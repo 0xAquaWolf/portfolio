@@ -15,9 +15,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <!-- <a href="https://github.com/0xAquaWolf/your-portfolio-repo">
-    <img src="public/images/png/aquawolf-logo.png" alt="Logo" width="80" height="80">
-  </a> -->
 
   <p align="center">
   For many years i dreamed of a smooth and modern website to showcase everything that i have learned after 8 years, this is my love letter to Web Developement as a Full-Stack Engineer with a passion for UI/UX design.
@@ -72,10 +69,8 @@ Key Features:
 - Dark mode support for comfortable viewing in any lighting condition
 - Fast loading times and optimized performance
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-### Built With
-
+<br>
+<h3 align="center">Built With</h3>
 <div align="center">
 <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
 <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
@@ -85,9 +80,7 @@ Key Features:
 <img src="https://img.shields.io/badge/Aceternity_UI-FF4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Aceternity UI">
 <img src="https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
 </div>
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+<br>
 <!-- GETTING STARTED -->
 
 ## Getting Started
@@ -130,10 +123,6 @@ clone it
 
 whatever you like
 
-<!-- _For more examples, please refer to the [Documentation](https://example.com)_ -->
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- ROADMAP -->
 
 ## Roadmap
@@ -159,8 +148,6 @@ whatever you like
 
 See the [open issues](https://github.com/0xAquaWolf/your-portfolio-repo/issues) for a full list of proposed features (and known issues).
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- CONTRIBUTING -->
 
 ## Contributing
@@ -184,8 +171,6 @@ Don't forget to give the project a star! Thanks again!
 
 Distributed under the GPL License. See `LICENSE` for more information.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 <!-- CONTACT -->
 
 ## Contact
@@ -193,8 +178,6 @@ Distributed under the GPL License. See `LICENSE` for more information.
 Twitter / x - [@0xAquaWolf](https://twitter.com/0xAquaWolf)
 
 [Aquawolf Academy Discord](https://discord.gg/wzPBjEcn87)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ACKNOWLEDGMENTS -->
 
