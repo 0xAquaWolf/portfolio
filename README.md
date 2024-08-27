@@ -20,7 +20,7 @@
   </a> -->
 
   <p align="center">
-  For many years i dreamed a smooth and modern website to showcase everything that i have learned after 8 years, this is my love letter to Web Developement as a Full-Stack Engineer with a passion for UI/UX design.
+  For many years i dreamed of a smooth and modern website to showcase everything that i have learned after 8 years, this is my love letter to Web Developement as a Full-Stack Engineer with a passion for UI/UX design.
     <br />
     <a href="https://0xAquaWolf.com">View Demo</a>
     ·
