@@ -6,7 +6,7 @@ const activeStyle =
 
 export default function Menu() {
   return (
-    <div className="relative z-10 top-10 px-20 flex items-center justify-between ">
+    <div className="relative z-10 top-10 px-20 flex items-center justify-between">
       <div className="flex items-center gap-2 ">
         <Image
           src="/images/png/aquawolf-logo.png"

@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("font-sans antialiased", fontSans.variable)}>
+      <body className={cn("font-sans antialiased ", fontSans.variable)}>
         {children}
       </body>
     </html>
