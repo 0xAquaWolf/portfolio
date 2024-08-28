@@ -29,20 +29,22 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Your App Name",
+    title: "0xAquaWolf",
   },
   formatDetection: {
     telephone: false,
   },
   openGraph: {
     type: "website",
-    siteName: "Your Site Name",
+    images: "images/png/portfolio-preview.png",
+    siteName: "0xAquaWolf",
     title: "0xAquaWolf Portfolio & Blog",
     description:
       "AquaWolf is a senior full-stack Web3 software engineer and indie hacker with a proven track record in building impactful, consumer-facing products that have generated over $28M in Web3 projects and $30K MRR in e-commerce. Specializing in rapid prototyping, full-stack development, UI/UX design, and emerging technologies like AI and blockchain, AquaWolf is passionately building innovative solutions and upskilling in Web3, AI, and Machine Learning while releasing quality apps to the public.",
   },
   twitter: {
     card: "summary",
+    images: "images/png/portfolio-preview.png",
     title: "0xAquaWolf Portfolio & Blog",
     description:
       "AquaWolf is a senior full-stack Web3 software engineer and indie hacker with a proven track record in building impactful, consumer-facing products that have generated over $28M in Web3 projects and $30K MRR in e-commerce. Specializing in rapid prototyping, full-stack development, UI/UX design, and emerging technologies like AI and blockchain, AquaWolf is passionately building innovative solutions and upskilling in Web3, AI, and Machine Learning while releasing quality apps to the public.",
