@@ -1,6 +1,6 @@
 export default function SVGGradientBg() {
   return (
-    <div className="absolute inset-0 w-full h-screen bg-black overflow-hidden">
+    <div className="absolute inset-0 w-full h-screen bg-[#0C0A12] overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="w-full h-full"
