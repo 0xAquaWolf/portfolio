@@ -22,15 +22,6 @@ interface NavItem {
   isActive: boolean;
 }
 
-// const socialIcons = [
-//   { name: "X", src: "/images/x-icon.png", href: "#" },
-//   { name: "YouTube", src: "/images/youtube-icon.png", href: "#" },
-//   { name: "GitHub", src: "/images/github-icon.png", href: "#" },
-//   { name: "Instagram", src: "/images/instagram-icon.png", href: "#" },
-//   { name: "TikTok", src: "/images/tiktok-icon.png", href: "#" },
-//   { name: "LinkedIn", src: "/images/linkedin-icon.png", href: "#" },
-// ];
-
 export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navMenu, setNavMenu] = useState<NavItem[]>([
