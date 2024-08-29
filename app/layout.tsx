@@ -1,9 +1,12 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+  ),
   title: "0xAquaWolf Portfolio & Blog",
   description:
     "AquaWolf is a Senior Full-Stack Software Engineer and indie hacker with a proven track record in building impactful, consumer-facing products that have generated over $28M in Web3 projects and $30K MRR in e-commerce. Specializing in rapid prototyping, full-stack development, UI/UX design, and emerging technologies like AI and blockchain, AquaWolf is passionately building innovative solutions and upskilling in Web3, AI, and Machine Learning while releasing quality apps to the public.",
@@ -24,8 +27,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: "/site.webmanifest",
-  themeColor: "#ffffff",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -36,19 +38,23 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    images: "images/png/portfolio-preview.png",
+    images: "/images/png/portfolio-preview.png",
     siteName: "0xAquaWolf",
     title: "0xAquaWolf Portfolio & Blog",
     description:
       "AquaWolf is a Senior Full-Stack Software Engineer and indie hacker with a proven track record in building impactful, consumer-facing products that have generated over $28M in Web3 projects and $30K MRR in e-commerce. Specializing in rapid prototyping, full-stack development, UI/UX design, and emerging technologies like AI and blockchain, AquaWolf is passionately building innovative solutions and upskilling in Web3, AI, and Machine Learning while releasing quality apps to the public.",
   },
   twitter: {
-    card: "summary",
-    images: "images/png/portfolio-preview.png",
+    card: "summary_large_image",
+    images: "/images/png/portfolio-preview.png",
     title: "0xAquaWolf Portfolio & Blog",
     description:
       "AquaWolf is a Senior Full-Stack Software Engineer and indie hacker with a proven track record in building impactful, consumer-facing products that have generated over $28M in Web3 projects and $30K MRR in e-commerce. Specializing in rapid prototyping, full-stack development, UI/UX design, and emerging technologies like AI and blockchain, AquaWolf is passionately building innovative solutions and upskilling in Web3, AI, and Machine Learning while releasing quality apps to the public.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
 };
 
 const fontSans = FontSans({
@@ -63,7 +69,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn("font-sans antialiased ", fontSans.variable)}>
+      <body className={cn("font-sans antialiased", fontSans.variable)}>
         {children}
       </body>
     </html>
