@@ -223,8 +223,7 @@ export default function Menu() {
                         />
                       </a>
                       <a
-                        // href="https://www.linkedin.com/in/0xAquaWolf"
-                        href="#"
+                        href="https://www.linkedin.com/in/0xAquaWolf"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="grid items-center"
