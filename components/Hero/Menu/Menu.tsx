@@ -11,11 +11,10 @@ import LinkedinLogo from "../../../public/images/svg/LinkedIn-Logo.svg";
 import TiktokLogo from "../../../public/images/svg/Tiktok-Logo.svg";
 import TwitterLogo from "../../../public/images/svg/X-Twitter-Logo.svg";
 import YouTubeLogo from "../../../public/images/svg/Youtube-Logo.svg";
+import clsx from "clsx";
 
-const inActiveStyle =
-  "text-white/50 hover:bg-white/40 transition-all rounded-full px-4 py-1";
-const activeStyle =
-  "bg-gradient-to-b from-white/40 to-[#2F2D2D]/20 px-4 py-1 rounded-full";
+const inActiveStyle = "text-white/50 hover:bg-white/40 hover:text-white/80";
+const activeStyle = "bg-gradient-to-b from-white/40 to-[#2F2D2D]/20";
 
 interface NavItem {
   name: string;
@@ -83,20 +82,18 @@ export default function Menu() {
           <div className="hidden lg:flex lg:gap-x-12 lg:flex-1 lg:items-center gap-4 text-white bg-white/20 px-5 py-2 rounded-full lg:w-full">
             {/* Desktop Mobile menu */}
             {navMenu.map((item) => (
-              <span key={item.name}>
-                {item.isActive === true ? (
-                  <a className="relative flex-2" href={item.href}>
-                    <div className={activeStyle}>{item.name}</div>
-                  </a>
-                ) : (
-                  <a
-                    onClick={() => setActiveNavItem(item.name)}
-                    href={item.href}
-                    className={inActiveStyle}
-                  >
-                    {item.name}
-                  </a>
-                )}
+              <span key={item.name} onClick={() => setActiveNavItem(item.name)}>
+                <a
+                  className={clsx({
+                    "relative flex-2 transition-all rounded-full px-4 py-1":
+                      true,
+                    [activeStyle]: item.isActive,
+                    [inActiveStyle]: !item.isActive,
+                  })}
+                  href={item.href}
+                >
+                  {item.name}
+                </a>
               </span>
             ))}
           </div>
