@@ -134,6 +134,8 @@ whatever you like
   - [ ] Widescreen responsiveness min-w-[1440px]
 - [x] Logo Cloud
   - [ ] Widescreen responsiveness min-w-[1440px]
+  - [ ] Widescreen make bigger
+  - [ ] Tablet row layout (md:flex-row)
 - [ ] Stats Section with dynamic info
   - [ ] Design in figma
   - [ ] Code with tailwindcss
@@ -227,6 +229,16 @@ Twitter / x - [@0xAquaWolf](https://twitter.com/0xAquaWolf)
 [Bun-url]: https://bun.sh/
 [Node.js]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
 [Node-url]: https://nodejs.org/
+
+## Star History
+
+<a href="https://star-history.com/#0xAquaWolf/portfolio&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date" />
+ </picture>
+</a>
 
 #### Farewell
 
