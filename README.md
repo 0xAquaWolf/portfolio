@@ -128,10 +128,15 @@ whatever you like
 ## Roadmap
 
 - Hero Section
-  - [ ] Nav Menu
-  - [ ] Call to actions
-  - [ ] Mobile Responsiveness
+  - [x] Nav Menu
+  - [x] Call to actions
+  - [x] Mobile Responsiveness
+  - [ ] Widescreen responsiveness min-w-[1440px]
+- [x] Logo Cloud
+  - [ ] Widescreen responsiveness min-w-[1440px]
 - [ ] Stats Section with dynamic info
+  - [ ] Design in figma
+  - [ ] Code with tailwindcss
 - [ ] Youtube video section with live view count
 - [ ] 1st Quote Section
 - [ ] About me Section
