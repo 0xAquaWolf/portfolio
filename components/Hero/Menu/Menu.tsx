@@ -145,6 +145,7 @@ export default function Menu() {
                       <a
                         key={item.name + 1}
                         href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
                         className="-mx-3 block rounded-lg px-3 py-2 text-3xl font-normal leading-7 text-white hover:bg-gray-50/20 transition-all"
                       >
                         {item.name}
