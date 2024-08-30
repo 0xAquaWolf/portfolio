@@ -198,7 +198,7 @@ export default function Menu() {
                     </div>
                     <div className="flex gap-10 justify-center align-center">
                       <a
-                        href="https://www.instagram.com/AquaWolf369"
+                        href="https://www.instagram.com/_0xAquaWolf"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="grid items-center"

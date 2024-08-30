@@ -67,3 +67,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes marquee {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+}
+
+.marquee-fast .animate-marquee {
+  animation-duration: 60s;
+}
+
+.marquee-slow .animate-marquee {
+  animation-duration: 80s;
+}
