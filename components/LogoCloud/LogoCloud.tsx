@@ -3,9 +3,9 @@ import PythonLogo from "@/public/images/svg/Python-Logo.svg";
 import NextJSLogo from "@/public/images/svg/Next-js.svg";
 import VercelLogo from "@/public/images/svg/Vercel-Logo.svg";
 import TailwindCSSLogo from "@/public/images/svg/Tailwind-Logo.svg";
-import ReactLogo from "@/public/images/svg/react-Logo.svg";
+import ReactLogo from "@/public/images/svg/react-logo.svg";
 import TypescriptLogo from "@/public/images/svg/TS-Logo.svg";
-import FigmaLogo from "@/public/images/svg/figma-Logo.svg";
+import FigmaLogo from "@/public/images/svg/figma-logo.svg";
 
 const logos = [
   { src: ReactLogo, alt: "React Logo", name: "React" },
