@@ -57,10 +57,10 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
 
   return (
     <div className="lg:px-[200px] py-16 overflow-hidden">
-      <h2 className="text-3xl font-bold text-center text-white mb-2">
+      <h2 className="text-1xl lg:text-3xl font-bold text-center text-white mb-2">
         Loved by Thousands of People
       </h2>
-      <p className="text-xl text-center text-gray-300 mb-8">
+      <p className="text-sm w-[80%] mx-auto lg:text-xl text-center text-gray-300 mb-8">
         {"Here's what some of my viewers have to say about 0xAquaWolf"}
       </p>
       <div className="relative">
