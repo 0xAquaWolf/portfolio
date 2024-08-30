@@ -63,39 +63,44 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
       <p className="text-xl text-center text-gray-300 mb-8">
         Here's what some of my viewers have to say about 0xAquaWolf
       </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Mobile view: single column */}
-        <div className="md:hidden overflow-hidden h-[600px] marquee-slow px-10">
-          <div className="animate-marquee">
-            {testimonials.map((testimonial, i) => (
-              <TestimonialCard key={i} {...testimonial} />
-            ))}
-            {/* Duplicate testimonials to create seamless loop */}
-            {testimonials.map((testimonial, i) => (
-              <TestimonialCard key={`dup-${i}`} {...testimonial} />
-            ))}
-          </div>
-        </div>
-        {/* Desktop view: three columns */}
-        {[group1, group2, group3].map((group, index) => (
-          <div
-            key={index}
-            className={`hidden md:block overflow-hidden h-[600px] ${
-              index === 1 ? "marquee-slow" : "marquee-fast"
-            }`}
-          >
+      <div className="relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Mobile view: single column */}
+          <div className="md:hidden overflow-hidden h-[600px] marquee-slow px-10">
             <div className="animate-marquee">
-              {group.map((testimonial, i) => (
+              {testimonials.map((testimonial, i) => (
                 <TestimonialCard key={i} {...testimonial} />
               ))}
               {/* Duplicate testimonials to create seamless loop */}
-              {group.map((testimonial, i) => (
+              {testimonials.map((testimonial, i) => (
                 <TestimonialCard key={`dup-${i}`} {...testimonial} />
               ))}
             </div>
           </div>
-        ))}
+          {/* Desktop view: three columns */}
+          {[group1, group2, group3].map((group, index) => (
+            <div
+              key={index}
+              className={`hidden md:block overflow-hidden h-[600px] ${
+                index === 1 ? "marquee-slow" : "marquee-fast"
+              }`}
+            >
+              <div className="animate-marquee">
+                {group.map((testimonial, i) => (
+                  <TestimonialCard key={i} {...testimonial} />
+                ))}
+                {/* Duplicate testimonials to create seamless loop */}
+                {group.map((testimonial, i) => (
+                  <TestimonialCard key={`dup-${i}`} {...testimonial} />
+                ))}
+              </div>
+            </div>
+          ))}
+          {/* top shadow */}
+          <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-t from-transparent to-black"></div>
+          {/* bottom shadow */}
+          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t to-transparent from-black"></div>
+        </div>
       </div>
     </div>
   );

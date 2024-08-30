@@ -6,7 +6,7 @@ export default function YoutubeGrid() {
     <div className="">
       <div>Loved by Thousands of People</div>
       <div>Here's what some of my viewers have to say about 0xAquaWolf</div>
-      <div className="min-h-screen">
+      <div className="min-h-screen relative">
         <ScrollingTestimonials testimonials={commentsData} />
       </div>
     </div>
