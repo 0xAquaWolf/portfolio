@@ -54,14 +54,14 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
   };
 
   const [group1, group2, group3] = splitTestimonials(testimonials);
-  console.log({ group1, group2, group3 });
+
   return (
     <div className="lg:px-[200px] py-16 overflow-hidden">
       <h2 className="text-3xl font-bold text-center text-white mb-2">
         Loved by Thousands of People
       </h2>
       <p className="text-xl text-center text-gray-300 mb-8">
-        Here's what some of my viewers have to say about 0xAquaWolf
+        {"Here's what some of my viewers have to say about 0xAquaWolf"}
       </p>
       <div className="relative">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
