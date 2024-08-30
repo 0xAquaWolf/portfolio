@@ -92,6 +92,7 @@ export const WavyBackground = ({
     animationId = requestAnimationFrame(render);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     init();
     return () => {
