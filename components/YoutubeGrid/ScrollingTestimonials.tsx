@@ -1,61 +1,50 @@
 import React from "react";
 import Image from "next/image";
+import { CommentData } from "./CommentData";
 
-interface TestimonialProps {
-  username: string;
-  handle: string;
-  avatarUrl: string;
-  comment: string;
-  isYouTuber: boolean;
-}
-
-const TestimonialCard: React.FC<TestimonialProps> = ({
+const TestimonialCard: React.FC<CommentData> = ({
   username,
   handle,
   avatarUrl,
   comment,
   isYouTuber,
 }) => (
-  <div className="bg-gray-600/20 p-4 rounded-lg mb-4">
-    <div className="flex items-center space-x-2 mb-2 justify-between">
-      <div className="flex items-center gap-4">
-        <div>
-          <Image
-            src={avatarUrl}
-            alt={`${username}'s avatar`}
-            width={40}
-            height={40}
-            className="rounded-full select-none"
-          />
-        </div>
-        <div className="min-w-0 flex-1">
+  <div className="bg-gray-600/20 p-4 rounded-lg mb-4 border-[1px] border-white/10">
+    <div className="flex items-center mb-2">
+      <div className="flex items-center flex-grow min-w-0">
+        <Image
+          src={avatarUrl}
+          alt={`${username}'s avatar`}
+          width={40}
+          height={40}
+          className="rounded-full select-none mr-4"
+        />
+        <div className="min-w-0 flex-shrink">
           <p className="text-white font-semibold truncate">{username}</p>
           <p className="text-gray-400 text-sm truncate">{handle}</p>
         </div>
       </div>
-      <div>
-        {isYouTuber && (
+      {isYouTuber && (
+        <div className="flex-shrink-0 ml-2">
           <svg
-            className="w-5 h-5 text-red-500 ml-auto"
+            className="w-5 h-5 text-red-500"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
             <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
           </svg>
-        )}
-      </div>
+        </div>
+      )}
     </div>
     <p className="text-white">{comment}</p>
   </div>
 );
 
-const ScrollingTestimonials: React.FC<{ testimonials: TestimonialProps[] }> = ({
+const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
   testimonials,
 }) => {
   // Split testimonials into three groups
-  const splitTestimonials = (
-    testis: TestimonialProps[]
-  ): TestimonialProps[][] => {
+  const splitTestimonials = (testis: CommentData[]): CommentData[][] => {
     const third = Math.ceil(testis.length / 3);
     return [
       testis.slice(0, third),
