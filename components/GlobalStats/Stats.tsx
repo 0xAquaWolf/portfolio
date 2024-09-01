@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { Octokit } from "@octokit/rest";
+import NumberTicker from "../magicui/number-ticker";
 
 // Types for our stats
 interface Stat {
@@ -8,9 +9,7 @@ interface Stat {
 }
 
 // Function to format large numbers
-const formatNumber = (num: number): string => {
-  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+const formatNumber = (num: number): number => num;
 
 // Function to fetch YouTube channel info
 async function getChannelInfo(channelId: string): Promise<Stat[]> {
@@ -110,8 +109,8 @@ export const Stats = async () => {
               key={index}
               className="text-center px-6 w-full md:w-1/3 mb-8 md:mb-0"
             >
-              <p className="text-4xl lg:text-5xl font-bold mb-2">
-                {formatNumber(stat.value)}
+              <p className="text-4xl lg:text-5xl font-bold mb-2 ">
+                <NumberTicker value={stat.value} />
               </p>
               <p className="text-sm lg:text-lg text-gray-400">{stat.label}</p>
             </div>
