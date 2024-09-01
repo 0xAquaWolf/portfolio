@@ -3,8 +3,8 @@ import HeroCircles from "./HeroCircles";
 export default function HeroCTA() {
   return (
     <div className="relative z-40 mt-20 grid grid-cols-1 lg:grid-cols-2">
-      <div className="grid px-2 lg:pl-10 grid-cols-1 gap-4 items-center justify-center">
-        <div className="h-10 w-80 mx-auto lg:mx-0 lg:h-12">
+      <div className="grid px-2 lg:pl-10 grid-cols-1 gap-4 lg:gap-2 items-center justify-center">
+        <div className="h-10 w-80 mx-auto lg:mx-0 lg:h-12 rounded-full bg-purple-800">
           <div className="text-sm lg:text-base flex items-center justify-center w-full h-full text-white/80 bg-gradient-to-b from-white/40 to-[#2F2D2D]/20 px-2 py-0 lg:px-4 lg:py-1 rounded-full">
             Senior Full-Stack Software Engineer
           </div>
