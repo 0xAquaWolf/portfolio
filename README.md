@@ -94,6 +94,15 @@ To get a local copy up and running, follow these simple steps.
   curl -fsSL https://bun.sh/install | bash
   ```
 
+#### Environment Variables
+
+To run this project, you will need to add the following environment variables to your `.env` file:
+
+```bash
+YOUTUBE_API_KEY=""
+GITHUB_ACCESS_TOKEN=""
+```
+
 ### Installation
 
 1. Clone the repo
