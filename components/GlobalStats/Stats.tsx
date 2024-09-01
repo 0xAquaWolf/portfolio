@@ -1,3 +1,6 @@
+import { google } from "googleapis";
+import { Octokit } from "@octokit/rest";
+
 // Types for our stats
 interface Stat {
   value: number;
@@ -9,17 +12,94 @@ const formatNumber = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
+// Function to fetch YouTube channel info
+async function getChannelInfo(channelId: string): Promise<Stat[]> {
+  const youtube = google.youtube({
+    version: "v3",
+    auth: process.env.YOUTUBE_API_KEY,
+  });
+
+  try {
+    const response = await youtube.channels.list({
+      part: ["statistics"],
+      id: [channelId],
+    });
+
+    if (response.data.items && response.data.items.length > 0) {
+      const channel = response.data.items[0];
+      return [
+        {
+          value: Number(channel.statistics?.viewCount) || 0,
+          label: "Youtube Views",
+        },
+        {
+          value: Number(channel.statistics?.subscriberCount) || 0,
+          label: "Youtube Subscribers",
+        },
+      ];
+    } else {
+      console.log("Channel not found");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching channel info:", error);
+    return [];
+  }
+}
+
+// Function to fetch GitHub stars
+async function getGitHubStars(username: string): Promise<number> {
+  const octokit = new Octokit({
+    auth: process.env.GITHUB_ACCESS_TOKEN,
+  });
+
+  try {
+    const { data: repos } = await octokit.repos.listForUser({
+      username,
+      per_page: 100, // Adjust if you have more than 100 repos
+    });
+
+    const totalStars = repos.reduce(
+      (sum, repo) => sum + (repo.stargazers_count ?? 0),
+      0
+    );
+    return totalStars;
+  } catch (error) {
+    console.error("Error fetching GitHub stars:", error);
+    return 0;
+  }
+}
+
 // Server Component
 export const Stats = async () => {
-  // In a real application, you would fetch this data from an API or database
+  const YOUR_CHANNEL_ID = "UCkwRYP1J1hjRXwo5lyBRWdQ";
+  const YOUR_GITHUB_USERNAME = "0xAquaWolf"; // Replace with your actual GitHub username
+
+  let youtubeStats: Stat[] = [];
+  let githubStars = 0;
+
+  try {
+    [youtubeStats, githubStars] = await Promise.all([
+      getChannelInfo(YOUR_CHANNEL_ID),
+      getGitHubStars(YOUR_GITHUB_USERNAME),
+    ]);
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    // Provide fallback data in case of errors
+    youtubeStats = [
+      { value: 0, label: "Youtube Views" },
+      { value: 0, label: "Youtube Subscribers" },
+    ];
+    githubStars = 0;
+  }
+
   const statsData: Stat[] = [
-    { value: 24878, label: "Youtube Views" },
-    { value: 558, label: "Youtube Subcribers" },
-    { value: 69, label: "Github Stars" },
+    ...youtubeStats,
+    { value: githubStars, label: "Github Stars" },
   ];
 
   return (
-    <section className="text-white py-12 px-4">
+    <section className="text-white py-12 px-4 mb-20 lg:mb-32">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-base lg:text-2xl font-semibold text-center mb-8">
           Global Stats
