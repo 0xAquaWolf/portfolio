@@ -240,6 +240,6 @@ Twitter / x - [@0xAquaWolf](https://twitter.com/0xAquaWolf)
  </picture>
 </a>
 
-### Farewell
+## Farewell
 
 Wholeness and balanced Vibrations 🙌
