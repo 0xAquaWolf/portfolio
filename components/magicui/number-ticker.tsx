@@ -47,7 +47,7 @@ export default function NumberTicker({
   return (
     <motion.span
       className={cn(
-        "inline-block tabular-nums text-white dark:text-black tracking-wider",
+        "inline-block tabular-nums text-black dark:text-white tracking-wider",
         className
       )}
       ref={ref}

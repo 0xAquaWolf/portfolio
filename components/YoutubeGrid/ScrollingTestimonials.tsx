@@ -56,7 +56,7 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
   const [group1, group2, group3] = splitTestimonials(testimonials);
 
   return (
-    <div className="lg:px-[200px] py-16 overflow-hidden">
+    <div className="max-w-[1440px] mx-auto py-16 overflow-hidden">
       <h2 className="text-1xl lg:text-3xl font-bold text-center text-white mb-2">
         Loved by Thousands of People
       </h2>

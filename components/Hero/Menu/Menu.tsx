@@ -43,7 +43,7 @@ export default function Menu() {
   };
 
   return (
-    <div className="">
+    <div className="max-w-[1440px] mx-auto">
       <header className="absolute inset-x-0 top-0 z-50">
         <nav
           aria-label="Global"

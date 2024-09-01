@@ -27,32 +27,6 @@
   </p>
 </div>
 
-<!-- TABLE OF CONTENTS -->
-<!-- <details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details> -->
-
 <!-- ABOUT THE PROJECT -->
 
 <h2 align="center">About This Project</h3>
@@ -145,9 +119,11 @@ whatever you like
   - [ ] Widescreen responsiveness min-w-[1440px]
   - [ ] Widescreen make bigger
   - [ ] Tablet row layout (md:flex-row)
-- [ ] Stats Section with dynamic info
-  - [ ] Design in figma
-  - [ ] Code with tailwindcss
+- [x] Stats Section with dynamic info
+  - [x] Design in figma
+  - [x] Code with tailwindcss
+  - [x] Dynamic data from API
+  - [x] Animate number with framer-motion
 - [ ] Youtube video section with live view count
 - [ ] 1st Quote Section
 - [ ] About me Section

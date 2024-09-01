@@ -31,7 +31,7 @@ interface LogoProps {
 }
 
 const Logo = ({ src, alt, name, width = 30, height = 30 }: LogoProps) => (
-  <div className="flex justify-start lg:justify-center items-center gap-3 lg:gap-2">
+  <div className="lg:max-w-[1440px] mx-auto flex justify-start lg:justify-center items-center gap-3 lg:gap-2">
     {Array.isArray(src) ? (
       <>
         <Image
