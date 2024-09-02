@@ -1,4 +1,5 @@
-import { VideosBentoGrid } from "./VideosBentoGrid";
+// import { VideosBentoGrid } from "./VideosBentoGrid";
+import VideoGrid from "./VideoGrid";
 
 export default function YoutubeVideos() {
   return (
@@ -12,7 +13,8 @@ export default function YoutubeVideos() {
           Dev Workflows
         </p>
       </div>
-      <VideosBentoGrid />
+      <VideoGrid />
+      {/* <VideosBentoGrid /> */}
     </>
   );
 }
