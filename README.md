@@ -125,6 +125,10 @@ whatever you like
   - [x] Dynamic data from API
   - [x] Animate number with framer-motion
 - [ ] Youtube video section with live view count
+  - [ ] Design in figma
+  - [ ] Code with tailwindcss
+  - [ ] Dynamic data from API
+  - [ ] Animate number with framer-motion
 - [ ] 1st Quote Section
 - [ ] About me Section
 - [ ] Projects and Startups Section
