@@ -13,6 +13,13 @@ interface Stat {
 
 // Function to fetch YouTube channel info
 async function getChannelInfo(channelId: string): Promise<Stat[]> {
+  if (process.env.NODE_ENV === "development") {
+    return [
+      { value: 10000000, label: "Youtube Views" },
+      { value: 100000, label: "Youtube Subscribers" },
+    ];
+  }
+
   const youtube = google.youtube({
     version: "v3",
     auth: process.env.YOUTUBE_API_KEY,
@@ -48,6 +55,10 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
 
 // Function to fetch GitHub stars
 async function getGitHubStars(username: string): Promise<number> {
+  if (process.env.NODE_ENV === "development") {
+    return 528;
+  }
+
   const octokit = new Octokit({
     auth: process.env.GITHUB_ACCESS_TOKEN,
   });
