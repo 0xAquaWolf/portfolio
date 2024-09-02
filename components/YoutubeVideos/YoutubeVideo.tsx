@@ -3,7 +3,7 @@ import VideoGrid from "./VideoGrid";
 
 export default function YoutubeVideos() {
   return (
-    <>
+    <div className="px-8">
       <div className="text-white">
         <h2 className="text-1xl lg:text-3xl font-bold text-center text-white mb-2">
           Watched by Thousands of People
@@ -15,6 +15,6 @@ export default function YoutubeVideos() {
       </div>
       <VideoGrid />
       {/* <VideosBentoGrid /> */}
-    </>
+    </div>
   );
 }

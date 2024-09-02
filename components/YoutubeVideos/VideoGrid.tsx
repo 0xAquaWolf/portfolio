@@ -132,7 +132,7 @@ const VideoGrid: React.FC = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[83rem] mx-auto group md:auto-rows-[20rem]">
+    <div className="2xl:max-w-[1440px] lg:max-w-[1100px] grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[83rem] mx-auto group md:auto-rows-[20rem]">
       {videos.map((video) => (
         <VideoCard key={video.id} {...video} />
       ))}
