@@ -19,38 +19,42 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
       { value: 100000, label: "Youtube Subscribers" },
     ];
   }
+  return [
+    { value: 27167, label: "Youtube Views" },
+    { value: 728, label: "Youtube Subscribers" },
+  ];
 
-  const youtube = google.youtube({
-    version: "v3",
-    auth: process.env.YOUTUBE_API_KEY,
-  });
+  // const youtube = google.youtube({
+  //   version: "v3",
+  //   auth: process.env.YOUTUBE_API_KEY,
+  // });
 
-  try {
-    const response = await youtube.channels.list({
-      part: ["statistics"],
-      id: [channelId],
-    });
+  // try {
+  //   const response = await youtube.channels.list({
+  //     part: ["statistics"],
+  //     id: [channelId],
+  //   });
 
-    if (response.data.items && response.data.items.length > 0) {
-      const channel = response.data.items[0];
-      return [
-        {
-          value: Number(channel.statistics?.viewCount) || 0,
-          label: "Youtube Views",
-        },
-        {
-          value: Number(channel.statistics?.subscriberCount) || 0,
-          label: "Youtube Subscribers",
-        },
-      ];
-    } else {
-      console.log("Channel not found");
-      return [];
-    }
-  } catch (error) {
-    console.error("Error fetching channel info:", error);
-    return [];
-  }
+  //   if (response.data.items && response.data.items.length > 0) {
+  //     const channel = response.data.items[0];
+  //     return [
+  //       {
+  //         value: Number(channel.statistics?.viewCount) || 0,
+  //         label: "Youtube Views",
+  //       },
+  //       {
+  //         value: Number(channel.statistics?.subscriberCount) || 0,
+  //         label: "Youtube Subscribers",
+  //       },
+  //     ];
+  //   } else {
+  //     console.log("Channel not found");
+  //     return [];
+  //   }
+  // } catch (error) {
+  //   console.error("Error fetching channel info:", error);
+  //   return [];
+  // }
 }
 
 // Function to fetch GitHub stars
