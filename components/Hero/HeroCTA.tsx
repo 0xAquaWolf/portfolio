@@ -15,13 +15,13 @@ export default function HeroCTA() {
         <div className="flex gap-4 justify-center lg:justify-start">
           <a
             href="#"
-            className="bg-white rounded-full px-4 py-2 xl:px-6 xl:py-3 text-black hover:text-white hover:bg-transparent border-[1px] hover:border-white transition-all xl:text-lg"
+            className="bg-white rounded-full px-4 py-2 xl:px-6 xl:py-3 text-black hover:text-white hover:bg-transparent transition-all xl:text-lg shadow-cta hover:shadow-alt-cta"
           >
             See Projects
           </a>
           <a
             href="#"
-            className="rounded-full px-6 py-2 xl:px-8 xl:py-3 border-[1px] border-white text-white hover:bg-white hover:text-black transition-all xl:text-lg"
+            className="hover:shadow-cta shadow-alt-cta rounded-full px-6 py-2 xl:px-8 xl:py-3 text-white hover:bg-white hover:text-black transition-all xl:text-lg"
           >
             Watch Videos
           </a>

@@ -32,6 +32,10 @@ const config = {
       },
     },
     extend: {
+      boxShadow: {
+        "alt-cta": "inset 0px 0px 10px #FFFFFF",
+        cta: "inset 0px 0px 14px #000000",
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

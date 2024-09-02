@@ -91,13 +91,13 @@ export default function Menu() {
           <div className="hidden lg:flex lg:flex-1 gap-4 lg:justify-end">
             <a
               href="#"
-              className="bg-white rounded-full px-4 py-2 text-black hover:text-white hover:bg-transparent border-[1px] hover:border-white transition-all"
+              className="bg-white rounded-full px-4 py-2 text-black hover:text-white hover:bg-transparent shadow-cta hover:shadow-alt-cta transition-all"
             >
               Hire Me
             </a>
             <a
               href="#"
-              className="rounded-full px-6 py-2 border-[1px] border-white text-white hover:bg-white hover:text-black transition-all"
+              className="rounded-full px-6 py-2 shadow-alt-cta hover:shadow-cta text-white hover:bg-white hover:text-black transition-all"
             >
               Links
             </a>
