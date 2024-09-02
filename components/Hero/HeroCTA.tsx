@@ -9,7 +9,7 @@ export default function HeroCTA() {
             Senior Full-Stack Software Engineer
           </div>
         </div>
-        <div className="text-[10vw] lg:text-[5vw] xl:text-[5vw] font-bold leading-[11vw] text-center lg:text-left lg:leading-[5vw] xl:leading-tight text-white bg-gradient-to-b to-[#F26FD8] from-[#FFF4F4] bg-clip-text text-transparent">
+        <div className="text-[10vw] lg:text-[4vw] xl:text-[4.5vw] font-bold leading-[11vw] text-center lg:text-left lg:leading-[5vw] xl:leading-tight text-white bg-gradient-to-b to-[#F26FD8] from-[#FFF4F4] bg-clip-text text-transparent">
           Exploring the hidden mysteries of tech
         </div>
         <div className="flex gap-4 justify-center lg:justify-start">
