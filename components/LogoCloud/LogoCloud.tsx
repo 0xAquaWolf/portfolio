@@ -31,7 +31,7 @@ interface LogoProps {
 }
 
 const Logo = ({ src, alt, name, width = 30, height = 30 }: LogoProps) => (
-  <div className="flex items-start lg:items-cente gap-3 lg:gap-2">
+  <div className="flex items-start lg:items-center self-center gap-3 lg:gap-2">
     {Array.isArray(src) ? (
       <>
         <Image
@@ -65,9 +65,11 @@ export default function LogoCloud() {
       <h2 className="text-center mb-4 lg:mb-0 text-base px-10 lg:px-0 lg:text-2xl w-full lg:max-w-none mx-auto">
         Leveraging the most state-of-the-art technologies
       </h2>
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 justify-start lg:justify-center lg:items-center w-full lg:w-[80%] mx-auto px-4 lg:px-0">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 justify-center items-center w-full lg:w-[80%] mx-auto px-4 lg:px-0">
         {logos.map((logo, index) => (
-          <Logo key={index} {...logo} />
+          <div key={index} className="flex lg:justify-center">
+            <Logo {...logo} />
+          </div>
         ))}
       </div>
       <p className="text-center opacity-60 text-sm w-full max-w-[300px] lg:max-w-none mx-auto">
