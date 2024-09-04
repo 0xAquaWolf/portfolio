@@ -82,9 +82,9 @@
 }
 
 .marquee-fast .animate-marquee {
-  animation-duration: 20s;
+  animation-duration: 15s;
 }
 
 .marquee-slow .animate-marquee {
-  animation-duration: 50s;
+  animation-duration: 40s;
 }
