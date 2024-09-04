@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { CommentData } from "./CommentData";
+import SectionHeading from "../SectionHeading";
 
 const TestimonialCard: React.FC<CommentData> = ({
   username,
@@ -9,25 +10,25 @@ const TestimonialCard: React.FC<CommentData> = ({
   comment,
   isYouTuber,
 }) => (
-  <div className="bg-gray-600/20 p-4 rounded-lg mb-4 border-[1px] border-white/10">
-    <div className="flex items-center mb-2">
-      <div className="flex items-center flex-grow min-w-0">
+  <div className="mb-4 rounded-lg border-[1px] border-white/10 bg-gray-600/20 p-4">
+    <div className="mb-2 flex items-center">
+      <div className="flex min-w-0 flex-grow items-center">
         <Image
           src={avatarUrl}
           alt={`${username}'s avatar`}
           width={40}
           height={40}
-          className="rounded-full select-none mr-4"
+          className="mr-4 select-none rounded-full"
         />
         <div className="min-w-0 flex-shrink">
-          <p className="text-white font-semibold truncate">{username}</p>
-          <p className="text-gray-400 text-sm truncate">{handle}</p>
+          <p className="truncate font-semibold text-white">{username}</p>
+          <p className="truncate text-sm text-gray-400">{handle}</p>
         </div>
       </div>
       {isYouTuber && (
-        <div className="flex-shrink-0 ml-2">
+        <div className="ml-2 flex-shrink-0">
           <svg
-            className="w-5 h-5 text-red-500"
+            className="h-5 w-5 text-red-500"
             fill="currentColor"
             viewBox="0 0 24 24"
           >
@@ -56,17 +57,15 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
   const [group1, group2, group3] = splitTestimonials(testimonials);
 
   return (
-    <div className="2xl:max-w-[1440px] lg:max-w-[1100px] mx-auto mt-32 py-16 overflow-hidden">
-      <h2 className="text-1xl lg:text-3xl font-bold text-center text-white mb-2">
-        Loved by Thousands of People
-      </h2>
-      <p className="text-sm w-[80%] mx-auto lg:text-xl text-center text-gray-300 mb-8">
-        {"Here's what some of my viewers have to say about 0xAquaWolf"}
-      </p>
+    <div className="3xl:max-w-[1440px] mx-auto mt-32 overflow-hidden py-16 lg:max-w-[1100px]">
+      <SectionHeading
+        heading="Loved by Thousands of People"
+        subheading="Here's what some of my viewers have to say about 0xAquaWolf"
+      />
       <div className="relative">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {/* Mobile view: single column */}
-          <div className="md:hidden overflow-hidden h-[600px] marquee-slow px-10">
+          <div className="marquee-slow h-[600px] overflow-hidden px-10 md:hidden">
             <div className="animate-marquee">
               {testimonials.map((testimonial, i) => (
                 <TestimonialCard key={i} {...testimonial} />
@@ -81,7 +80,7 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
           {[group1, group2, group3].map((group, index) => (
             <div
               key={index}
-              className={`hidden md:block overflow-hidden h-[600px] ${
+              className={`hidden h-[600px] overflow-hidden md:block ${
                 index === 1 ? "marquee-slow" : "marquee-fast"
               }`}
             >
@@ -97,9 +96,9 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
             </div>
           ))}
           {/* top shadow */}
-          <div className="absolute top-0 left-0 right-0 h-1/4 bg-gradient-to-t from-transparent to-black"></div>
+          <div className="absolute left-0 right-0 top-0 h-1/4 bg-gradient-to-t from-transparent to-black"></div>
           {/* bottom shadow */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t to-transparent from-black"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black to-transparent"></div>
         </div>
       </div>
     </div>

@@ -90,9 +90,9 @@ const VideoCard: React.FC<VideoItem> = ({
     href={videoUrl}
     target="_blank"
     rel="noopener noreferrer"
-    className={`w-full relative group/bento ${spanClass}`}
+    className={`group/bento relative w-full ${spanClass}`}
   >
-    <div className="h-full w-full absolute inset-0 bg-black opacity-0 group-hover/bento:opacity-30 rounded-lg transition-all duration-200" />
+    <div className="absolute inset-0 h-full w-full rounded-lg bg-black opacity-0 transition-all duration-200 group-hover/bento:opacity-30" />
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ const VideoCard: React.FC<VideoItem> = ({
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-20 w-20 absolute z-10 inset-0 text-red-500 opacity-0 transition duration-200 m-auto group-hover/bento:opacity-100"
+      className="absolute inset-0 z-10 m-auto h-20 w-20 text-red-500 opacity-0 transition duration-200 group-hover/bento:opacity-100"
     >
       <path
         d="M18 3a5 5 0 0 1 5 5v8a5 5 0 0 1 -5 5h-12a5 5 0 0 1 -5 -5v-8a5 5 0 0 1 5 -5zm-9 6v6a1 1 0 0 0 1.514 .857l5 -3a1 1 0 0 0 0 -1.714l-5 -3a1 1 0 0 0 -1.514 .857z"
@@ -114,7 +114,7 @@ const VideoCard: React.FC<VideoItem> = ({
       alt={title}
       width={500}
       height={500}
-      className={`h-full w-full object-cover rounded-lg ${spanClass} ${objectPosition}`}
+      className={`h-full w-full rounded-lg object-cover ${spanClass} ${objectPosition}`}
     />
   </Link>
 );
@@ -132,7 +132,7 @@ const VideoGrid: React.FC = () => {
   }, []);
 
   return (
-    <div className="2xl:max-w-[1440px] lg:max-w-[1100px] grid grid-cols-1 md:grid-cols-3 gap-4 max-w-[83rem] mx-auto group md:auto-rows-[20rem]">
+    <div className="3xl:max-w-[1440px] group mx-auto grid max-w-[83rem] grid-cols-1 gap-4 md:auto-rows-[20rem] md:grid-cols-3 lg:max-w-[1100px]">
       {videos.map((video) => (
         <VideoCard key={video.id} {...video} />
       ))}

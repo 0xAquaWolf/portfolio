@@ -21,7 +21,7 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
   }
   return [
     { value: 27167, label: "Youtube Views" },
-    { value: 728, label: "Youtube Subscribers" },
+    { value: 780, label: "Youtube Subscribers" },
   ];
 
   // const youtube = google.youtube({
@@ -75,7 +75,7 @@ async function getGitHubStars(username: string): Promise<number> {
 
     const totalStars = repos.reduce(
       (sum, repo) => sum + (repo.stargazers_count ?? 0),
-      0
+      0,
     );
     console.log("Total Stars:", totalStars);
     return totalStars;
@@ -114,21 +114,21 @@ export const Stats = async () => {
   ];
 
   return (
-    <section className="text-white py-12 px-4 mb-20 lg:mb-32">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-base lg:text-2xl font-semibold text-center mb-8">
+    <section className="mx-auto mb-20 max-w-[1440px] px-4 py-12 text-white lg:mb-32">
+      <div className="mx-auto max-w-6xl">
+        <h2 className="mb-8 text-center text-base font-semibold lg:text-2xl">
           Global Stats
         </h2>
-        <div className="flex flex-col md:flex-row justify-center items-center">
+        <div className="flex flex-col items-center justify-center md:flex-row">
           {statsData.map((stat, index) => (
             <div
               key={index}
-              className="text-center px-6 w-full md:w-1/3 mb-8 md:mb-0"
+              className="mb-8 w-full px-6 text-center md:mb-0 md:w-1/3"
             >
-              <p className="text-4xl lg:text-5xl font-bold mb-2 ">
+              <p className="mb-2 text-4xl font-bold lg:text-5xl">
                 <NumberTicker value={stat.value} />
               </p>
-              <p className="text-sm lg:text-lg text-gray-400">{stat.label}</p>
+              <p className="text-sm text-gray-400 lg:text-lg">{stat.label}</p>
             </div>
           ))}
         </div>

@@ -4,12 +4,12 @@ import { WavyBackground } from "../ui/wavy-background";
 
 export function WavyBackgroundDemo() {
   return (
-    <WavyBackground className="max-w-6xl mx-auto py-20 pb-40 relative">
-      <p className="text-2xl md:text-4xl lg:text-6xl xl:text-7xl inter-var text-center bg-gradient-to-r from-white to-[#B17DE8] inline-block text-transparent bg-clip-text px-4 pb-2">
+    <WavyBackground className="relative mx-auto max-w-6xl py-20 pb-40">
+      <p className="inter-var inline-block bg-gradient-to-r from-white to-[#B17DE8] bg-clip-text px-4 pb-2 text-center text-2xl text-transparent md:text-4xl lg:text-6xl xl:text-7xl">
         The Smallest company in the world can look as large as the largest
         company on the web.
       </p>
-      <p className="text-base md:text-lg mt-4 text-white/80 font-light inter-var text-center">
+      <p className="inter-var mt-4 text-center text-base font-light text-white/80 md:text-lg">
         - Steve Jobs
       </p>
     </WavyBackground>

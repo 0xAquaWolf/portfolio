@@ -6,7 +6,7 @@ import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
   let newVars = Object.fromEntries(
-    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val]),
   );
 
   addBase({
@@ -31,15 +31,24 @@ const config = {
         "2xl": "1400px",
       },
     },
+
     extend: {
+      backgroundImage: {
+        "letter-top": "linear-gradient(360deg, #130832 0%, #722186 100%)",
+        "letter-middle":
+          "linear-gradient(1.77deg, #1A1056 1.57%, #8F1BAC 98.43%)",
+      },
       boxShadow: {
         "alt-cta": "inset 0px 0px 10px #FFFFFF",
         cta: "inset 0px 0px 14px #000000",
+        "letter-top": "0px 0px 20px #0F0C22",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
+        handwriting: ["var(--font-handwriting)"],
       },
       colors: {
+        "letter-bottom": "#68147D",
         "bg-default": "#07070C",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

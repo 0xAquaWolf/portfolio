@@ -31,7 +31,7 @@ interface LogoProps {
 }
 
 const Logo = ({ src, alt, name, width = 30, height = 30 }: LogoProps) => (
-  <div className="flex items-start lg:items-center self-center gap-3 lg:gap-2">
+  <div className="flex items-start gap-3 self-center lg:items-center lg:gap-2">
     {Array.isArray(src) ? (
       <>
         <Image
@@ -55,24 +55,24 @@ const Logo = ({ src, alt, name, width = 30, height = 30 }: LogoProps) => (
         height={height as number}
       />
     )}
-    {name && <div className="font-semibold text-sm lg:text-base">{name}</div>}
+    {name && <div className="text-sm font-semibold lg:text-base">{name}</div>}
   </div>
 );
 
 export default function LogoCloud() {
   return (
-    <div className="relative z-40 mt-20 mb-[-100px] lg:mb-0 text-white flex flex-col gap-4 lg:gap-8">
-      <h2 className="text-center mb-4 lg:mb-0 text-base px-10 lg:px-0 lg:text-2xl w-full lg:max-w-none mx-auto">
+    <div className="relative z-40 mx-auto mb-[-100px] mt-20 flex flex-col gap-4 text-white lg:mb-0 lg:max-w-[1440px] lg:gap-8">
+      <h2 className="mx-auto mb-4 w-full px-10 text-center text-base lg:mb-0 lg:max-w-none lg:px-0 lg:text-2xl">
         Leveraging the most state-of-the-art technologies
       </h2>
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 justify-center items-center w-full lg:w-[80%] mx-auto px-4 lg:px-0">
+      <div className="mx-auto grid w-full grid-cols-2 items-center justify-center gap-4 px-4 lg:w-[80%] lg:grid-cols-6 lg:px-0">
         {logos.map((logo, index) => (
           <div key={index} className="flex lg:justify-center">
             <Logo {...logo} />
           </div>
         ))}
       </div>
-      <p className="text-center opacity-60 text-sm w-full max-w-[300px] lg:max-w-none mx-auto">
+      <p className="mx-auto w-full max-w-[300px] text-center text-sm opacity-60 lg:max-w-none">
         Staying ahead of the curve and surfing the waves of innovation
       </p>
     </div>
