@@ -1,12 +1,15 @@
 import type { Metadata, Viewport } from "next";
-import { Inter as FontSans } from "next/font/google";
+import {
+  Inter as FontSans,
+  La_Belle_Aurore as FontHandwriting,
+} from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
   ),
   title: "0xAquaWolf Portfolio & Blog",
   description:
@@ -63,6 +66,12 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 
+const fontHandwriting = FontHandwriting({
+  weight: ["400"],
+  subsets: ["latin"],
+  variable: "--font-handwriting",
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -71,7 +80,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn("bg-bg-default font-sans antialiased", fontSans.variable)}
+        className={cn(
+          "bg-bg-default font-sans antialiased",
+          fontSans.variable,
+          fontHandwriting.variable,
+        )}
       >
         <ThemeProvider
           attribute="class"
