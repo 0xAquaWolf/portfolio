@@ -7,8 +7,12 @@ export default function Letter() {
     <div className="relative px-5 lg:px-0">
       <h2 className="text-transparent">About Me</h2>
       <div className="relative">
+        {/* Letter Bottom */}
+        <div className="bg-letter-middle absolute left-0 top-0 z-10 h-full w-full -rotate-1 rounded-lg lg:-rotate-2"></div>
+        {/* Letter Middle */}
+        <div className="bg-letter-bottom absolute left-1 top-1 z-20 h-[98%] w-[98%] -rotate-1 rounded-lg lg:left-3 lg:top-10 lg:h-[95%] lg:w-[98%] lg:rotate-3"></div>
         {/* Letter Top */}
-        <div className="bg-letter-top shadow-letter-top relative -top-3 z-[100] -rotate-1 rounded-lg lg:rotate-2 lg:rounded-xl">
+        <div className="bg-letter-top shadow-letter-top relative z-30 -rotate-1 rounded-lg lg:rotate-2 lg:rounded-xl">
           <article className="space-y-4 p-4 text-base text-white/80 lg:space-y-5 lg:p-5 lg:px-24 lg:py-14 lg:text-2xl">
             <p>Hey everyone 👋</p>
             <p>I&apos;m AquaWolf, and I&apos;ve been on quite a journey.</p>
@@ -113,10 +117,6 @@ export default function Letter() {
             </div>
           </article>
         </div>
-        {/* Letter Middle */}
-        <div className="bg-letter-bottom absolute -top-[3] left-[26] z-[5] h-full w-[80%] -rotate-1 rounded-lg lg:left-3 lg:top-10 lg:h-[75%] lg:w-full lg:rotate-3"></div>
-        {/* Letter Bottom */}
-        <div className="bg-letter-middle absolute -top-[22] left-[50] z-0 h-full w-[78%] -rotate-1 rounded-lg lg:left-0 lg:top-0 lg:h-full lg:w-full lg:-rotate-2"></div>
       </div>
     </div>
   );
