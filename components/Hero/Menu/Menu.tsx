@@ -38,26 +38,26 @@ export default function Menu() {
       prevNavMenu.map((item) => ({
         ...item,
         isActive: item.name === selectedName,
-      }))
+      })),
     );
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto">
+    <div className="mx-auto max-w-[1440px]">
       <header className="absolute inset-x-0 top-0 z-50">
         <nav
           aria-label="Global"
           className="flex items-center justify-between p-6 lg:px-8"
         >
           <div className="flex lg:flex-1">
-            <div className="flex items-center gap-2 ">
+            <div className="flex items-center gap-2">
               <Image
                 src="/images/png/aquawolf-logo.png"
                 alt="Logo"
                 width={25}
                 height={25}
               />
-              <div className="text-white text-lg font-semibold">0xAquaWolf</div>
+              <div className="text-lg font-semibold text-white">0xAquaWolf</div>
             </div>
           </div>
           <div className="flex lg:hidden">
@@ -70,13 +70,13 @@ export default function Menu() {
               <Bars3Icon aria-hidden="true" className="h-10 w-10 text-white" />
             </button>
           </div>
-          <div className="hidden lg:flex lg:gap-x-12 lg:flex-1 lg:items-center gap-4 text-white bg-white/20 px-5 py-2 rounded-full lg:w-full">
+          <div className="hidden gap-4 rounded-full bg-white/20 px-5 py-2 text-white lg:flex lg:w-full lg:flex-1 lg:items-center lg:gap-x-12">
             {/* Desktop Mobile menu */}
             {navMenu.map((item) => (
               <span key={item.name} onClick={() => setActiveNavItem(item.name)}>
                 <a
                   className={clsx({
-                    "relative flex-2 transition-all rounded-full px-4 py-1":
+                    "flex-2 relative rounded-full px-4 py-1 transition-all":
                       true,
                     [activeStyle]: item.isActive,
                     [inActiveStyle]: !item.isActive,
@@ -88,16 +88,16 @@ export default function Menu() {
               </span>
             ))}
           </div>
-          <div className="hidden lg:flex lg:flex-1 gap-4 lg:justify-end">
+          <div className="hidden gap-4 lg:flex lg:flex-1 lg:justify-end">
             <a
               href="#"
-              className="bg-white rounded-full px-4 py-2 text-black hover:text-white hover:bg-transparent shadow-cta hover:shadow-alt-cta transition-all"
+              className="rounded-full bg-white px-4 py-2 text-black shadow-cta transition-all hover:bg-transparent hover:text-white hover:shadow-alt-cta"
             >
               Hire Me
             </a>
             <a
               href="#"
-              className="rounded-full px-6 py-2 shadow-alt-cta hover:shadow-cta text-white hover:bg-white hover:text-black transition-all"
+              className="rounded-full px-6 py-2 text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta"
             >
               Links
             </a>
@@ -109,19 +109,19 @@ export default function Menu() {
           className="lg:hidden"
         >
           <div className="fixed inset-0 z-50" />
-          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 bg-bg-default">
+          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-bg-default px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="relative z-50">
               <div className="flex items-center justify-between">
                 <a href="#" className="-m-1.5 p-1.5">
                   <span className="sr-only">0xAquaWolf</span>
-                  <div className="flex items-center gap-2 ">
+                  <div className="flex items-center gap-2">
                     <Image
                       src="/images/png/aquawolf-logo.png"
                       alt="Logo"
                       width={25}
                       height={25}
                     />
-                    <div className="text-white text-lg font-semibold">
+                    <div className="text-lg font-semibold text-white">
                       0xAquaWolf
                     </div>
                   </div>
@@ -146,7 +146,7 @@ export default function Menu() {
                         key={item.name + 1}
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-3xl font-normal leading-7 text-white hover:bg-gray-50/20 transition-all"
+                        className="-mx-3 block rounded-lg px-3 py-2 text-3xl font-normal leading-7 text-white transition-all hover:bg-gray-50/20"
                       >
                         {item.name}
                       </a>
@@ -154,11 +154,11 @@ export default function Menu() {
                   </div>
                   {/* Seperator */}
                   <div className="flex flex-1 items-center justify-center">
-                    <div className="bg-white/100 w-[70vw] h-[2px]"></div>
+                    <div className="h-[2px] w-[70vw] bg-white/100"></div>
                   </div>
                   {/* Social Links */}
-                  <div className="grid gap-10 mt-10">
-                    <div className="flex flex-1 gap-10 justify-center align-center">
+                  <div className="mt-10 grid gap-10">
+                    <div className="align-center flex flex-1 justify-center gap-10">
                       <a
                         href="https://twitter.com/0xAquaWolf"
                         target="_blank"
@@ -197,7 +197,7 @@ export default function Menu() {
                         />
                       </a>
                     </div>
-                    <div className="flex gap-10 justify-center align-center">
+                    <div className="align-center flex justify-center gap-10">
                       <a
                         href="https://www.instagram.com/_0xAquaWolf"
                         target="_blank"
