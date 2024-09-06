@@ -21,7 +21,7 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
   }
   return [
     { value: 27167, label: "Youtube Views" },
-    { value: 780, label: "Youtube Subscribers" },
+    { value: 815, label: "Youtube Subscribers" },
   ];
 
   // const youtube = google.youtube({
