@@ -30,7 +30,7 @@ export type ConfettiRef = Api | null;
 
 const ConfettiContext = createContext<Api>({} as Api);
 
-const Confetti = forwardRef<ConfettiRef, Props>((props, ref) => {
+const Confetti = forwardRef<ConfettiRef, Props>(function Confetti(props, ref) {
   const {
     options,
     globalOptions = { resize: true, useWorker: true },
@@ -96,7 +96,5 @@ const Confetti = forwardRef<ConfettiRef, Props>((props, ref) => {
 //     ConfettiGlobalOptions & { canvas?: HTMLCanvasElement };
 //   children?: React.ReactNode;
 // }
-
-export { Confetti };
 
 export default Confetti;
