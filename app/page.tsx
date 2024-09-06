@@ -5,6 +5,9 @@ import Stats from "@/components/GlobalStats/Stats";
 import YoutubeVideos from "@/components/YoutubeVideos/YoutubeVideo";
 import { WavyBackgroundDemo } from "@/components/ui/WavyBackgroundDemo";
 import AboutMe from "@/components/about-me/AboutMe";
+import Startup from "@/components/Startups/Startup";
+import SecondQuote from "@/components/SecondQuote/SecondQuote";
+import TheEnd from "@/components/TheEnd";
 
 export default function Home() {
   return (
@@ -16,6 +19,9 @@ export default function Home() {
       <YoutubeVideos />
       <WavyBackgroundDemo />
       <AboutMe />
+      <Startup />
+      <SecondQuote />
+      <TheEnd />
     </main>
   );
 }
