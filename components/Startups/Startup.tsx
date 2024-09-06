@@ -181,7 +181,7 @@ export default function Startup() {
     (startup) => startup.status === "failed",
   );
   return (
-    <div className="mt-20 px-6 lg:mt-40">
+    <div className="mt-20 px-6 lg:mt-40 lg:px-3">
       <SectionHeading
         heading="Projects & Startups (demo)"
         subheading="Live Streaming weekly: AI Startups until 💰, Fail Fast, Fail often, Fail Forward"

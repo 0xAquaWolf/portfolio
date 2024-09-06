@@ -58,12 +58,12 @@ export function MrrCard({
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div className="flex items-center space-x-2">
-          <Icon
-            className={`h-5 w-5 sm:h-6 sm:w-6 ${status === "failed" ? "text-red-400" : "text-purple-400"}`}
-          />
           <div>
-            <CardTitle className="text-lg font-bold sm:text-2xl">
+            <CardTitle className="flex items-center text-lg font-bold sm:text-2xl">
               {name}
+              <Icon
+                className={`ml-2 h-5 w-5 sm:h-6 sm:w-6 ${status === "failed" ? "text-red-400" : "text-purple-400"}`}
+              />
             </CardTitle>
             <p className="text-xs text-gray-400 sm:text-sm">{description}</p>
           </div>
@@ -84,13 +84,17 @@ export function MrrCard({
       <CardContent>
         <div className="h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart
+              data={data}
+              margin={{ top: 5, right: 5, bottom: 5, left: 5 }}
+            >
               <XAxis
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
                 stroke="#9CA3AF"
                 tick={{ fontSize: 10 }}
+                height={30}
               />
               <YAxis
                 axisLine={false}
@@ -98,6 +102,7 @@ export function MrrCard({
                 tickFormatter={(value) => `$${value / 1000}k`}
                 stroke="#9CA3AF"
                 tick={{ fontSize: 10 }}
+                width={40}
               />
               <Tooltip
                 formatter={(value) => [`$${value}`, "MRR"]}
