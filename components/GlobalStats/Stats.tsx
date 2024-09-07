@@ -1,6 +1,6 @@
-import { google } from "googleapis";
-import { Octokit } from "@octokit/rest";
-import NumberTicker from "../magicui/number-ticker";
+import { google } from 'googleapis';
+import { Octokit } from '@octokit/rest';
+import NumberTicker from '../magicui/number-ticker';
 
 // Types for our stats
 interface Stat {
@@ -13,15 +13,15 @@ interface Stat {
 
 // Function to fetch YouTube channel info
 async function getChannelInfo(channelId: string): Promise<Stat[]> {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     return [
-      { value: 10000000, label: "Youtube Views" },
-      { value: 100000, label: "Youtube Subscribers" },
+      { value: 10000000, label: 'Youtube Views' },
+      { value: 100000, label: 'Youtube Subscribers' },
     ];
   }
   return [
-    { value: 27167, label: "Youtube Views" },
-    { value: 815, label: "Youtube Subscribers" },
+    { value: 27167, label: 'Youtube Views' },
+    { value: 822, label: 'Youtube Subscribers' },
   ];
 
   // const youtube = google.youtube({
@@ -59,7 +59,7 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
 
 // Function to fetch GitHub stars
 async function getGitHubStars(username: string): Promise<number> {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === 'development') {
     return 528;
   }
 
@@ -77,18 +77,18 @@ async function getGitHubStars(username: string): Promise<number> {
       (sum, repo) => sum + (repo.stargazers_count ?? 0),
       0,
     );
-    console.log("Total Stars:", totalStars);
+    console.log('Total Stars:', totalStars);
     return totalStars;
   } catch (error) {
-    console.error("Error fetching GitHub stars:", error);
+    console.error('Error fetching GitHub stars:', error);
     return 0;
   }
 }
 
 // Server Component
 export const Stats = async () => {
-  const YOUR_CHANNEL_ID = "UCkwRYP1J1hjRXwo5lyBRWdQ";
-  const YOUR_GITHUB_USERNAME = "0xAquaWolf"; // Replace with your actual GitHub username
+  const YOUR_CHANNEL_ID = 'UCkwRYP1J1hjRXwo5lyBRWdQ';
+  const YOUR_GITHUB_USERNAME = '0xAquaWolf'; // Replace with your actual GitHub username
 
   let youtubeStats: Stat[] = [];
   let githubStars = 0;
@@ -99,18 +99,18 @@ export const Stats = async () => {
       getGitHubStars(YOUR_GITHUB_USERNAME),
     ]);
   } catch (error) {
-    console.error("Error fetching stats:", error);
+    console.error('Error fetching stats:', error);
     // Provide fallback data in case of errors
     youtubeStats = [
-      { value: 0, label: "Youtube Views" },
-      { value: 0, label: "Youtube Subscribers" },
+      { value: 0, label: 'Youtube Views' },
+      { value: 0, label: 'Youtube Subscribers' },
     ];
     githubStars = 0;
   }
 
   const statsData: Stat[] = [
     ...youtubeStats,
-    { value: githubStars, label: "Github Stars" },
+    { value: githubStars, label: 'Github Stars' },
   ];
 
   return (

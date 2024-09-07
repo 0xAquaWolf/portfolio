@@ -119,7 +119,7 @@ export function Footer() {
         </div>
 
         <p className="mt-8 text-center text-sm">
-          © {currentYear} Lights Codes Labs LLC, All rights reserved
+          © {currentYear} AquaWolf Labs, All rights reserved
         </p>
       </div>
     </footer>
