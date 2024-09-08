@@ -20,8 +20,8 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
     ];
   }
   return [
-    { value: 27167, label: 'Youtube Views' },
-    { value: 822, label: 'Youtube Subscribers' },
+    { value: 30623, label: 'Youtube Views' },
+    { value: 829, label: 'Youtube Subscribers' },
   ];
 
   // const youtube = google.youtube({
@@ -88,7 +88,7 @@ async function getGitHubStars(username: string): Promise<number> {
 // Server Component
 export const Stats = async () => {
   const YOUR_CHANNEL_ID = 'UCkwRYP1J1hjRXwo5lyBRWdQ';
-  const YOUR_GITHUB_USERNAME = '0xAquaWolf'; // Replace with your actual GitHub username
+  const YOUR_GITHUB_USERNAME = '0xAquaWolf';
 
   let youtubeStats: Stat[] = [];
   let githubStars = 0;

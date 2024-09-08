@@ -12,7 +12,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-black px-4 py-8 text-white">
+    <footer className="bg-bg-default px-4 py-8 text-white">
       <div className="mx-auto max-w-6xl">
         <nav className="mb-8 flex justify-center space-x-6">
           <Link
