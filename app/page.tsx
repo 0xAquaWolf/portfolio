@@ -9,6 +9,8 @@ import Startup from '@/components/Startups/Startup';
 import SecondQuote from '@/components/SecondQuote/SecondQuote';
 import TheEnd from '@/components/TheEnd';
 import { Footer } from '@/components/footer';
+import Newsletter from '@/components/Newsletter/Newsletter';
+import FeaturedBlogs from '@/components/Blog/FeaturedBlogs';
 
 export default function Home() {
   return (
@@ -22,6 +24,8 @@ export default function Home() {
       <AboutMe />
       <Startup />
       <SecondQuote />
+      <FeaturedBlogs />
+      <Newsletter />
       <TheEnd />
       <Footer />
     </main>
