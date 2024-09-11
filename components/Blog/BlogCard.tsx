@@ -3,11 +3,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface BlogPost {
-  id: string;
   title: string;
-  excerpt: string;
+  description: string;
   imageUrl: string;
-  avatarUrl: string;
+  url: string;
 }
 
 interface BlogCardProps {
@@ -15,8 +14,9 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ blog }: BlogCardProps) {
+  console.log(blog);
   return (
-    <Link href={`/blog/${blog.id}`} className="block">
+    <Link href={blog.url} className="block">
       <div className="relative h-[24rem] w-64 flex-shrink-0 overflow-hidden rounded-2xl bg-white shadow-md lg:h-[30rem] lg:w-80">
         <Image
           src={blog.imageUrl}
@@ -27,11 +27,11 @@ export default function BlogCard({ blog }: BlogCardProps) {
         <div className="absolute inset-x-0 bottom-0 z-10 p-4">
           <div className="mb-2 flex items-center space-x-3">
             <Image
-              src={blog.avatarUrl}
+              src="/images/jpeg/featured-blogs/blog-aquawolf-logo.png"
               alt="Author avatar"
               width={40}
               height={40}
-              className="rounded-full"
+              className="rounded-2xl"
             />
             <div className="flex flex-col">
               <p className="text-sm text-white">0xAquaWolf</p>
@@ -44,7 +44,7 @@ export default function BlogCard({ blog }: BlogCardProps) {
                 {blog.title}
               </h3>
               <p className="mt-1 line-clamp-2 text-sm text-gray-300">
-                {blog.excerpt}
+                {blog.description}
               </p>
             </div>
           </div>
