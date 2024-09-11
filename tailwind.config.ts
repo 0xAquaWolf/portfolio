@@ -32,8 +32,31 @@ const config = {
         '2xl': '1400px',
       },
     },
-
     extend: {
+      // typography: (theme: any) => ({
+      //   DEFAULT: {
+      //     css: {
+      //       pre: {
+      //         backgroundColor: theme('colors.gray.100'),
+      //         color: theme('colors.gray.900'),
+      //         padding: theme('spacing.4'),
+      //         borderRadius: theme('borderRadius.md'),
+      //         fontSize: theme('fontSize.sm')[0],
+      //         lineHeight: theme('lineHeight.snug'),
+      //       },
+      //       code: {
+      //         color: theme('colors.indigo.600'),
+      //         fontWeight: '600',
+      //       },
+      //       'code::before': {
+      //         content: '""',
+      //       },
+      //       'code::after': {
+      //         content: '""',
+      //       },
+      //     },
+      //   },
+      // }),
       backgroundImage: {
         'letter-top': 'linear-gradient(360deg, #130832 0%, #722186 100%)',
         'letter-middle':
@@ -106,7 +129,11 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), addVariablesForColors],
+  plugins: [
+    require('tailwindcss-animate'),
+    addVariablesForColors,
+    require('@tailwindcss/typography'),
+  ],
 } satisfies Config;
 
 export default config;

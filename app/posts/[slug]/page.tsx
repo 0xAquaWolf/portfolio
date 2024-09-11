@@ -90,7 +90,9 @@ const PostLayout = ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
-        <MDXContent />
+        <div className="prose prose-sm prose-invert mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <MDXContent />
+        </div>
       </article>
     </div>
   );

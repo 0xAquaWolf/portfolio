@@ -5,7 +5,10 @@ description: 'Learn how AI is being used to combat climate change and promote su
 imageUrl: '/images/png/PlaceholderBlogFeaturedImage1.png'
 readTime: '2'
 ---
-<p className="text-lg bg-red-500">
+
+import Code from '@/components/Blog/Code';
+
+<p className="text-lg">
 As the world grapples with the urgent threat of climate change, Artificial Intelligence is emerging as a powerful tool in the fight against global warming. From optimizing renewable energy systems to predicting extreme weather events, AI is helping us understand and address environmental challenges more effectively.
 </p>
 
@@ -40,10 +43,8 @@ A paragraph, introducing a thematic break:
 
 ---
 
-```js
-some.code()
-```
+<Code code={`console.log('Hello World')`} />
 
-a [link](https://example.com), an ![image](./image.png), some *emphasis*,
+a [link](https://example.com), an ![image](/images/png/PlaceholderBlogFeaturedImage1.png), some *emphasis*,
 something **strong**, and finally a little `code()`.
 
