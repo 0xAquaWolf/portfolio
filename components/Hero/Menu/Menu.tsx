@@ -1,20 +1,21 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Dialog, DialogPanel } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import SVGGradientBg from "../SVGGradientBg";
-import GithubLogo from "../../../public/images/svg/Github-Logo.svg";
-import InstagramLogo from "../../../public/images/svg/Instagram-Logo.svg";
-import LinkedinLogo from "../../../public/images/svg/LinkedIn-Logo.svg";
-import TiktokLogo from "../../../public/images/svg/Tiktok-Logo.svg";
-import TwitterLogo from "../../../public/images/svg/X-Twitter-Logo.svg";
-import YouTubeLogo from "../../../public/images/svg/Youtube-Logo.svg";
-import clsx from "clsx";
+import { useState } from 'react';
+import { Dialog, DialogPanel } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
+import SVGGradientBg from '../SVGGradientBg';
+import GithubLogo from '../../../public/images/svg/Github-Logo.svg';
+import InstagramLogo from '../../../public/images/svg/Instagram-Logo.svg';
+import LinkedinLogo from '../../../public/images/svg/LinkedIn-Logo.svg';
+import TiktokLogo from '../../../public/images/svg/Tiktok-Logo.svg';
+import TwitterLogo from '../../../public/images/svg/X-Twitter-Logo.svg';
+import YouTubeLogo from '../../../public/images/svg/Youtube-Logo.svg';
+import clsx from 'clsx';
+import Link from 'next/link';
 
-const inActiveStyle = "text-white/50 hover:bg-white/40 hover:text-white/80";
-const activeStyle = "bg-gradient-to-b from-white/40 to-[#2F2D2D]/20";
+const inActiveStyle = 'text-white/50 hover:bg-white/40 hover:text-white/80';
+const activeStyle = 'bg-gradient-to-b from-white/40 to-[#2F2D2D]/20';
 
 interface NavItem {
   name: string;
@@ -25,12 +26,12 @@ interface NavItem {
 export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navMenu, setNavMenu] = useState<NavItem[]>([
-    { name: "Home", href: "#", isActive: true },
-    { name: "About", href: "#about", isActive: false },
-    { name: "Videos", href: "#videos", isActive: false },
-    { name: "Projects", href: "#projects", isActive: false },
-    { name: "Blog", href: "#blog", isActive: false },
-    { name: "Discord", href: "#discord", isActive: false },
+    { name: 'Home', href: '#', isActive: true },
+    { name: 'About', href: '#about', isActive: false },
+    { name: 'Videos', href: '#videos', isActive: false },
+    { name: 'Projects', href: '#projects', isActive: false },
+    { name: 'Blog', href: '#blog', isActive: false },
+    { name: 'Discord', href: '#discord', isActive: false },
   ]);
 
   const setActiveNavItem = (selectedName: string) => {
@@ -50,7 +51,7 @@ export default function Menu() {
           className="flex items-center justify-between p-6 lg:px-8"
         >
           <div className="flex lg:flex-1">
-            <div className="flex items-center gap-2">
+            <Link className="flex items-center gap-2" href="/">
               <Image
                 src="/images/png/aquawolf-logo.png"
                 alt="Logo"
@@ -58,7 +59,7 @@ export default function Menu() {
                 height={25}
               />
               <div className="text-lg font-semibold text-white">0xAquaWolf</div>
-            </div>
+            </Link>
           </div>
           <div className="flex lg:hidden">
             <button
@@ -76,7 +77,7 @@ export default function Menu() {
               <span key={item.name} onClick={() => setActiveNavItem(item.name)}>
                 <a
                   className={clsx({
-                    "flex-2 relative rounded-full px-4 py-1 transition-all":
+                    'flex-2 relative rounded-full px-4 py-1 transition-all':
                       true,
                     [activeStyle]: item.isActive,
                     [inActiveStyle]: !item.isActive,
@@ -254,7 +255,7 @@ export default function Menu() {
           <div
             style={{
               clipPath:
-                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
             }}
             className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
           />
@@ -266,7 +267,7 @@ export default function Menu() {
           <div
             style={{
               clipPath:
-                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
             }}
             className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
           />

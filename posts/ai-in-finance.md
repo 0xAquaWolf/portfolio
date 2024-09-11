@@ -2,8 +2,8 @@
 title: 'AI in Finance: Revolutionizing Trading, Risk Management, and Beyond'
 date: '2023-09-28'
 description: 'Explore how AI is transforming the financial sector, from algorithmic trading to fraud detection.'
-readTime: '4 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-1.jpg'
+readTime: '4'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage1.png'
 ---
 
 Artificial Intelligence is reshaping the financial industry, offering new ways to analyze markets, manage risk, and detect fraud. From high-frequency trading algorithms to AI-powered robo-advisors, the impact of AI on finance is far-reaching and transformative.

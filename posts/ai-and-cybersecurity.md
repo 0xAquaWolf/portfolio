@@ -2,8 +2,8 @@
 title: 'AI in Cybersecurity: The New Frontier of Digital Defense'
 date: '2023-08-05'
 description: 'Learn how AI is bolstering cybersecurity efforts and the challenges it presents in the ongoing battle against cyber threats.'
-readTime: '4 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-2.jpg'
+readTime: '4'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage2.png'
 ---
 
 In the ever-evolving landscape of cybersecurity, Artificial Intelligence has emerged as a powerful tool in defending against increasingly sophisticated cyber threats. From threat detection to incident response, AI is enhancing the capabilities of cybersecurity professionals and systems.

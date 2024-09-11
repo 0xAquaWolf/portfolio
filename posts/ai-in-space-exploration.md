@@ -2,8 +2,8 @@
 title: 'AI in Space Exploration: Pushing the Boundaries of Human Knowledge'
 date: '2023-11-02'
 description: 'Discover how AI is accelerating space exploration and our understanding of the universe.'
-readTime: '3 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-2.jpg'
+readTime: '3'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage2.png'
 ---
 
 Artificial Intelligence is playing an increasingly crucial role in space exploration, enabling us to push the boundaries of human knowledge and venture further into the cosmos. From autonomous rovers on Mars to AI-powered data analysis of distant galaxies, AI is revolutionizing our approach to space science.

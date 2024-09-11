@@ -2,8 +2,8 @@
 title: 'AI and Human Augmentation: The Next Step in Human Evolution?'
 date: '2023-11-20'
 description: 'Explore the potential of AI in enhancing human capabilities and the ethical considerations it raises.'
-readTime: '5 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-3.jpg'
+readTime: '5'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage3.png'
 ---
 
 As Artificial Intelligence continues to advance, the possibility of using AI to augment human capabilities is becoming increasingly real. From brain-computer interfaces to AI-powered prosthetics, the line between human and machine is blurring, raising both exciting possibilities and ethical concerns.

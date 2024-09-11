@@ -2,8 +2,8 @@
 title: 'AI as a Creative Partner: Transforming Art, Music, and Design'
 date: '2023-09-10'
 description: 'Discover how AI is pushing the boundaries of creativity in various artistic fields.'
-readTime: '3 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-3.jpg'
+readTime: '3'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage3.png'
 ---
 
 Artificial Intelligence is no longer confined to analytical tasks; it's now making waves in creative industries, challenging our perceptions of art, music, and design. From AI-generated artwork to algorithmic compositions, the line between human and machine creativity is becoming increasingly blurred.

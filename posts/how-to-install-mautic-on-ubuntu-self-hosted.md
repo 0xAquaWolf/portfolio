@@ -2,7 +2,7 @@
 title: 'How to Install Mautic on Ubuntu Self-Hosted'
 date: '2024-09-11'
 description: 'Learn how to install Mautic on Ubuntu Self-Hosted'
-readTime: '4 min'
+readTime: '4'
 imageUrl: '/images/jpeg/featured-blogs/mautic-blog-post.png'
 ---
 

@@ -2,8 +2,8 @@
 title: 'AI in Education: Personalizing Learning for the Digital Age'
 date: '2023-07-20'
 description: 'Discover how AI is reshaping education through personalized learning experiences and intelligent tutoring systems.'
-readTime: '3 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-4.jpg'
+readTime: '3'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage4.png'
 ---
 
 Artificial Intelligence is revolutionizing education by offering personalized learning experiences tailored to individual students' needs. From adaptive learning platforms to intelligent tutoring systems, AI is helping to make education more effective, engaging, and accessible.

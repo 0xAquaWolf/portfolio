@@ -3,19 +3,9 @@ import SectionHeading from '../SectionHeading';
 import BlogCard from './BlogCard';
 import { allPosts as featuredBlogs } from 'contentlayer/generated';
 
-// console.log(featuredBlogs);
-
-// interface BlogPost {
-//   id: string;
-//   title: string;
-//   excerpt: string;
-//   imageUrl: string;
-//   avatarUrl: string;
-// }
-
 export default function FeaturedBlogs() {
   return (
-    <>
+    <div className="mt-20 lg:mt-40">
       <SectionHeading
         heading="AI & Tech Blog"
         subheading="Documenting all of my learnings and teachings in AI and technology."
@@ -29,6 +19,6 @@ export default function FeaturedBlogs() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

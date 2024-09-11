@@ -2,8 +2,8 @@
 title: 'Navigating the Ethical Maze of AI Development'
 date: '2023-07-02'
 description: 'Delve into the complex ethical considerations surrounding AI development and deployment.'
-readTime: '5 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-1.jpg'
+readTime: '5'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage1.png'
 ---
 
 As AI systems become increasingly sophisticated and ubiquitous, the ethical implications of their development and deployment have come to the forefront of public discourse. From bias in machine learning algorithms to the potential for AI-driven job displacement, the challenges are numerous and complex.

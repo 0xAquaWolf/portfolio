@@ -2,8 +2,8 @@
 title: 'The AI Revolution in Healthcare: Transforming Patient Care'
 date: '2023-06-15'
 description: 'Explore how artificial intelligence is revolutionizing healthcare, from diagnosis to treatment planning.'
-readTime: '4 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-3.jpg'
+readTime: '4'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage3.png'
 ---
 
 Artificial Intelligence (AI) is rapidly transforming the healthcare industry, offering unprecedented opportunities to improve patient care, streamline operations, and accelerate medical research. From early disease detection to personalized treatment plans, AI is revolutionizing every aspect of healthcare.

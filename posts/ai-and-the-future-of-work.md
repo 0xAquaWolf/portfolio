@@ -2,8 +2,8 @@
 title: 'AI and the Future of Work: Navigating the Changing Job Landscape'
 date: '2023-12-22'
 description: 'Explore how AI is reshaping the job market and what it means for the future of work.'
-readTime: '5 min'
-imageUrl: '/images/jpeg/featured-blogs/PlaceHolderBlog-4.jpg'
+readTime: '5'
+imageUrl: '/images/png/PlaceholderBlogFeaturedImage4.png'
 ---
 
 As Artificial Intelligence continues to advance, it's reshaping the job market in profound ways. While AI has the potential to automate many tasks, it's also creating new job opportunities and changing the nature of work itself. Understanding these changes is crucial for individuals and organizations alike.
