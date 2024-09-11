@@ -14,7 +14,7 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ blog }: BlogCardProps) {
-  console.log(blog);
+  // console.log(blog);
   return (
     <Link href={blog.url} className="block">
       <div className="relative h-[24rem] w-64 flex-shrink-0 overflow-hidden rounded-2xl bg-white shadow-md lg:h-[30rem] lg:w-80">
