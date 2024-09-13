@@ -8,15 +8,6 @@ import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/lib/mdx';
 
-// export const generateStaticParams = async () =>
-//   allPosts.map((post) => ({ slug: frontmatter._raw.flattenedPath }));
-
-// export const generateMetadata = ({ params }: { params: { slug: string } }) => {
-//   const post = allPosts.find((post) => frontmatter._raw.flattenedPath === params.slug);
-//   if (!post) throw new Error(`Post not found for slug: ${params.slug}`);
-//   return { title: frontmatter.title };
-// };
-
 const PostLayout = async ({ params }: { params: { slug: string } }) => {
   const post = await getPostBySlug(params.slug);
   const { frontmatter, content, slug } = post;
