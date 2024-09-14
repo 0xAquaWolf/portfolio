@@ -15,6 +15,7 @@
     "@heroicons/react": "^2.1.5",
     "@octokit/rest": "^21.0.2",
     "@radix-ui/react-accordion": "^1.2.0",
+    "@shikijs/rehype": "^1.17.6",
     "@tabler/icons-react": "^3.14.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.0",

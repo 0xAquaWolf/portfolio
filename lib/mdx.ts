@@ -1,29 +1,44 @@
+import { glob } from 'glob';
+import { join } from 'path';
 import fs from 'fs';
-import path from 'path';
 import matter from 'gray-matter';
-import { compileMDX } from 'next-mdx-remote/rsc';
-import dynamic from 'next/dynamic';
-const postsDirectory = path.join(process.cwd(), 'posts');
 
-export async function getPostBySlug(slug: string) {
-  const realSlug = slug.replace(/\.(mdx)$/, '');
-  const filePath = path.join(postsDirectory, `${realSlug}.mdx`);
-  const fileContents = fs.readFileSync(filePath, 'utf8');
+const postsDirectory = join(process.cwd(), 'posts');
+
+export function getPostSlugs() {
+  return glob.sync('**/*.mdx', { cwd: postsDirectory });
+}
+
+export function getPost(filepath: string): PostData {
+  const fullPath = join(postsDirectory, filepath);
+  const fileContents = fs.readFileSync(fullPath, 'utf8');
   const { data, content } = matter(fileContents);
-
-  const { content: compiledContent } = await compileMDX({
-    source: content,
-    components: {
-      CodeBlock: dynamic(() => import('@/components/CodeBlock'), {
-        ssr: false,
-      }),
-    },
-    options: { parseFrontmatter: true },
-  });
-
   return {
-    slug: realSlug,
-    frontmatter: data,
-    content: compiledContent,
-  };
+    ...data,
+    content,
+    filepath,
+    slug: filepath.replace(/\.mdx$/, ''),
+  } as PostData;
+}
+
+export function getPosts(limit: number = -1): PostData[] {
+  const slugs = getPostSlugs();
+  const posts = slugs
+    .map((slug) => getPost(slug))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  return limit === -1 ? posts : posts.slice(0, limit);
+}
+
+interface PostData {
+  createdAt: string;
+  filepath: string;
+  content: string;
+  slug: string;
+  [key: string]: any;
+}
+
+export function getPostBySlug(slug: string): PostData | undefined {
+  //   console.log({ slug });
+  const allPosts = getPosts();
+  return allPosts.find((post) => post.slug === slug);
 }

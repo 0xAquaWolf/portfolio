@@ -1,18 +1,33 @@
-import { codeToHtml } from 'shiki';
+// components/MdxContent.tsx
+import React from 'react';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 
-export default function Page() {
+const CopyButton = ({ code }: { code: string }) => {
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+  };
+
   return (
-    <main>
-      <CodeBlock />
-    </main>
+    <button onClick={handleCopy} className="copy-button">
+      Copy
+    </button>
   );
-}
+};
 
-async function CodeBlock() {
-  const out = await codeToHtml('console.log("Hello World")', {
-    lang: 'ts',
-    theme: 'github-dark',
-  });
+const components = {
+  pre: (props: React.ComponentProps<'pre'>) => {
+    const code = React.Children.toArray(
+      props.children,
+    )[0] as React.ReactElement;
+    return (
+      <pre className="relative" {...props}>
+        <CopyButton code={code.props.children} />
+        {props.children}
+      </pre>
+    );
+  },
+};
 
-  return <div dangerouslySetInnerHTML={{ __html: out }} />;
+export function CodeBlock({ source }: { source: string }) {
+  return <MDXRemote source={source} components={components} />;
 }

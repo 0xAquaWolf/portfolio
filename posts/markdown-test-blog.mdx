@@ -6,8 +6,6 @@ imageUrl: '/images/png/PlaceholderBlogFeaturedImage1.png'
 readTime: '2'
 ---
 
-import CodeBlock from '@/components/CodeBlock';
-
 <p className="text-lg">
 As the world grapples with the urgent threat of climate change, Artificial Intelligence is emerging as a powerful tool in the fight against global warming. From optimizing renewable energy systems to predicting extreme weather events, AI is helping us understand and address environmental challenges more effectively.
 </p>
@@ -43,7 +41,19 @@ A paragraph, introducing a thematic break:
 
 ---
 
-<CodeBlock />
+```ts
+async function CodeBlock({ code, lang = 'ts' }: CodeBlockProps) {
+  // Ensure code is a string
+  console.log(code.code);
+
+  const out = await codeToHtml(code.code, {
+    lang,
+    theme: 'catppuccin-macchiato',
+  });
+
+  return <div dangerouslySetInnerHTML={{ __html: out }} />;
+}
+```
 
 a [link](https://example.com), an ![image](/images/png/PlaceholderBlogFeaturedImage1.png), some *emphasis*,
 something **strong**, and finally a little `code()`.

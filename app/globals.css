@@ -111,3 +111,19 @@
 .marquee-slow .animate-marquee {
   animation-duration: 40s;
 }
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #4a5568;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.copy-button:hover {
+  background-color: #2d3748;
+}
