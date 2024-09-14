@@ -32,6 +32,7 @@
     "react-dom": "^18",
     "react-markdown": "^9.0.1",
     "recharts": "^2.12.7",
+    "rehype-raw": "^7.0.0",
     "simplex-noise": "^4.0.3",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
