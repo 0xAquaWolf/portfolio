@@ -77,7 +77,7 @@ async function getGitHubStars(username: string): Promise<number> {
       (sum, repo) => sum + (repo.stargazers_count ?? 0),
       0,
     );
-    console.log('Total Stars:', totalStars);
+    // console.log('Total Stars:', totalStars);
     return totalStars;
   } catch (error) {
     console.error('Error fetching GitHub stars:', error);

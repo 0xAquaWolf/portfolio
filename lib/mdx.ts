@@ -42,3 +42,9 @@ export function getPostBySlug(slug: string): PostData | undefined {
   const allPosts = getPosts();
   return allPosts.find((post) => post.slug === slug);
 }
+
+export function getFeaturedPosts(limit: number = 8): PostData[] {
+  const allPosts = getPosts();
+  const featuredPosts = allPosts.filter((post) => Boolean(post.featured));
+  return featuredPosts.slice(0, limit);
+}

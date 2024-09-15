@@ -1,15 +1,11 @@
 import React from 'react';
 import SectionHeading from '../SectionHeading';
 import BlogCard from './BlogCard';
-
-// interface BlogPost {
-//   title: string;
-//   description: string;
-//   imageUrl: string;
-//   url: string;
-// }
+import { getFeaturedPosts } from '@/lib/mdx';
 
 export default function FeaturedBlogs() {
+  const featuredPosts = getFeaturedPosts();
+
   return (
     <div className="mt-20 lg:mt-40">
       <SectionHeading
@@ -19,9 +15,17 @@ export default function FeaturedBlogs() {
       <div className="rounded-2xllg:mt-40 mt-20">
         <div className="mt-8 overflow-x-auto rounded-2xl pb-4">
           <div className="flex space-x-6 px-4">
-            {/* {featuredBlogs.map((blog, idx) => (
-              <BlogCard key={idx} blog={blog} />
-            ))} */}
+            {featuredPosts.map((post, idx) => (
+              <BlogCard
+                key={idx}
+                blog={{
+                  title: post.title,
+                  description: post.description || post.excerpt,
+                  imageUrl: post.imageUrl,
+                  url: `/posts/${post.slug}`,
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>
