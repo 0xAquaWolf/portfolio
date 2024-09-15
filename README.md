@@ -114,33 +114,44 @@ whatever you like
   - [x] Nav Menu
   - [x] Call to actions
   - [x] Mobile Responsiveness
-  - [ ] Widescreen responsiveness min-w-[1440px]
+  - [ ] Menu Widescreen responsiveness min-w-[1440px]
 - [x] Logo Cloud
-  - [ ] Widescreen responsiveness min-w-[1440px]
-  - [ ] Widescreen make bigger
-  - [ ] Tablet row layout (md:flex-row)
+  - [x] Widescreen responsiveness min-w-[1440px]
+  - [x] Widescreen make bigger
+  - [x] Tablet row layout (md:flex-row)
 - [x] Stats Section with dynamic info
   - [x] Design in figma
   - [x] Code with tailwindcss
   - [x] Dynamic data from API
   - [x] Animate number with framer-motion
-- [ ] Youtube video section with live view count
-  - [ ] Design in figma
-  - [ ] Code with tailwindcss
-  - [ ] Dynamic data from API
-  - [ ] Animate number with framer-motion
-- [ ] 1st Quote Section
-- [ ] About me Section
-- [ ] Projects and Startups Section
-- [ ] 2nd Quote Section
+- [x] Youtube video section with live view count
+  - [x] Design in figma
+  - [x] Code with tailwindcss
+  - [x] Dynamic data from API
+  - [x] Animate number with framer-motion
+  - [ ] Cache response from YouTube API
+  - [ ] Create list of top videos and link to playlist
+- [x] 1st Quote Section
+- [x] About me Section
+- [x] Projects and Startups Section
+- [x] 2nd Quote Section
 - Blog
-  - [ ] Use Markdown files
-  - [ ] Implement blog functionality
+  - [x] Use Markdown files
+  - [x] Use MDX Files
+  - [x] Syntax Highlighting with Shiki
   - [ ] Add comment system for blog posts
-- [ ] Join the Newsletter section
-- [ ] 3rd Quote Section
-- [ ] Join the community section (discord)
-- [ ] Footer with social links
+  - [ ] Add microinteraction with heart
+  - [ ] Add read time based on words per minute
+  - [ ] Add view count
+- Add Backend with Supabase
+  - [ ] Create API endpoints for blog posts
+  - [ ] Create API endpoints for newsletter
+  - [ ] Create API endpoints for projects
+  - [ ] Create API endpoints for stats
+- [x] Join the Newsletter section
+  - [ ] API call to backend to add to list with Mautic
+- [x] Footer with social links
+  - [ ] Mobile responsiveness
 
 See the [open issues](https://github.com/0xAquaWolf/your-portfolio-repo/issues) for a full list of proposed features (and known issues).
 

@@ -4,6 +4,7 @@ date: '2023-04-01'
 description: 'This is a test blog post to test the markdown parser.'
 imageUrl: '/images/png/PlaceholderBlogFeaturedImage1.png'
 readTime: '2'
+featured: true
 ---
 
 <p className="text-lg">
@@ -41,12 +42,18 @@ A paragraph, introducing a thematic break:
 
 ---
 
-```tsx
-type Props = {
-  code: string;
-  lang?: BundledLanguage;
-  theme?: BundledTheme;
-};
+```ts
+async function CodeBlock({ code, lang = 'ts' }: CodeBlockProps) {
+  // Ensure code is a string
+  console.log(code.code);
+
+  const out = await codeToHtml(code.code, {
+    lang,
+    theme: 'catppuccin-macchiato',
+  });
+
+  return <div dangerouslySetInnerHTML={{ __html: out }} />;
+}
 ```
 
 a [link](https://example.com), an ![image](/images/png/PlaceholderBlogFeaturedImage1.png), some *emphasis*,

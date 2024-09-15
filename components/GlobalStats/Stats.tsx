@@ -20,8 +20,8 @@ async function getChannelInfo(channelId: string): Promise<Stat[]> {
     ];
   }
   return [
-    { value: 30623, label: 'Youtube Views' },
-    { value: 829, label: 'Youtube Subscribers' },
+    { value: 33623, label: 'Youtube Views' },
+    { value: 909, label: 'Youtube Subscribers' },
   ];
 
   // const youtube = google.youtube({
@@ -77,7 +77,7 @@ async function getGitHubStars(username: string): Promise<number> {
       (sum, repo) => sum + (repo.stargazers_count ?? 0),
       0,
     );
-    console.log('Total Stars:', totalStars);
+    // console.log('Total Stars:', totalStars);
     return totalStars;
   } catch (error) {
     console.error('Error fetching GitHub stars:', error);
