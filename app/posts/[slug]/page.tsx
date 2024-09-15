@@ -1,5 +1,4 @@
 import { format, parseISO } from 'date-fns';
-// import { allPosts } from 'contentlayer/generated';
 import Image from 'next/image';
 import SVGGradientBg from '@/components/Hero/SVGGradientBg';
 import Menu from '@/components/Hero/Menu/Menu';
@@ -8,19 +7,16 @@ import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/lib/mdx';
 import markdownToHtml from '@/lib/markdownToHTML';
-// import CodeBlock from '@/components/CodeBlock';
 
 const PostLayout = async ({ params }: { params: { slug: string } }) => {
-  // const post = getPost(`${params.slug}.mdx`);
-  console.log(params.slug);
+  // console.log(params.slug);
   const post = getPostBySlug(params.slug);
-  console.log('Page layout', { post });
+  // console.log('Page layout', { post });
   let content = '';
   if (post) content = await markdownToHtml(post?.content);
-  console.log('Content', content);
-  // const { frontmatter, content, slug } = post;
+  // console.log('Content', content);
   if (!post) notFound();
-  // return <div>Placeholder</div>;
+
   return (
     <div className="relative overflow-x-hidden">
       <article className="mx-auto max-w-5xl py-8 text-white">
@@ -90,7 +86,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
-        <div className="prose prose-sm prose-invert mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="prose prose-md prose-invert mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </article>
