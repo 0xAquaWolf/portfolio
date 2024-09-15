@@ -5,6 +5,19 @@ import matter from 'gray-matter';
 
 const postsDirectory = join(process.cwd(), 'posts');
 
+interface PostData {
+  title: string;
+  date: string;
+  description: string;
+  imageUrl: string;
+  featured: boolean;
+  readTime: string;
+  filepath: string;
+  content: string;
+  slug: string;
+  [key: string]: any;
+}
+
 export function getPostSlugs() {
   return glob.sync('**/*.mdx', { cwd: postsDirectory });
 }
@@ -27,14 +40,6 @@ export function getPosts(limit: number = -1): PostData[] {
     .map((slug) => getPost(slug))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   return limit === -1 ? posts : posts.slice(0, limit);
-}
-
-interface PostData {
-  createdAt: string;
-  filepath: string;
-  content: string;
-  slug: string;
-  [key: string]: any;
 }
 
 export function getPostBySlug(slug: string): PostData | undefined {
