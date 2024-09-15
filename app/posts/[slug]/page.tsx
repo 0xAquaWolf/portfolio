@@ -86,7 +86,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
-        <div className="prose prose-md prose-invert mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="prose z-99 prose-md prose-invert relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </article>
