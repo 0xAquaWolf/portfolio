@@ -70,6 +70,7 @@ const config = {
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
         handwriting: ['var(--font-handwriting)'],
+        monalisa: ['var(--font-monalisa)'],
       },
       colors: {
         'letter-bottom': '#68147D',

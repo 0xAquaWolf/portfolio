@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'MonaLisa';
+  src: url('/fonts/monolisa/MonoLisa-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'MonaLisa';
+  src: url('/fonts/monolisa/MonoLisa-RegularItalic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -166,4 +180,8 @@
 
 .subheading-anchor {
   @apply no-underline hover:underline;
+}
+
+code {
+  font-family: 'MonaLisa', monospace !important;
 }

@@ -7,6 +7,7 @@ import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
 import { notFound } from 'next/navigation';
 import { getPostBySlug } from '@/lib/mdx';
 import markdownToHtml from '@/lib/markdownToHTML';
+import ScrollTracker from '@/components/ScrollTracker';
 
 const PostLayout = async ({ params }: { params: { slug: string } }) => {
   const post = getPostBySlug(params.slug);
@@ -16,6 +17,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className="relative overflow-x-hidden">
+      <ScrollTracker />
       <article className="mx-auto max-w-5xl py-8 text-white">
         <SVGGradientBg />
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
@@ -83,7 +85,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
             </div>
           </div>
         </div>
-        <div className="prose z-99 prose-md prose-invert relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div className="z-99 prose-md prose prose-invert relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
       </article>
