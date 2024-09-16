@@ -9,13 +9,10 @@ import { getPostBySlug } from '@/lib/mdx';
 import markdownToHtml from '@/lib/markdownToHTML';
 
 const PostLayout = async ({ params }: { params: { slug: string } }) => {
-  // console.log(params.slug);
   const post = getPostBySlug(params.slug);
-  // console.log('Page layout', { post });
+  if (!post) notFound();
   let content = '';
   if (post) content = await markdownToHtml(post?.content);
-  // console.log('Content', content);
-  if (!post) notFound();
 
   return (
     <div className="relative overflow-x-hidden">
