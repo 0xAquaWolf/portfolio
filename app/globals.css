@@ -185,3 +185,15 @@
 code {
   font-family: 'MonaLisa', monospace !important;
 }
+
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    theme('colors.pink.500'),
+    theme('colors.purple.500'),
+    theme('colors.blue.500')
+  );
+  margin: 2rem 0;
+}
