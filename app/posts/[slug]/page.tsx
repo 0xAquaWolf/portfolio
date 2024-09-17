@@ -50,7 +50,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
                       height={16}
                     />
                     <span className="bg-gradient-to-r from-[#FCD3ED] to-[#F690DF] bg-clip-text font-medium text-transparent">
-                      {post.readTime} min read
+                      {post.readTime} read
                     </span>
                   </div>
                   <div className="flex items-center space-x-2">
