@@ -23,6 +23,7 @@ export default function FeaturedBlogs() {
                   description: post.description || post.excerpt,
                   imageUrl: post.imageUrl,
                   url: `/posts/${post.slug}`,
+                  readTime: post.readTime,
                 }}
               />
             ))}

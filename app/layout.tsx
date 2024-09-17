@@ -78,8 +78,6 @@ const MonaLisa = localFont({
   variable: '--font-monalisa',
 });
 
-console.log(MonaLisa);
-
 export default function RootLayout({
   children,
 }: {

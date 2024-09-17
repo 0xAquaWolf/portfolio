@@ -1,12 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
 
 interface BlogPost {
   title: string;
   description: string;
   imageUrl: string;
   url: string;
+  readTime: string;
 }
 
 interface BlogCardProps {
@@ -34,19 +36,27 @@ export default function BlogCard({ blog }: BlogCardProps) {
               className="rounded-2xl"
             />
             <div className="flex flex-col">
-              <p className="text-sm text-white">0xAquaWolf</p>
-              <p className="text-sm text-gray-300">8 min read</p>
+              <div className="flex items-center space-x-2">
+                <Image
+                  src={ReadTimeIcon}
+                  alt="Read Time"
+                  width={16}
+                  height={16}
+                />
+                <span className="bg-gradient-to-r from-[#FCD3ED] to-[#F690DF] bg-clip-text font-medium text-transparent">
+                  {blog.readTime} read
+                </span>
+              </div>
+              <p className="text-sm text-white">Written by 0xAquaWolf</p>
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="flex-1">
-              <h3 className="line-clamp-2 text-lg font-semibold text-white">
-                {blog.title}
-              </h3>
-              <p className="mt-1 line-clamp-2 text-sm text-gray-300">
-                {blog.description}
-              </p>
-            </div>
+          <div className="mt-2 overflow-hidden">
+            <h3 className="truncate text-lg font-semibold text-white">
+              {blog.title}
+            </h3>
+            <p className="mt-1 truncate text-sm text-gray-300">
+              {blog.description}
+            </p>
           </div>
         </div>
         {/* bottom shadow */}
