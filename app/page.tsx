@@ -20,12 +20,12 @@ export default function Home() {
       <YoutubeGrid />
       <Stats />
       <YoutubeVideos />
-      <WavyBackgroundDemo />
+      {/* <WavyBackgroundDemo /> */}
       <AboutMe />
       <Startup />
       <SecondQuote />
       <FeaturedBlogs />
-      <Newsletter />
+      {/* <Newsletter /> */}
       <TheEnd />
       <Footer />
     </main>
