@@ -14,86 +14,26 @@ export default function Letter() {
         {/* Letter Top */}
         <div className="bg-letter-top shadow-letter-top relative z-30 -rotate-1 rounded-lg lg:rotate-2 lg:rounded-xl">
           <article className="space-y-4 p-4 text-base text-white/80 lg:space-y-5 lg:p-5 lg:px-24 lg:py-14 lg:text-2xl">
-            <p>Hey everyone 👋</p>
-            <p>I&apos;m AquaWolf, and I&apos;ve been on quite a journey.</p>
-            <p>
-              I&apos;ve been coding since 2016, and let me tell you, it&apos;s
-              been a wild ride. Coding gets a bad rap sometimes, but it
-              shouldn&apos;t. To me, coding has always been a treasure.
-            </p>
-            <p>
-              There&apos;s nothing quite like the feeling of creating something
-              from nothing, or solving a complex problem that&apos;s been
-              nagging at you for days. That rush of satisfaction when your code
-              finally runs smoothly—that&apos;s how coding used to feel all the
-              time for me.
-            </p>
-            <p>But things changed.</p>
-            <p>
-              In 2021, I got swept up in the crypto bull run. I helped launch
-              various NFT projects, including DAW (Desperate Ape Wives) on ETH
-              and TheLostKingdom on FTM. We&apos;re talking millions in sales
-              and thousands in trading volume. It was exhilarating, but it came
-              at a cost.
-            </p>
-            <p>
-              I lost control over my well-being. An avalanche of work and stress
-              buried me. I was coding for 12 hours a day, smoking weed just to
-              cope with the pain. And still, it wasn&apos;t enough.
-            </p>
-            <p>
-              The industry just let it happen. No one seemed to care about my
-              health as long as the money kept flowing.
-            </p>
-            <p>
-              Coding, which had once been my joy, became a chore. Something I
-              fell behind on. Something I cleared out, not cherished. Rather
-              than delighting in it, I was just dealing with it.
-            </p>
-            <p>
-              But you know what? Even after all that, coding still remains a
-              wonder to me. It&apos;s powerful. It&apos;s creative. It connects
-              people across the globe and helps millions earn a living.
-            </p>
-            <p>
-              The magic was still there, just buried under a mess of burnout and
-              neglect.
-            </p>
-            <p>
-              So I decided to make a change. I left it all behind and became a
-              digital nomad. I traveled from the Amazon in Peru to the beaches
-              of Thailand and the spiritual heart of India. I experienced
-              ayahuasca 8 times in peru and 4 times in Thailand, spiritually
-              died multiple times on DMT and mushrooms, kambo, san pedro, and
-              went on various shamanic journeys over the course of 2 years
-            </p>
-            <p>
-              It was a redo, a rethink, a simplified, potent reintroduction to
-              my passion and my Self, i was lost and i found my Self in all of
-              it, everything i was looking for outwardly was within.
-            </p>
-            <p>A fresh start, the way it should be.</p>
-            <p>
-              This journey became my love letter to balance and growth. I purged
-              a lot of trauma, did a massive amount of shadow work, and finally
-              found the peace I was looking for.
-            </p>
-            <p>
-              Now, I&apos;m no longer afraid to share my story. I&apos;m a
-              Senior Full-Stack developer, yes, but I&apos;m also a shaman, a
-              time traveler, a hacker, a tinker, a delusional optimist, a truth
-              seeker, a data broker, an AI researcher, and a polymath.
-            </p>
-            <p>
-              To everyone out there feeling lost or burnt out: there&apos;s
-              hope.
-            </p>
-            <p>In the chaos there is always balance to find</p>
-            <p>
-              This is my journey, and I&apos;m still allowing the expansion to
-              continue. May it inspire you to find your own balance in this wild
-              world of technology and beyond.
-            </p>
+            <p>What&apos;s Up Everyone, I&apos;m AquaWolf from Miami, FL</p>
+            <p>So, my story&apos;s kinda wild. Started coding back in 2016, got caught up in the crypto craze of October 2021.</p>
+            <p>Helped launch some really big NFT projects - DAW, TheLostKingdom & SuperFuzz, My code generated over 28m+ and i ended up achieving a massive personal success...</p>
+            <p>But fuck, burnout hit me like a big 18 wheeler truck.</p>
+            <p>I was lost, ship wrecked, stranded at sea with no boat.</p>
+            <p>So i decided to shake things up. Went digital nomadding for 2 years.</p>
+            <p>Trekking through Peru, Thailand, India, Cambodia, Laos.</p>
+            <p>Got real deep into Health & Wellness, Spirituality, Consciousness, Neuroscience, Ayahuasca, Magic Mushrooms and DMT.</p>
+            <p>I was looking for myself so i could put all the pieces back together because i was so broken, i honestly didn&apos;t even want to code anymore all i wanted to do was sell everything and become a monk and just travel barefoot no possessions, but eventually i grounded myself back in to reality</p>
+            <p>So, Now I&apos;m back in the game, wearing a bunch of hats:</p>
+            <ul className="list-disc pl-6">
+              <li>Live Stream Coding (Building in Public)</li>
+              <li>Senior Full-Stack Dev</li>
+              <li>AI tinkerer & Hacker</li>
+              <li>UI/UX Designer</li>
+              <li>Entrepreneur</li>
+            </ul>
+            <p>Hit me up and lets connect if you&apos;re into building cool stuff and following your curiosity or just wanna chat about Entrepreneurship, AI, Consciousness or everything really.</p>
+            <p>I&apos;m always down for a good collab or mind-bending convo if time permits.</p>
+            <p>Much love</p>
             <div className="relative flex flex-col items-center gap-2">
               <div className="self-start">
                 Wholeness & Balanced Vibrations 🙏
