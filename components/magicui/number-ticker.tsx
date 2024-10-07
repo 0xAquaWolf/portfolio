@@ -53,7 +53,7 @@ export default function NumberTicker({
       ref={ref}
       initial={{ opacity: 0 }}
       animate={{ opacity: isInView ? 1 : 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.2 }}
     />
   );
 }
