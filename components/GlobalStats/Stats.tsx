@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { Octokit } from '@octokit/rest';
 import NumberTicker from '../magicui/number-ticker';
+import { cache } from 'react';
 
 // Types for our stats
 interface Stat {
@@ -11,54 +12,49 @@ interface Stat {
 // Function to format large numbers
 // const formatNumber = (num: number): number => num;
 
-// Function to fetch YouTube channel info
-async function getChannelInfo(channelId: string): Promise<Stat[]> {
+// Server Component
+const getCachedChannelInfo = cache(async (channelId: string): Promise<Stat[]> => {
   if (process.env.NODE_ENV === 'development') {
     return [
       { value: 10000000, label: 'Youtube Views' },
       { value: 100000, label: 'Youtube Subscribers' },
     ];
   }
-  return [
-    { value: 33623, label: 'Youtube Views' },
-    { value: 929, label: 'Youtube Subscribers' },
-  ];
 
-  // const youtube = google.youtube({
-  //   version: "v3",
-  //   auth: process.env.YOUTUBE_API_KEY,
-  // });
+  const youtube = google.youtube({
+    version: "v3",
+    auth: process.env.YOUTUBE_API_KEY,
+  });
 
-  // try {
-  //   const response = await youtube.channels.list({
-  //     part: ["statistics"],
-  //     id: [channelId],
-  //   });
+  try {
+    const response = await youtube.channels.list({
+      part: ["statistics"],
+      id: [channelId],
+    });
 
-  //   if (response.data.items && response.data.items.length > 0) {
-  //     const channel = response.data.items[0];
-  //     return [
-  //       {
-  //         value: Number(channel.statistics?.viewCount) || 0,
-  //         label: "Youtube Views",
-  //       },
-  //       {
-  //         value: Number(channel.statistics?.subscriberCount) || 0,
-  //         label: "Youtube Subscribers",
-  //       },
-  //     ];
-  //   } else {
-  //     console.log("Channel not found");
-  //     return [];
-  //   }
-  // } catch (error) {
-  //   console.error("Error fetching channel info:", error);
-  //   return [];
-  // }
-}
+    if (response.data.items && response.data.items.length > 0) {
+      const channel = response.data.items[0];
+      return [
+        {
+          value: Number(channel.statistics?.viewCount) || 0,
+          label: "Youtube Views",
+        },
+        {
+          value: Number(channel.statistics?.subscriberCount) || 0,
+          label: "Youtube Subscribers",
+        },
+      ];
+    } else {
+      console.log("Channel not found");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching channel info:", error);
+    return [];
+  }
+});
 
-// Function to fetch GitHub stars
-async function getGitHubStars(username: string): Promise<number> {
+const getCachedGitHubStars = cache(async (username: string): Promise<number> => {
   if (process.env.NODE_ENV === 'development') {
     return 528;
   }
@@ -83,9 +79,8 @@ async function getGitHubStars(username: string): Promise<number> {
     console.error('Error fetching GitHub stars:', error);
     return 0;
   }
-}
+});
 
-// Server Component
 export const Stats = async () => {
   const YOUR_CHANNEL_ID = 'UCkwRYP1J1hjRXwo5lyBRWdQ';
   const YOUR_GITHUB_USERNAME = '0xAquaWolf';
@@ -95,8 +90,8 @@ export const Stats = async () => {
 
   try {
     [youtubeStats, githubStars] = await Promise.all([
-      getChannelInfo(YOUR_CHANNEL_ID),
-      getGitHubStars(YOUR_GITHUB_USERNAME),
+      getCachedChannelInfo(YOUR_CHANNEL_ID),
+      getCachedGitHubStars(YOUR_GITHUB_USERNAME),
     ]);
   } catch (error) {
     console.error('Error fetching stats:', error);

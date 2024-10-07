@@ -93,13 +93,7 @@ export default function Menu() {
               href="#"
               className="rounded-full bg-white px-4 py-2 text-black shadow-cta transition-all hover:bg-transparent hover:text-white hover:shadow-alt-cta"
             >
-              Hire Me
-            </a>
-            <a
-              href="#"
-              className="rounded-full px-6 py-2 text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta"
-            >
-              Links
+              Live Stream
             </a>
           </div>
         </nav>

@@ -12,6 +12,8 @@ import { Footer } from '@/components/footer';
 // import Newsletter from '@/components/Newsletter/Newsletter';
 import FeaturedBlogs from '@/components/Blog/FeaturedBlogs';
 
+export const revalidate = 3600 * 12 // revalidate every hour
+
 export default function Home() {
   return (
     <main className="bg-bg-default">
