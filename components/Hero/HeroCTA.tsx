@@ -14,7 +14,7 @@ export default function HeroCTA() {
         </div>
         <div className="flex gap-4 justify-center lg:justify-start">
           <a
-            href="#"
+            href="https://cal.com/0xaquawolf/discovery"
             className="bg-white rounded-full px-4 py-2 xl:px-6 xl:py-3 text-black hover:text-white hover:bg-transparent transition-all xl:text-lg shadow-cta hover:shadow-alt-cta"
           >
             Book a Call
