@@ -1,0 +1,92 @@
+.copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background-color: #4a5568;
+    color: white;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+  }
+  
+  .copy-button:hover {
+    background-color: rgb(71, 71, 71);
+  }
+  
+  [data-rehype-pretty-code-figure] pre {
+    @apply px-0;
+  }
+  
+  [data-rehype-pretty-code-figure] code {
+    @apply border-0 p-0 text-sm !leading-loose md:text-base;
+  }
+  
+  [data-rehype-pretty-code-figure] code[data-line-numbers] {
+    counter-reset: line;
+  }
+  
+  [data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    @apply mr-3 inline-block w-3 text-right text-gray-500;
+  }
+  
+  [data-rehype-pretty-code-figure] [data-line] {
+    @apply border-l-2 border-l-transparent px-3;
+  }
+  
+  [data-rehype-pretty-code-figure] [data-highlighted-line] {
+    background: rgba(200, 200, 255, 0.1);
+    @apply border-l-orange-400;
+  }
+  
+  [data-rehype-pretty-code-figure] [data-highlighted-chars] {
+    @apply rounded bg-zinc-600/50;
+    box-shadow: 0 0 0 4px rgb(82 82 91 / 0.5);
+  }
+  
+  [data-rehype-pretty-code-figure] [data-chars-id] {
+    @apply border-b-2 p-1 shadow-none;
+  }
+  
+  /* styles/globals.css or your CSS file */
+  
+  /* Hide the anchor icon by default */
+  .anchor-icon {
+    opacity: 0;
+    margin-right: 0.5rem;
+    font-weight: normal;
+    transition: opacity 0.2s ease;
+    color: #8b8b8b;
+  }
+  
+  /* Show the anchor icon when hovering over the heading */
+  h1:hover .anchor-icon,
+  h2:hover .anchor-icon,
+  h3:hover .anchor-icon,
+  h4:hover .anchor-icon,
+  h5:hover .anchor-icon,
+  h6:hover .anchor-icon {
+    opacity: 1;
+  }
+  
+  /* Style the anchor link */
+  .anchor-link {
+    text-decoration: none;
+  }
+  
+  .anchor-link:hover .anchor-icon {
+    color: #0070f3; /* or your preferred hover color */
+  }
+  
+  /* Remove text-decoration from the heading itself */
+  h1, h2, h3, h4, h5, h6 {
+    position: relative;
+  }
+  
+  /* Optional: Add negative margin to compensate for the anchor width */
+  h1, h2, h3, h4, h5, h6 {
+    margin-left: -1.5rem;
+    padding-left: 1.5rem;
+  }

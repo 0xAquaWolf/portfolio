@@ -5,15 +5,24 @@ import Menu from '@/components/Hero/Menu/Menu';
 import BlogViewsIcon from '@/public/images/svg/BlogViewsIcon.svg';
 import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
 import { notFound } from 'next/navigation';
-import { getPostBySlug } from '@/lib/mdx';
-import markdownToHtml from '@/lib/markdownToHTML';
 import ScrollTracker from '@/components/ScrollTracker';
+import { posts } from "#site/content"
+import  MDXComponent from "@/components/mdx-components";
+import '@/app/mdx.css'
+
+
+async function getPostFromParams(slug: string) {
+  const post = posts.find((post) => post.slugAsParams === slug);
+  return post;
+}
 
 const PostLayout = async ({ params }: { params: { slug: string } }) => {
-  const post = getPostBySlug(params.slug);
-  if (!post) notFound();
-  let content = '';
-  if (post) content = await markdownToHtml(post?.content);
+  const post = await getPostFromParams(params.slug);
+  // console.log(post)
+
+  if (!post || !post.published) {
+    notFound();
+  }
 
   return (
     <div className="relative overflow-x-hidden">
@@ -86,7 +95,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
           </div>
         </div>
         <div className="z-99 prose-md prose prose-invert relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+          <MDXComponent code={post.body} title={post.title} />
         </div>
       </article>
     </div>
