@@ -7,7 +7,7 @@ export default function FeaturedBlogs() {
   const featuredPosts = getFeaturedPosts();
 
   return (
-    <div className="mt-20 lg:mt-40">
+    <div id="blog" className="mt-20 lg:mt-40">
       <SectionHeading
         heading="AI & Tech Blog"
         subheading="Documenting all of my learnings and teachings in AI and technology."

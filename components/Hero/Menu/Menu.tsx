@@ -31,7 +31,6 @@ export default function Menu() {
     { name: 'Videos', href: '#videos', isActive: false },
     { name: 'Projects', href: '#projects', isActive: false },
     { name: 'Blog', href: '#blog', isActive: false },
-    { name: 'Discord', href: '#discord', isActive: false },
   ]);
 
   const setActiveNavItem = (selectedName: string) => {
