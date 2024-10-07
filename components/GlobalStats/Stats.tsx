@@ -9,12 +9,12 @@ interface Stat {
   label: string;
 }
 
-// Function to format large numbers
-// const formatNumber = (num: number): number => num;
+// Debug flag for local testing
+const DEBUG = process.env.NODE_ENV === 'development';
 
 // Server Component
 const getCachedChannelInfo = cache(async (channelId: string): Promise<Stat[]> => {
-  if (process.env.NODE_ENV === 'development') {
+  if (DEBUG) {
     return [
       { value: 10000000, label: 'Youtube Views' },
       { value: 100000, label: 'Youtube Subscribers' },
@@ -55,7 +55,7 @@ const getCachedChannelInfo = cache(async (channelId: string): Promise<Stat[]> =>
 });
 
 const getCachedGitHubStars = cache(async (username: string): Promise<number> => {
-  if (process.env.NODE_ENV === 'development') {
+  if (DEBUG) {
     return 528;
   }
 
@@ -73,7 +73,6 @@ const getCachedGitHubStars = cache(async (username: string): Promise<number> => 
       (sum, repo) => sum + (repo.stargazers_count ?? 0),
       0,
     );
-    // console.log('Total Stars:', totalStars);
     return totalStars;
   } catch (error) {
     console.error('Error fetching GitHub stars:', error);
@@ -112,7 +111,7 @@ export const Stats = async () => {
     <section className="mx-auto mb-20 max-w-[1440px] px-4 py-12 text-white lg:mb-32">
       <div className="mx-auto max-w-6xl">
         <h2 className="mb-8 text-center text-base font-semibold lg:text-2xl">
-          Global Stats
+          Global Stats {DEBUG ? '(Debug Mode)' : ''}
         </h2>
         <div className="flex flex-col items-center justify-center md:flex-row">
           {statsData.map((stat, index) => (

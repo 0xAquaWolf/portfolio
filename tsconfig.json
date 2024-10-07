@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "contentlayer/generated": ["./.contentlayer/generated"]
+      "#site/content": ["./.velite"]
     }
   },
   "include": [

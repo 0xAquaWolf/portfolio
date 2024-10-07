@@ -7,6 +7,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
+import SVGGradientBg from '@/components/Hero/SVGGradientBg';
+import Menu from '@/components/Hero/Menu/Menu';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -95,10 +97,14 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
+        <SVGGradientBg />
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+          <Menu />
+        </div>
           <div className="">{children}</div>
         </ThemeProvider>
       </body>
