@@ -26,7 +26,7 @@ const CodeBlockWithCopy = ({ children }: any) => {
     <div className="relative">
       <button
         onClick={copyToClipboard}
-        className="absolute right-2 text-xs flex gap-1 items-center top-2 p-2 rounded-lg cursor-pointer z-20 dark:bg-muted bg-muted-foreground/15 hover:bg-muted/45"
+        className="absolute right-2 text-xs flex gap-1 items-center top-2 p-2 rounded-lg cursor-pointer z-20 dark:bg-slate-900 dark:hover:bg-slate-700 transition-all bg-slate-100 hover:bg-slate-200"
         aria-label="Copy code"
       >
         {isCopied ? (
