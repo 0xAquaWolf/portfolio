@@ -6,7 +6,6 @@ import { h } from "hastscript";
 import remarkGfm from "remark-gfm"; // Import remark-gfm
 import remarkToc from "remark-toc"; // Import remark-toc
 
-
 function calculateReadTime(content: string): string {
   const wordsPerMinute = 200;
   const wordCount = content.split(/\s+/).length;
