@@ -1,245 +1,279 @@
-<h1 align="center">Portfolio & Blog</h3>
 
-<a name="readme-top"></a>
+# Corely AI – CMS/CRM Open Source Enterprise Platform✨
 
-<!-- PROJECT SHIELDS -->
-<div align="center">
-<!-- PROJECT SHIELDS -->
-<img src="https://img.shields.io/github/forks/0xAquaWolf/portfolio.svg?style=for-the-badge" alt="Forks">
-<img src="https://img.shields.io/github/stars/0xAquaWolf/portfolio.svg?style=for-the-badge" alt="Stars">
-<img src="https://img.shields.io/github/issues/0xAquaWolf/portfolio.svg?style=for-the-badge" alt="Issues">
-<img src="https://img.shields.io/github/license/0xAquaWolf/portfolio.svg?style=for-the-badge" alt="License">
+![Stars](https://img.shields.io/github/stars/harshitduggal1/corely.svg?style=for-the-badge)
+![Forks](https://img.shields.io/github/forks/harshitduggal1/corely.svg?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/harshitduggal1/corely.svg?style=for-the-badge)
+![License](https://img.shields.io/github/license/harshitduggal1/corely.svg?style=for-the-badge)
 
-</div>
+**Corely AI** is a robust, open-source **CMS/CRM enterprise software platform** built to meet the evolving needs of businesses. From managing content to streamlining customer relationships, Corely AI offers **scalability, flexibility, and efficiency** that developers will love.  
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
+[GitHub Repository](https://github.com/harshitduggal1/corely) • [Report Bug](https://github.com/harshitduggal1/corely/issues) • [Request Feature](https://github.com/harshitduggal1/corely/issues)
 
-  <p align="center">
-  For many years i dreamed of a smooth and modern website to showcase everything that i have learned after 8 years, this is my love letter to Web Developement as a Full-Stack Engineer with a passion for UI/UX design.
-    <br />
-    <a href="https://0xAquaWolf.com">View Demo</a>
-    ·
-    <a href="https://github.com/0xAquaWolf/portfolio/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/0xAquaWolf/portfolio/issues">Request Feature</a>
-  </p>
-</div>
+---
 
-<!-- ABOUT THE PROJECT -->
+## Why Corely AI?  
 
-<h2 align="center">About This Project</h3>
+Corely AI is built to be **developer-friendly** with a clean codebase, powerful APIs, and modern frameworks. Whether you're a small startup or a large enterprise, this platform **scales effortlessly** and delivers advanced features with **speed and stability**.
 
-[![Portfolio Screen Shot][product-screenshot]](https://0xaquawolf.com)
+### Key Features
 
-This is my personal portfolio and blog website. It showcases my projects, skills, and thoughts on various topics in the tech industry. The site is built with modern web technologies to ensure a smooth, responsive, and visually appealing experience for visitors.
+- **Modular CMS**: Customize content workflows, publish quickly, and stay agile.
+- **Integrated CRM**: Manage customer data, automate workflows, and improve relationships.
+- **API-First Architecture**: Easily integrate with other platforms and services.
+- **Responsive & Intuitive UI**: Seamless user experience across all devices.
+- **Enterprise-Ready**: Designed for high-performance needs, with built-in security.
 
-Key Features:
+---
 
-- Responsive design that looks great on both desktop and mobile devices
-- Portfolio section to showcase my projects with detailed descriptions
-- Blog section for sharing my thoughts and experiences in the tech world
-- Dark mode support for comfortable viewing in any lighting condition
-- Fast loading times and optimized performance
+## Built With
 
-<br>
-<h3 align="center">Built With</h3>
-<div align="center">
-<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
-<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js">
-<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
-<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-<img src="https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white" alt="shadcn/ui">
-<img src="https://img.shields.io/badge/Aceternity_UI-FF4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Aceternity UI">
-<img src="https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
-</div>
-<br>
-<!-- GETTING STARTED -->
+- **Node.js**  
+- **TypeScript**  
+- **Next.js**  
+- **PostgreSQL**  
+- **Tailwind CSS**  
+- **Bun**  
 
-## Getting Started
+---
 
-To get a local copy up and running, follow these simple steps.
+## Getting Started  
+
+Follow these steps to set up Corely AI locally:  
 
 ### Prerequisites
 
-- Bun
+- **Bun**:  
   ```sh
   curl -fsSL https://bun.sh/install | bash
   ```
 
-#### Environment Variables
-
-To run this project, you will need to add the following environment variables to your `.env` file:
-
-```bash
-YOUTUBE_API_KEY=""
-GITHUB_ACCESS_TOKEN=""
-```
-
 ### Installation
 
-1. Clone the repo
+1. **Clone the Repository**  
    ```sh
-   git clone https://github.com/0xAquaWolf/portfolio.git
+   git clone https://github.com/harshitduggal1/corely.git
    ```
-2. Install packages
+2. **Install Dependencies**  
    ```sh
    bun install
    ```
-3. Start the development server
+3. **Start the Development Server**  
    ```sh
-   bun run dev
+   bun dev
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-<!-- USAGE EXAMPLES -->
+## Roadmap  
 
-## Usage
+- **Content Management System (CMS)**  
+  - [x] Create & manage dynamic pages  
+  - [x] User roles & access control  
+  - [ ] Custom themes & plugins  
 
-Gain inspiration for your own portfolio
+- **Customer Relationship Management (CRM)**  
+  - [x] Track customer interactions  
+  - [ ] Email campaigns with templates  
+  - [ ] Advanced analytics dashboard  
 
-fork it
+- **Backend Integrations**  
+  - [x] REST API support  
+  - [ ] GraphQL support  
+  - [ ] Webhooks for automation  
 
-clone it
+Check the [open issues](https://github.com/harshitduggal1/corely/issues) for more details on upcoming features and known issues.
 
-whatever you like
+---
 
-<!-- ROADMAP -->
+## Contributing  
 
-## Roadmap
+We believe in the power of **open-source collaboration**. Whether it’s fixing bugs, adding new features, or improving documentation, we welcome all contributions!  
 
-- Hero Section
-  - [x] Nav Menu
-  - [x] Call to actions
-  - [x] Mobile Responsiveness
-  - [ ] Menu Widescreen responsiveness min-w-[1440px]
-- [x] Logo Cloud
-  - [x] Widescreen responsiveness min-w-[1440px]
-  - [x] Widescreen make bigger
-  - [x] Tablet row layout (md:flex-row)
-- [x] Stats Section with dynamic info
-  - [x] Design in figma
-  - [x] Code with tailwindcss
-  - [x] Dynamic data from API
-  - [x] Animate number with framer-motion
-- [x] Youtube video section with live view count
-  - [x] Design in figma
-  - [x] Code with tailwindcss
-  - [x] Dynamic data from API
-  - [x] Animate number with framer-motion
-  - [ ] Cache response from YouTube API
-  - [ ] Create list of top videos and link to playlist
-- [x] 1st Quote Section
-- [x] About me Section
-- [x] Projects and Startups Section
-- [x] 2nd Quote Section
-- Blog
-  - [x] Use Markdown files
-  - [x] Use MDX Files
-  - [x] Syntax Highlighting with Shiki
-  - [ ] Add comment system for blog posts
-  - [ ] Add microinteraction with heart
-  - [ ] Add read time based on words per minute
-  - [ ] Add view count
-- Add Backend with Supabase
-  - [ ] Create API endpoints for blog posts
-  - [ ] Create API endpoints for newsletter
-  - [ ] Create API endpoints for projects
-  - [ ] Create API endpoints for stats
-- [x] Join the Newsletter section
-  - [ ] API call to backend to add to list with Mautic
-- [x] Footer with social links
-  - [ ] Mobile responsiveness
+1. **Fork the Repository**  
+2. **Create a Feature Branch**  
+   ```sh
+   git checkout -b feature/AmazingFeature
+   ```
+3. **Commit Your Changes**  
+   ```sh
+   git commit -m "Add AmazingFeature"
+   ```
+4. **Push to the Branch**  
+   ```sh
+   git push origin feature/AmazingFeature
+   ```
+5. **Open a Pull Request**
 
-See the [open issues](https://github.com/0xAquaWolf/your-portfolio-repo/issues) for a full list of proposed features (and known issues).
+---
 
-<!-- CONTRIBUTING -->
+## License  
 
-## Contributing
+Distributed under the **GPL License**. See `LICENSE` for more details.
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+---
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+## Contact  
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- **Twitter**: [@0xAquaWolf](https://twitter.com/0xAquaWolf)  
+- **Discord**: [Join Corely AI Community](https://discord.gg/wzPBjEcn87)  
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+---
 
-<!-- LICENSE -->
+## Acknowledgments  
 
-## License
+- [Node.js Documentation](https://nodejs.org/en/docs/)  
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)  
+- [Tailwind CSS](https://tailwindcss.com/docs)  
+- [Bun Documentation](https://bun.sh/docs)  
 
-Distributed under the GPL License. See `LICENSE` for more information.
+---
+# Contribution Guide for Corely AI – CMS/CRM Open Source Enterprise Software Platform  
 
-<!-- CONTACT -->
+**Welcome, Developer!** 🎉  
 
-## Contact
+We’re thrilled that you’re considering contributing to **Corely AI**, a powerful open-source CMS/CRM enterprise platform. Whether you’re here to squash a bug, enhance our features, improve the documentation, or propose something entirely new, your contributions matter! Together, we can make Corely AI an **industry-leading platform**.  
 
-Twitter / x - [@0xAquaWolf](https://twitter.com/0xAquaWolf)
+This guide will walk you through everything you need to know to start contributing.
 
-[Aquawolf Academy Discord](https://discord.gg/wzPBjEcn87)
+---
 
-<!-- ACKNOWLEDGMENTS -->
+## How You Can Contribute  
 
-## Acknowledgments
+There are countless ways to make an impact on Corely AI. Here are some ways you can contribute:
 
-- [Next.js Documentation](https://nextjs.org/docs)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Shadcn UI](https://ui.shadcn.com/)
-- [Aceternity UI](https://ui.aceternity.com/)
-- [React Icons](https://react-icons.github.io/react-icons/)
-- [Bun Documentation](https://bun.sh/docs)
-- [Node.js Documentation](https://nodejs.org/en/docs/)
+### 1. Report Issues  
+Found a bug? Is something not working as expected? Open an issue to let us know!  
+- Go to our **[Issues](https://github.com/harshitduggal1/corely/issues)** page and click **New Issue**.
+- Provide as much detail as possible, including steps to reproduce the issue.
+- Add relevant tags, such as **bug**, **enhancement**, or **help wanted**.
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+### 2. Suggest New Features  
+Have an idea to make Corely AI better? Share it with us!  
+- Open a **Feature Request Issue** with a detailed description.
+- Tell us how your idea benefits the project and other users.
+- Let us know if you’d like to help implement it!
 
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+### 3. Improve Documentation  
+Clear and concise documentation is key to Corely AI’s success.  
+- Found a typo or outdated instructions? Fix it!
+- Write new tutorials or improve existing ones.
+- Check the **[Docs Folder](https://github.com/harshitduggal1/corely/tree/main/docs)** and propose changes.
 
-[forks-shield]: https://img.shields.io/github/forks/0xAquaWolf/your-portfolio-repo.svg?style=for-the-badge
-[forks-url]: https://github.com/0xAquaWolf/your-portfolio-repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/0xAquaWolf/your-portfolio-repo.svg?style=for-the-badge
-[stars-url]: https://github.com/0xAquaWolf/your-portfolio-repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/0xAquaWolf/your-portfolio-repo.svg?style=for-the-badge
-[issues-url]: https://github.com/0xAquaWolf/your-portfolio-repo/issues
-[license-shield]: https://img.shields.io/github/license/0xAquaWolf/your-portfolio-repo.svg?style=for-the-badge
-[license-url]: https://github.com/0xAquaWolf/your-portfolio-repo/blob/master/LICENSE.txt
-[product-screenshot]: /public/images/png/portfolio-preview.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[TypeScript]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[TypeScript-url]: https://www.typescriptlang.org/
-[Tailwind CSS]: https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white
-[Tailwind-url]: https://tailwindcss.com/
-[Shadcn UI]: https://img.shields.io/badge/Shadcn_UI-000000?style=for-the-badge&logo=shadcnui&logoColor=white
-[Shadcn-url]: https://ui.shadcn.com/
-[Aceternity UI]: https://img.shields.io/badge/Aceternity_UI-FF4785?style=for-the-badge&logo=storybook&logoColor=white
-[Aceternity-url]: https://ui.aceternity.com/
-[Bun]: https://img.shields.io/badge/Bun-000000?style=for-the-badge&logo=bun&logoColor=white
-[Bun-url]: https://bun.sh/
-[Node.js]: https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white
-[Node-url]: https://nodejs.org/
+### 4. Submit Code Contributions  
+We welcome developers of all skill levels to contribute code. You can:
+- Fix a bug listed in the **[Issues](https://github.com/harshitduggal1/corely/issues)** section.
+- Add new features or improve existing ones.
+- Refactor code for better performance and readability.
 
-## Star History
+---
 
-<a href="https://star-history.com/#0xAquaWolf/portfolio&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=0xAquaWolf/portfolio&type=Date" />
- </picture>
-</a>
+## Getting Started with Your First Contribution  
 
-## Farewell
+Here’s how to get started:
 
-Wholeness and balanced Vibrations 🙌
+### Step 1: Fork the Repository  
+Click the **Fork** button on the top right of the repository page to create a copy of the project in your GitHub account.
+
+### Step 2: Clone Your Fork  
+Clone the repository to your local machine.  
+```bash
+git clone https://github.com/harshitduggal1/corely.git
+cd corely
+
+Absolutely! Let’s supercharge the excitement and make it as attention-grabbing as possible. I'll use vivid language and an engaging tone to entice developers to participate in your project. Here’s a revised version:
+
+```markdown
+# 🌟 Welcome to the **Corely AI CMS/CRM** Wonderland! 🌟
+
+Are you ready to dive into an exhilarating adventure in the world of open-source software? Look no further! Our **Corely AI CMS/CRM** platform is your ticket to transforming how businesses manage content and connect with their customers! 
+
+## 🚀 Join the Revolution!
+Don’t just watch from the sidelines—become a pioneer in shaping the future of enterprise software! 🛠️✨ Each contribution is a stepping stone toward creating powerful tools that thousands will rely on. Together, let’s build something extraordinary that’ll leave a mark on the tech landscape!
+
+**Repository URL**: [🌐 Explore the Corely Repository!](https://github.com/harshitduggal1/corely)
+
+## 🛠️ **Your Journey to Contributing Starts Here!**
+Ready to contribute? Let’s break it down into fun-packed steps!
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/harshitduggal1/corely.git
+   cd corely
+   ```
+
+2. **Create Your Awesome Branch**:
+   ```bash
+   git checkout -b create-super-feature
+   ```
+
+3. **Craft Your Code Masterpiece**:
+   - **Follow Our Legendary Code Style Guidelines**:
+     - Use **TypeScript** for *all* components—unleash the power of types!
+     - Adhere to the [Airbnb JavaScript/TypeScript Style Guide](https://github.com/airbnb/javascript) for awesomeness.
+     - Format your code like a pro with **Prettier**:
+       ```bash
+       npx prettier --write .
+       ```
+     
+4. **Commit Your Brilliance**:
+   - Write engaging commit messages that tell your story! Follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+     - `feat:` for those amazing new features
+     - `fix:` to squash those pesky bugs
+     - `docs:` for pure documentation gold
+     - `style:` when you’re just making things look pretty
+
+5. **Test, Test, Test!**:
+   - Ensure your code shines by running existing tests:
+     ```bash
+     bun test
+     ```
+   - Add new tests for your newly minted features—show us what you've got!
+
+6. **Lint Like a Champion**:
+   - Ensure your code is spotless and free of errors:
+     ```bash
+     npx eslint .
+     ```
+
+7. **Open Your Dazzling Pull Request**:
+   - Go to your repository on GitHub and click **New Pull Request**.
+   - Compare your branch with the main branch of the original repository.
+   - Write an epic description of your changes and link any relevant issues. Share your vision with the world!
+
+## 🤝 Embrace the Code of Conduct
+We believe in building a respectful and inclusive community! Check out our [Code of Conduct](link-to-code-of-conduct) and help us create an environment where everyone feels welcome.
+
+## 💡 **Have Questions? We’ve Got Answers!** 💡
+Don't hesitate to reach out! If you hit a snag or want to brainstorm ideas, connect with us:
+
+- **Discord**: Join the Corely AI Community for vibrant discussions and support!
+- **Twitter**: Follow [@0xAquaWolf](https://twitter.com/0xAquaWolf) for all the latest updates and fun!
+
+## 📌 **Pro Tips for Contributions**:
+- **Keep it Small**: Smaller pull requests are less overwhelming and more likely to be merged quickly!
+- **Stay Current**: Regularly pull the latest changes from main:
+  ```bash
+  git pull origin main
+  ```
+- **Communicate Openly**: Leave comments on your PR—let's keep the conversation going!
+- **Be Patient**: Everyone appreciates your efforts! The review process might take some time, but your contributions are valued more than you know!
+
+## 🌟 **Recognition & Rewards Await!** 🌟
+Every single contribution counts! As a token of our appreciation, contributors will:
+- Earn a legendary spot in the **Contributors** section of our repository.
+- Be celebrated with a shoutout on our social media platforms!
+
+---
+
+**The Corely AI revolution is here, and YOU are a crucial part of it!** 🌍✨ Let’s create groundbreaking solutions together that will earn us tons of ⭐️⭐️⭐️⭐️⭐️ and make a lasting impact in the tech community! Are you in?
+```
+
+
+Let’s build the future of **enterprise platforms** together! ⭐  
+Give this project a **star** and join us on this exciting journey. With **Corely AI**, the possibilities are endless, and your contributions can change the way businesses operate.
+
+[Back to Top](#corely-ai--cmscrm-open-source-enterprise-platform)
+
+
+```
