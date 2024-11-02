@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/libsql';
 import { migrate } from 'drizzle-orm/libsql/migrator'
 import { createClient } from '@libsql/client';
  
-let url = process.env.NODE_ENV === "development" ? "file:./local.sqlite" : process.env.DB_PROD_URL ||;
+let url = process.env.NODE_ENV === "development" ? "file:./local.sqlite" : process.env.DB_PROD_URL || "";
 
 const client = createClient({ url, authToken: process.env.DB_AUTH_TOKEN });
 // console.log({client})
