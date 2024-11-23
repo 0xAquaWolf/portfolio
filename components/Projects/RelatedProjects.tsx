@@ -13,7 +13,7 @@ export default function RelatedProjects({
   allProjects,
 }: RelatedProjectsProps) {
   // Get 3 related projects based on matching tags
-  console.log('Current project tags:', currentProject.tags);
+  // console.log('Current project tags:', currentProject.tags);
   const relatedProjects = allProjects
     .filter((project) => {
       // Don't include the current project
@@ -26,10 +26,10 @@ export default function RelatedProjects({
       const matchingTags = project.tags.filter((tag) =>
         currentProject.tags.includes(tag),
       );
-      console.log(
-        `Project ${project.title} has ${matchingTags.length} matching tags:`,
-        matchingTags,
-      );
+      // console.log(
+      //   `Project ${project.title} has ${matchingTags.length} matching tags:`,
+      //   matchingTags,
+      // );
       return matchingTags.length > 0;
     })
     // Sort by number of matching tags

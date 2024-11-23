@@ -14,7 +14,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Projects from '@/components/Projects/Projects';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600 * 12; // revalidate every 12 hour
 
 export default function Home() {
   noStore();

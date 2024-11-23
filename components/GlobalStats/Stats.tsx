@@ -1,80 +1,126 @@
+import { google } from 'googleapis';
+import { Octokit } from '@octokit/rest';
 import NumberTicker from '../magicui/number-ticker';
-import { unstable_noStore as noStore } from 'next/cache';
+import { cache } from 'react';
 
+// Types for our stats
 interface Stat {
   value: number;
   label: string;
 }
 
-interface StatsResponse {
-  youtube: {
-    views: number;
-    subscribers: number;
-  };
-  github: {
-    stars: number;
-  };
-  timestamp: number;
-}
+// Debug flag for local testing
+const DEBUG = process.env.NODE_ENV === 'development';
 
-export const Stats = async () => {
-  noStore();
-
-  let statsData: Stat[] = [];
-
-  try {
-    // Get the base URL that works in all environments
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
-                   'http://localhost:3000';
-
-    console.log('Fetching stats from:', `${baseUrl}/api/stats`); // Debug log
-
-    const response = await fetch(`${baseUrl}/api/stats`, {
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Stats API Error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      });
-      throw new Error(`Failed to fetch stats: ${response.status} ${response.statusText}`);
+// Server Component
+const getCachedChannelInfo = cache(
+  async (channelId: string): Promise<Stat[]> => {
+    if (DEBUG) {
+      return [
+        { value: 10000000, label: 'Youtube Views' },
+        { value: 100000, label: 'Youtube Subscribers' },
+      ];
     }
 
-    const data: StatsResponse = await response.json();
-    console.log('Fetched Stats:', data); // Debug log
+    const youtube = google.youtube({
+      version: 'v3',
+      auth: process.env.YOUTUBE_API_KEY,
+    });
 
-    statsData = [
-      { value: data.youtube.views, label: 'Youtube Views' },
-      { value: data.youtube.subscribers, label: 'Youtube Subscribers' },
-      { value: data.github.stars, label: 'Github Stars' },
-    ];
+    try {
+      const response = await youtube.channels.list({
+        part: ['statistics'],
+        id: [channelId],
+      });
+
+      if (response.data.items && response.data.items.length > 0) {
+        const channel = response.data.items[0];
+        return [
+          {
+            value: Number(channel.statistics?.viewCount) || 0,
+            label: 'Youtube Views',
+          },
+          {
+            value: Number(channel.statistics?.subscriberCount) || 0,
+            label: 'Youtube Subscribers',
+          },
+        ];
+      } else {
+        console.log('Channel not found');
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching channel info:', error);
+      return [];
+    }
+  },
+);
+
+const getCachedGitHubStars = cache(
+  async (username: string): Promise<number> => {
+    if (DEBUG) {
+      return 528;
+    }
+
+    const octokit = new Octokit({
+      auth: process.env.GITHUB_ACCESS_TOKEN,
+    });
+
+    try {
+      const { data: repos } = await octokit.repos.listForUser({
+        username,
+        per_page: 100, // Adjust if you have more than 100 repos
+      });
+
+      const totalStars = repos.reduce(
+        (sum, repo) => sum + (repo.stargazers_count ?? 0),
+        0,
+      );
+      return totalStars;
+    } catch (error) {
+      console.error('Error fetching GitHub stars:', error);
+      return 0;
+    }
+  },
+);
+
+export const Stats = async () => {
+  const YOUR_CHANNEL_ID = 'UCkwRYP1J1hjRXwo5lyBRWdQ';
+  const YOUR_GITHUB_USERNAME = '0xAquaWolf';
+
+  let youtubeStats: Stat[] = [];
+  let githubStars = 0;
+
+  try {
+    [youtubeStats, githubStars] = await Promise.all([
+      getCachedChannelInfo(YOUR_CHANNEL_ID),
+      getCachedGitHubStars(YOUR_GITHUB_USERNAME),
+    ]);
   } catch (error) {
     console.error('Error fetching stats:', error);
-    statsData = [
+    // Provide fallback data in case of errors
+    youtubeStats = [
       { value: 0, label: 'Youtube Views' },
       { value: 0, label: 'Youtube Subscribers' },
-      { value: 0, label: 'Github Stars' },
     ];
+    githubStars = 0;
   }
+
+  const statsData: Stat[] = [
+    ...youtubeStats,
+    { value: githubStars, label: 'Github Stars' },
+  ];
 
   return (
     <section className="mx-auto mb-20 max-w-[1440px] px-4 py-12 text-white lg:mb-32">
       <div className="mx-auto max-w-6xl">
         <h2 className="mb-8 text-center text-base font-semibold lg:text-2xl">
-          Global Stats
+          Global Stats {DEBUG ? '(Debug Mode)' : ''}
         </h2>
         <div className="flex flex-col items-center justify-center md:flex-row">
           {statsData.map((stat, index) => (
             <div
-              key={`${index}-${Date.now()}`}
+              key={index}
               className="mb-8 w-full px-6 text-center md:mb-0 md:w-1/3"
             >
               <p className="mb-2 text-4xl font-bold lg:text-5xl">
