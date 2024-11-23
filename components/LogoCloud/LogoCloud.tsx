@@ -4,7 +4,7 @@ import TailwindCSSLogo from '@/public/images/svg/Tailwind-Logo.svg';
 import ReactLogo from '@/public/images/svg/react-logo.svg';
 import TypescriptLogo from '@/public/images/svg/TS-Logo.svg';
 import FigmaLogo from '@/public/images/svg/figma-logo.svg';
-import VercelLogo from '@/public/images/svg/vercel-logo.svg';
+import VercelLogo from '@/public/images/svg/Vercel-Logo.svg';
 import EthereumLogo from '@/public/images/svg/ethereum-logo.svg';
 import SolidityLogo from '@/public/images/svg/solidity-logo.svg';
 import EthersJSLogo from '@/public/images/svg/ethersjs-logo.svg';
