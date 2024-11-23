@@ -11,10 +11,14 @@ import TheEnd from '@/components/TheEnd';
 import { Footer } from '@/components/footer';
 // import Newsletter from '@/components/Newsletter/Newsletter';
 import FeaturedBlogs from '@/components/Blog/FeaturedBlogs';
+import { unstable_noStore as noStore } from 'next/cache';
 
-export const revalidate = 3600 * 12; // revalidate every hour
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function Home() {
+  noStore();
+
   return (
     <main className="bg-transparent">
       <Hero />
