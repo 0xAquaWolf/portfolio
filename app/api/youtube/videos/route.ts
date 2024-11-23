@@ -53,23 +53,23 @@ async function getTopVideos(channelId: string): Promise<YouTubeVideo[]> {
   });
 
   // Combine video data with statistics
-  const videos = videosResponse.data.items.map((item, index) => {
-    const stats = statsResponse.data.items?.[index]?.statistics;
-    const snippet = item.snippet;
-    const videoId = item.contentDetails?.videoId;
+  const items = videosResponse.data.items.map((item, index) => ({
+    id: item.contentDetails?.videoId,
+    snippet: item.snippet,
+    statistics: statsResponse.data.items?.[index]?.statistics,
+  }));
 
-    return {
-      id: videoId,
-      title: snippet?.title || '',
-      imageUrl: snippet?.thumbnails?.maxres?.url || 
-                snippet?.thumbnails?.standard?.url ||
-                snippet?.thumbnails?.high?.url ||
-                '',
-      videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
-      viewCount: parseInt(stats?.viewCount || '0', 10),
-      publishedAt: snippet?.publishedAt || '',
-    };
-  });
+  // Filter out videos with undefined or null IDs
+  const videos = items
+    .map((item) => ({
+      id: item.id,
+      title: item.snippet?.title || '',
+      imageUrl: item.snippet?.thumbnails?.high?.url || '',
+      videoUrl: `https://www.youtube.com/watch?v=${item.id}`,
+      viewCount: parseInt(item.statistics?.viewCount || '0'),
+      publishedAt: item.snippet?.publishedAt || '',
+    }))
+    .filter((video): video is YouTubeVideo => video.id !== undefined && video.id !== null);
 
   // Sort by view count
   return videos.sort((a, b) => b.viewCount - a.viewCount);

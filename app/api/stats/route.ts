@@ -145,7 +145,7 @@ export async function GET() {
     return new NextResponse(
       JSON.stringify({
         error: 'Failed to fetch stats',
-        message: error.message,
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
       }),
       { 
         status: 500,
