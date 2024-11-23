@@ -59,8 +59,9 @@ const config = {
       // }),
       backgroundImage: {
         'letter-top': 'linear-gradient(360deg, #130832 0%, #722186 100%)',
-        'letter-middle':
-          'linear-gradient(1.77deg, #1A1056 1.57%, #8F1BAC 98.43%)',
+        'letter-middle': 'linear-gradient(1.77deg, #1A1056 1.57%, #8F1BAC 98.43%)',
+        'fade-left': 'linear-gradient(to right, rgb(0, 0, 0), transparent)',
+        'fade-right': 'linear-gradient(to left, rgb(0, 0, 0), transparent)',
       },
       boxShadow: {
         'alt-cta': 'inset 0px 0px 10px #FFFFFF',
@@ -123,10 +124,26 @@ const config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'marquee-scroll': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        marquee2: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'marquee-scroll': 'marquee-scroll 40s linear infinite',
+        marquee: 'marquee 25s linear infinite',
+        marquee2: 'marquee2 25s linear infinite',
+        'marquee-infinite': 'marquee 25s linear infinite',
       },
     },
   },
@@ -135,6 +152,11 @@ const config = {
     addVariablesForColors,
     require('@tailwindcss/typography'),
   ],
+  variants: {
+    extend: {
+      animation: ['hover', 'group-hover'],
+    },
+  },
 } satisfies Config;
 
 export default config;

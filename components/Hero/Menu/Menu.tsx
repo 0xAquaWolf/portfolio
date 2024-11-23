@@ -26,10 +26,10 @@ interface NavItem {
 export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navMenu, setNavMenu] = useState<NavItem[]>([
-    { name: 'Home', href: '#', isActive: true },
-    { name: 'About', href: '#about', isActive: false },
-    { name: 'Videos', href: '#videos', isActive: false },
-    { name: 'Projects', href: '#projects', isActive: false },
+    { name: 'Home', href: '/', isActive: true },
+    { name: 'About', href: '/#about', isActive: false },
+    { name: 'Videos', href: '/#videos', isActive: false },
+    { name: 'Projects', href: '/#projects', isActive: false },
     { name: 'Blog', href: '/posts', isActive: false },
   ]);
 
@@ -93,7 +93,7 @@ export default function Menu() {
               href="#"
               className="rounded-full bg-white px-4 py-2 text-black shadow-cta transition-all hover:bg-transparent hover:text-white hover:shadow-alt-cta"
             >
-              Live Stream
+              Connect Wallet
             </a>
           </div>
         </nav>

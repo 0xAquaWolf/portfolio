@@ -25,11 +25,11 @@ export default function Letter() {
             <p>I was looking for myself so i could put all the pieces back together because i was so broken, i honestly didn&apos;t even want to code anymore all i wanted to do was sell everything and become a monk and just travel barefoot no possessions, but eventually i grounded myself back in to reality</p>
             <p>So, Now I&apos;m back in the game, wearing a bunch of hats:</p>
             <ul className="list-disc pl-6">
+              <li>Full-Stack Blockchain Developer</li>
               <li>Live Stream Coding (Building in Public)</li>
-              <li>Senior Full-Stack Dev</li>
-              <li>AI tinkerer & Hacker</li>
               <li>UI/UX Designer</li>
-              <li>Entrepreneur</li>
+              <li>AI tinkerer & Hacker</li>
+              <li>Creative Problem Solver</li>
             </ul>
             <p>Hit me up and lets connect if you&apos;re into building cool stuff and following your curiosity or just wanna chat about Entrepreneurship, AI, Consciousness or everything really.</p>
             <p>I&apos;m always down for a good collab or mind-bending convo if time permits.</p>
