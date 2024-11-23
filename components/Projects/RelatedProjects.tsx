@@ -45,7 +45,7 @@ export default function RelatedProjects({
       </h2>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
         {relatedProjects.map((project) => (
-          <ProjectCard {...project} />
+          <ProjectCard key={project.title} {...project} />
         ))}
       </div>
     </section>

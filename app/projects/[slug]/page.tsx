@@ -24,7 +24,7 @@ export default function ProjectPage({
               Project Not Found
             </h1>
             <p className="mt-4 text-gray-400">
-              The project you're looking for doesn't exist.
+              The project you&apos;re looking for doesn&apos;t exist.
             </p>
           </div>
         </div>
