@@ -1,7 +1,7 @@
-"use client";
-import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
-import { createNoise3D } from "simplex-noise";
+'use client';
+import { cn } from '@/lib/utils';
+import React, { useEffect, useRef, useState } from 'react';
+import { createNoise3D } from 'simplex-noise';
 
 export const WavyBackground = ({
   children,
@@ -11,7 +11,7 @@ export const WavyBackground = ({
   waveWidth,
   backgroundFill,
   blur = 10,
-  speed = "fast",
+  speed = 'fast',
   waveOpacity = 0.5,
   ...props
 }: {
@@ -22,7 +22,7 @@ export const WavyBackground = ({
   waveWidth?: number;
   backgroundFill?: string;
   blur?: number;
-  speed?: "slow" | "fast";
+  speed?: 'slow' | 'fast';
   waveOpacity?: number;
   [key: string]: any;
 }) => {
@@ -37,9 +37,9 @@ export const WavyBackground = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const getSpeed = () => {
     switch (speed) {
-      case "slow":
+      case 'slow':
         return 0.001;
-      case "fast":
+      case 'fast':
         return 0.002;
       default:
         return 0.001;
@@ -48,7 +48,7 @@ export const WavyBackground = ({
 
   const init = () => {
     canvas = canvasRef.current;
-    ctx = canvas.getContext("2d");
+    ctx = canvas.getContext('2d');
     w = ctx.canvas.width = window.innerWidth;
     h = ctx.canvas.height = window.innerHeight;
     ctx.filter = `blur(${blur}px)`;
@@ -62,11 +62,11 @@ export const WavyBackground = ({
   };
 
   const waveColors = colors ?? [
-    "#38bdf8",
-    "#818cf8",
-    "#c084fc",
-    "#e879f9",
-    "#22d3ee",
+    '#38bdf8',
+    '#818cf8',
+    '#c084fc',
+    '#e879f9',
+    '#22d3ee',
   ];
   const drawWave = (n: number) => {
     nt += getSpeed();
@@ -85,7 +85,7 @@ export const WavyBackground = ({
 
   let animationId: number;
   const render = () => {
-    ctx.fillStyle = backgroundFill || "black";
+    ctx.fillStyle = backgroundFill || 'black';
     ctx.globalAlpha = waveOpacity || 0.5;
     ctx.fillRect(0, 0, w, h);
     drawWave(5);
@@ -104,16 +104,16 @@ export const WavyBackground = ({
   useEffect(() => {
     // I'm sorry but i have got to support it on safari.
     setIsSafari(
-      typeof window !== "undefined" &&
-        navigator.userAgent.includes("Safari") &&
-        !navigator.userAgent.includes("Chrome"),
+      typeof window !== 'undefined' &&
+        navigator.userAgent.includes('Safari') &&
+        !navigator.userAgent.includes('Chrome'),
     );
   }, []);
 
   return (
     <div
       className={cn(
-        "relative flex h-screen flex-col items-center justify-center",
+        'relative flex h-screen flex-col items-center justify-center overflow-y-hidden',
         containerClassName,
       )}
     >
@@ -125,9 +125,13 @@ export const WavyBackground = ({
           ...(isSafari ? { filter: `blur(${blur}px)` } : {}),
         }}
       ></canvas>
-      <div className={cn("relative z-20", className)} {...props}>
+      <div className={cn('relative z-20', className)} {...props}>
         {children}
       </div>
+      {/* top shadow */}
+      <div className="absolute left-0 z-[99] h-full w-44 bg-gradient-to-r from-[#08080e] to-transparent"></div>
+      {/* bottom shadow */}
+      <div className="absolute right-0 z-[99] h-full w-44 bg-gradient-to-l from-[#08080e] to-transparent"></div>
     </div>
   );
 };

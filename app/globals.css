@@ -79,7 +79,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 
   /* Custom scrollbar styles */
@@ -156,7 +156,7 @@
   counter-reset: line;
 }
 
-[data-rehype-pretty-code-figure] code[data-line-numbers]>[data-line]::before {
+[data-rehype-pretty-code-figure] code[data-line-numbers] > [data-line]::before {
   counter-increment: line;
   content: counter(line);
   @apply mr-4 inline-block w-4 text-right text-gray-500;
@@ -191,10 +191,12 @@ code {
 hr {
   border: none;
   height: 2px;
-  background: linear-gradient(90deg,
-      theme('colors.pink.500'),
-      theme('colors.purple.500'),
-      theme('colors.blue.500'));
+  background: linear-gradient(
+    90deg,
+    theme('colors.pink.500'),
+    theme('colors.purple.500'),
+    theme('colors.blue.500')
+  );
   margin: 2rem 0;
 }
 

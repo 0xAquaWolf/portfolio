@@ -13,6 +13,7 @@ import TwitterLogo from '../../../public/images/svg/X-Twitter-Logo.svg';
 import YouTubeLogo from '../../../public/images/svg/Youtube-Logo.svg';
 import clsx from 'clsx';
 import Link from 'next/link';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const inActiveStyle = 'text-white/50 hover:bg-white/40 hover:text-white/80';
 const activeStyle = 'bg-gradient-to-b from-white/40 to-[#2F2D2D]/20';
@@ -89,12 +90,7 @@ export default function Menu() {
             ))}
           </div>
           <div className="hidden gap-4 lg:flex lg:flex-1 lg:justify-end">
-            <a
-              href="#"
-              className="rounded-full bg-white px-4 py-2 text-black shadow-cta transition-all hover:bg-transparent hover:text-white hover:shadow-alt-cta"
-            >
-              Connect Wallet
-            </a>
+            <ConnectButton />
           </div>
         </nav>
         <Dialog
