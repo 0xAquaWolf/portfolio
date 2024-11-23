@@ -5,16 +5,20 @@ import Stats from '@/components/GlobalStats/Stats';
 import YoutubeVideos from '@/components/YoutubeVideos/YoutubeVideo';
 import { WavyBackgroundDemo } from '@/components/ui/WavyBackgroundDemo';
 import AboutMe from '@/components/about-me/AboutMe';
-import Startup from '@/components/Startups/Startup';
 import SecondQuote from '@/components/SecondQuote/SecondQuote';
 import TheEnd from '@/components/TheEnd';
 import { Footer } from '@/components/footer';
 // import Newsletter from '@/components/Newsletter/Newsletter';
 import FeaturedBlogs from '@/components/Blog/FeaturedBlogs';
+import { unstable_noStore as noStore } from 'next/cache';
+import Projects from '@/components/Projects/Projects';
 
-export const revalidate = 3600 * 12; // revalidate every hour
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function Home() {
+  noStore();
+
   return (
     <main className="bg-transparent">
       <Hero />
@@ -24,10 +28,9 @@ export default function Home() {
       <YoutubeVideos />
       <WavyBackgroundDemo />
       <AboutMe />
-      <Startup />
+      <Projects />
       <SecondQuote />
       <FeaturedBlogs />
-      {/* <Newsletter /> */}
       <TheEnd />
       <Footer />
     </main>
