@@ -1,8 +1,18 @@
 /** @type {import('next').NextConfig} */
-export function webpack(config) {
-  config.plugins.push(new VeliteWebpackPlugin())
-  return config
-}
+const nextConfig = {
+  webpack: function (config) {
+    config.plugins.push(new VeliteWebpackPlugin())
+    return config
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.ytimg.com",
+      },
+    ],
+  },
+};
 
 class VeliteWebpackPlugin {
   static started = false
@@ -18,3 +28,5 @@ class VeliteWebpackPlugin {
     })
   }
 }
+
+export default nextConfig;
