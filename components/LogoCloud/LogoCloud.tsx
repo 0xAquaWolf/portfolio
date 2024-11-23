@@ -146,8 +146,10 @@ export default function LogoCloud() {
       </h2>
 
       <div className="relative flex w-full overflow-hidden">
-        {/* Left shadow */}
-        <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-[100px] bg-fade-left" />
+        {/* top shadow */}
+        <div className="absolute left-0 z-10 h-full w-32 bg-gradient-to-r from-bg-default to-transparent"></div>
+        {/* bottom shadow */}
+        <div className="absolute right-0 z-10 h-full w-32 bg-gradient-to-l from-bg-default to-transparent"></div>
 
         <div className="flex animate-marquee-scroll whitespace-nowrap py-6">
           {Array.from({ length: 2 }, (_, i) => (
@@ -163,9 +165,6 @@ export default function LogoCloud() {
             <LogoList key={`list-2-${i}`} startIndex={i + 2} />
           ))}
         </div>
-
-        {/* Right shadow */}
-        <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-[100px] bg-fade-right" />
       </div>
 
       <p className="mx-auto w-full max-w-[250px] text-center text-sm opacity-60 lg:max-w-none">
