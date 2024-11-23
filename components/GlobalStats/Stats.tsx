@@ -24,10 +24,10 @@ export const Stats = async () => {
 
   try {
     // Get the base URL from the environment or use a default for local development
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
-    
+
     const response = await fetch(`${baseUrl}/api/stats`, {
       cache: 'no-store',
       headers: {
@@ -41,7 +41,7 @@ export const Stats = async () => {
     }
 
     const data: StatsResponse = await response.json();
-    console.log('Fetched Stats:', data);
+    // console.log('Fetched Stats:', data);
 
     statsData = [
       { value: data.youtube.views, label: 'Youtube Views' },

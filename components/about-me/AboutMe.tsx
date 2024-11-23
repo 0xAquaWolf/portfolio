@@ -1,6 +1,6 @@
-import React from "react";
-import Letter from "./Letter";
-import SectionHeading from "../SectionHeading";
+import React from 'react';
+import Letter from './Letter';
+import SectionHeading from '../SectionHeading';
 
 export default function AboutMe() {
   return (

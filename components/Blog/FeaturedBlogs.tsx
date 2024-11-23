@@ -1,15 +1,14 @@
 import React from 'react';
 import SectionHeading from '../SectionHeading';
 import BlogCard from './BlogCard';
-import { posts } from "#site/content"
+import { posts } from '#site/content';
 // console.log(posts)
 
 export default function FeaturedBlogs() {
-
   return (
     <div id="blog" className="mt-20 lg:mt-40">
       <SectionHeading
-        heading="AI & Tech Blog"
+        heading="Blog"
         subheading="Documenting all of my learnings and teachings in AI and technology."
       />
       <div className="rounded-2xllg:mt-40 mt-20">

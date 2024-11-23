@@ -4,6 +4,13 @@ import { NextResponse } from 'next/server';
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
+const DEBUG_MODE = process.env.DEBUG_MODE === 'true';
+
+const debugLog = (...args: any[]) => {
+  if (DEBUG_MODE) {
+    console.log(...args);
+  }
+};
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -33,7 +40,7 @@ async function fetchWithRetry<T>(
 }
 
 async function getYoutubeStats(channelId: string) {
-  console.log('Fetching YouTube stats for channel:', channelId);
+  debugLog('Fetching YouTube stats for channel:', channelId);
   
   const youtube = google.youtube({
     version: 'v3',
@@ -52,7 +59,7 @@ async function getYoutubeStats(channelId: string) {
     const response = await request;
     
     // Log everything in detail
-    console.log('YouTube API Raw Response:', JSON.stringify({
+    debugLog('YouTube API Raw Response:', JSON.stringify({
       status: response.status,
       headers: response.headers,
       data: response.data,
@@ -70,7 +77,7 @@ async function getYoutubeStats(channelId: string) {
       subscribers: Number(stats?.subscriberCount) || 0,
     };
 
-    console.log('Processed YouTube stats:', result);
+    debugLog('Processed YouTube stats:', result);
     return result;
     
   } catch (error) {
@@ -80,7 +87,7 @@ async function getYoutubeStats(channelId: string) {
 }
 
 async function getGithubStats(username: string) {
-  console.log('Fetching GitHub stats for user:', username);
+  debugLog('Fetching GitHub stats for user:', username);
   
   const octokit = new Octokit({
     auth: process.env.GITHUB_ACCESS_TOKEN,
@@ -93,14 +100,14 @@ async function getGithubStats(username: string) {
   });
 
   const stars = repos.reduce((sum, repo) => sum + (repo.stargazers_count ?? 0), 0);
-  console.log('GitHub stars count:', stars);
+  debugLog('GitHub stars count:', stars);
   
   return { stars };
 }
 
 export async function GET() {
-  console.log('=== Starting new API call ===');
-  console.log('Timestamp:', new Date().toISOString());
+  debugLog('=== Starting new API call ===');
+  debugLog('Timestamp:', new Date().toISOString());
   
   try {
     const [youtube, github] = await Promise.all([
@@ -114,8 +121,8 @@ export async function GET() {
       timestamp: Date.now(),
     };
 
-    console.log('=== Final response data ===');
-    console.log(JSON.stringify(responseData, null, 2));
+    debugLog('=== Final response data ===');
+    debugLog(JSON.stringify(responseData, null, 2));
 
     return new NextResponse(
       JSON.stringify(responseData),
