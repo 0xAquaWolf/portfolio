@@ -140,7 +140,7 @@ export const LogoList = ({ startIndex = 0 }: { startIndex?: number }) => (
 
 export default function LogoCloud() {
   return (
-    <div className="relative z-40 mx-auto mb-[-75px] mt-[200px] flex flex-col gap-3 text-white lg:mb-0 lg:mt-16 lg:max-w-[1080px] lg:gap-6">
+    <div className="relative z-40 mx-auto mb-[-75px] mt-[200px] flex flex-col gap-3 text-white lg:mb-0 lg:mt-44 lg:max-w-[1080px] lg:gap-6">
       <h2 className="mx-auto mb-3 w-full px-8 text-center text-sm lg:mb-0 lg:max-w-none lg:px-0 lg:text-xl">
         Leveraging the state-of-the-art technologies
       </h2>
