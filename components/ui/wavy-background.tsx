@@ -1,6 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { createNoise3D, NoiseFunction3D } from 'simplex-noise';
 
 export const WavyBackground = ({
@@ -31,24 +31,13 @@ export const WavyBackground = ({
   const ntRef = useRef<number>(0);
   const animationIdRef = useRef<number>();
 
-  const getSpeed = () => {
-    switch (speed) {
-      case 'slow':
-        return 0.001;
-      case 'fast':
-        return 0.002;
-      default:
-        return 0.001;
-    }
-  };
-
-  const waveColors = colors ?? [
+  const waveColors = useMemo(() => colors ?? [
     '#38bdf8',
     '#818cf8',
     '#c084fc',
     '#e879f9',
     '#22d3ee',
-  ];
+  ], [colors]);
 
   const drawWave = useCallback((width: number) => {
     const ctx = canvasRef.current?.getContext('2d');
@@ -74,6 +63,17 @@ export const WavyBackground = ({
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
 
+    const getSpeed = () => {
+      switch (speed) {
+        case 'slow':
+          return 0.001;
+        case 'fast':
+          return 0.002;
+        default:
+          return 0.001;
+      }
+    };
+
     wRef.current = canvas.width = window.innerWidth;
     hRef.current = canvas.height = window.innerHeight;
 
@@ -97,7 +97,7 @@ export const WavyBackground = ({
     };
 
     render();
-  }, [blur, backgroundFill, waveOpacity, drawWave, getSpeed]);
+  }, [blur, backgroundFill, waveOpacity, drawWave, speed]);
 
   useEffect(() => {
     init();
