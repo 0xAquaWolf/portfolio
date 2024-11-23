@@ -26,7 +26,10 @@ export default function RelatedProjects({
       const matchingTags = project.tags.filter((tag) =>
         currentProject.tags.includes(tag),
       );
-      console.log(`Project ${project.title} has ${matchingTags.length} matching tags:`, matchingTags);
+      console.log(
+        `Project ${project.title} has ${matchingTags.length} matching tags:`,
+        matchingTags,
+      );
       return matchingTags.length > 0;
     })
     // Sort by number of matching tags
@@ -41,7 +44,7 @@ export default function RelatedProjects({
     })
     .slice(0, 3);
 
-  console.log('Found related projects:', relatedProjects.map(p => p.title));
+  // console.log('Found related projects:', relatedProjects.map(p => p.title));
 
   if (relatedProjects.length === 0) {
     console.log('No related projects found, returning null');

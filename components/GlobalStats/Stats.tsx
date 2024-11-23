@@ -23,10 +23,12 @@ export const Stats = async () => {
   let statsData: Stat[] = [];
 
   try {
-    // Get the base URL from the environment or use a default for local development
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    // Get the base URL that works in all environments
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
+                   'http://localhost:3000';
+
+    console.log('Fetching stats from:', `${baseUrl}/api/stats`); // Debug log
 
     const response = await fetch(`${baseUrl}/api/stats`, {
       cache: 'no-store',
@@ -37,11 +39,17 @@ export const Stats = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch stats');
+      const errorText = await response.text();
+      console.error('Stats API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      });
+      throw new Error(`Failed to fetch stats: ${response.status} ${response.statusText}`);
     }
 
     const data: StatsResponse = await response.json();
-    // console.log('Fetched Stats:', data);
+    console.log('Fetched Stats:', data); // Debug log
 
     statsData = [
       { value: data.youtube.views, label: 'Youtube Views' },
