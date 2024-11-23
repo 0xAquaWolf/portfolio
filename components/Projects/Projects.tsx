@@ -23,7 +23,7 @@ export const projectsData: Project[] = [
       'Developed a sophisticated trading bot using machine learning algorithms to analyze market patterns and execute automated trades with risk management strategies.',
     date: 'December 2023',
     imageUrl: '/projects/trading-bot.jpg',
-    tags: ['Python', 'TensorFlow', 'AWS', 'Docker', 'Machine Learning'],
+    tags: ['Python', 'TensorFlow', 'AWS', 'Docker', 'Machine Learning', 'Trading', 'Crypto'],
     slug: 'ai-powered-trading-bot',
     links: [
       { title: 'Live Demo', url: 'https://trading-bot.demo' },
@@ -51,7 +51,7 @@ export const projectsData: Project[] = [
       'Built a decentralized finance platform that automatically finds and compounds the best yields across multiple protocols, maximizing returns for users.',
     date: 'November 2023',
     imageUrl: '/projects/defi-yield.jpg',
-    tags: ['Solidity', 'React', 'Web3.js', 'Smart Contracts'],
+    tags: ['Solidity', 'React', 'Web3.js', 'Smart Contracts', 'DeFi', 'Crypto'],
     slug: 'defi-yield-aggregator',
     links: [
       { title: 'DApp', url: 'https://defi-yield.app' },
@@ -168,7 +168,7 @@ export const projectsData: Project[] = [
       'Developed a comprehensive portfolio tracking application that aggregates crypto assets across multiple wallets and exchanges with real-time price updates.',
     date: 'July 2023',
     imageUrl: '/projects/portfolio-tracker.jpg',
-    tags: ['React Native', 'Node.js', 'APIs', 'Mobile'],
+    tags: ['React Native', 'Node.js', 'APIs', 'Mobile', 'Crypto', 'Trading', 'DeFi'],
     slug: 'crypto-portfolio-tracker',
     links: [
       { title: 'Web App', url: 'https://crypto-tracker.app' },
