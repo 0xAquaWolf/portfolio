@@ -145,12 +145,15 @@ export default function LogoCloud() {
         Leveraging state-of-the-art technologies
       </h2>
 
-      <div className="relative flex w-full overflow-hidden">
-        {/* top shadow */}
-        {/* <div className="absolute left-0 z-10 h-full w-32 bg-gradient-to-r from-bg-default to-transparent"></div> */}
-        {/* bottom shadow */}
-        {/* <div className="absolute right-0 z-10 h-full w-32 bg-gradient-to-l from-bg-default to-transparent"></div> */}
-
+      <div
+        className="relative flex w-full overflow-hidden"
+        style={{
+          maskImage:
+            'linear-gradient(to right, transparent, black 15%, black 85%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to right, transparent, black 15%, black 85%, transparent 100%)',
+        }}
+      >
         <div className="flex animate-marquee-scroll whitespace-nowrap py-6">
           {Array.from({ length: 2 }, (_, i) => (
             <LogoList key={`list-1-${i}`} startIndex={i} />
