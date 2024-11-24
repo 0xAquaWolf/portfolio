@@ -1,10 +1,10 @@
-import HeroCircleSVGs from "../../public/images/svg/HeroCircles.svg";
-import Image from "next/image";
+import HeroCircleSVGs from '../../public/images/svg/HeroCircles.svg';
+import Image from 'next/image';
 
 export default function HeroCircles() {
   return (
-    <div className="lg:justify-center z-[-1] lg:z-0 lg:opacity-100 opacity-50 lg:items-center absolute top-[-10vw] right-0 lg:flex lg:static">
-      <Image src={HeroCircleSVGs} alt="Logo" width={500} height={500} />
+    <div className="absolute right-0 top-[-10vw] z-[-1] col-span-2 opacity-50 lg:static lg:z-0 lg:flex lg:items-center lg:justify-end lg:opacity-100">
+      <Image src={HeroCircleSVGs} alt="Logo" width={600} height={600} />
     </div>
   );
 }
