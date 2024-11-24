@@ -140,16 +140,16 @@ export const LogoList = ({ startIndex = 0 }: { startIndex?: number }) => (
 
 export default function LogoCloud() {
   return (
-    <div className="relative z-40 mx-auto mb-[-75px] mt-[200px] flex flex-col gap-3 text-white lg:mb-0 lg:mt-44 lg:max-w-[1080px] lg:gap-6">
+    <div className="lg:mt-22 relative z-40 mx-auto mb-[-75px] mt-[50px] flex flex-col gap-3 text-white lg:mb-0 lg:max-w-[1080px] lg:gap-6">
       <h2 className="mx-auto mb-3 w-full px-8 text-center text-sm lg:mb-0 lg:max-w-none lg:px-0 lg:text-xl">
         Leveraging state-of-the-art technologies
       </h2>
 
       <div className="relative flex w-full overflow-hidden">
         {/* top shadow */}
-        <div className="absolute left-0 z-10 h-full w-32 bg-gradient-to-r from-bg-default to-transparent"></div>
+        {/* <div className="absolute left-0 z-10 h-full w-32 bg-gradient-to-r from-bg-default to-transparent"></div> */}
         {/* bottom shadow */}
-        <div className="absolute right-0 z-10 h-full w-32 bg-gradient-to-l from-bg-default to-transparent"></div>
+        {/* <div className="absolute right-0 z-10 h-full w-32 bg-gradient-to-l from-bg-default to-transparent"></div> */}
 
         <div className="flex animate-marquee-scroll whitespace-nowrap py-6">
           {Array.from({ length: 2 }, (_, i) => (
