@@ -90,3 +90,46 @@
     margin-left: -1.5rem;
     padding-left: 1.5rem;
   }
+
+  /* Ensure all text in MDX content is white */
+  .prose-invert {
+    color: white;
+  }
+
+  .prose-invert h1,
+  .prose-invert h2,
+  .prose-invert h3,
+  .prose-invert h4,
+  .prose-invert h5,
+  .prose-invert h6 {
+    color: white;
+  }
+
+  .prose-invert p {
+    color: white;
+  }
+
+  .prose-invert li {
+    color: white;
+  }
+
+  .prose-invert blockquote {
+    color: white;
+    border-left-color: #6b7280;
+  }
+
+  .prose-invert strong {
+    color: white;
+  }
+
+  .prose-invert em {
+    color: white;
+  }
+
+  .prose-invert a {
+    color: #60a5fa;
+  }
+
+  .prose-invert a:hover {
+    color: #93c5fd;
+  }

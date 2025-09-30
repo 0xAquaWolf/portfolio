@@ -1,0 +1,498 @@
+---
+title: Laravel Best Practices for Modern Web Development in 2024
+date: '2024-09-30'
+description: Essential Laravel best practices every PHP developer should follow for building scalable, maintainable applications in 2024.
+imageUrl: /images/png/PlaceholderBlogFeaturedImage1.png
+featured: true
+published: true
+---
+
+# Laravel Best Practices for Modern Web Development in 2024
+
+Laravel has evolved significantly, and following modern best practices is crucial for building scalable, maintainable applications. Here are the essential practices every Laravel developer should implement in 2024.
+
+## 1. Use PHP 8.2+ Features
+
+Take advantage of modern PHP features in your Laravel applications:
+
+```php title="app/Models/User.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+class User extends Model
+{
+    // Use typed properties
+    protected string $name;
+    protected ?string $email;
+    
+    // Use attributes with accessor/mutator
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => ucfirst($value),
+            set: fn (string $value) => strtolower($value),
+        );
+    }
+
+    // Use enum for user status
+    public function status(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => UserStatus::from($value),
+            set: fn (UserStatus $value) => $value->value,
+        );
+    }
+}
+```
+
+## 2. Implement Service Layer Architecture
+
+Separate business logic from controllers using service classes:
+
+```php title="app/Services/UserService.php"
+<?php
+
+namespace App\Services;
+
+use App\Models\User;
+use App\DTO\CreateUserDTO;
+use Illuminate\Support\Facades\Hash;
+
+class UserService
+{
+    public function createUser(CreateUserDTO $userData): User
+    {
+        return User::create([
+            'name' => $userData->name,
+            'email' => $userData->email,
+            'password' => Hash::make($userData->password),
+        ]);
+    }
+
+    public function updateUserProfile(User $user, array $data): User
+    {
+        $user->update($data);
+        
+        // Clear cache if needed
+        cache()->forget("user.{$user->id}");
+        
+        return $user->fresh();
+    }
+}
+```
+
+## 3. Use Data Transfer Objects (DTOs)
+
+Implement DTOs for type safety and better data handling:
+
+```php title="app/DTO/CreateUserDTO.php"
+<?php
+
+namespace App\DTO;
+
+readonly class CreateUserDTO
+{
+    public function __construct(
+        public string $name,
+        public string $email,
+        public string $password,
+        public ?string $phone = null,
+    ) {}
+
+    public static function fromRequest(array $data): self
+    {
+        return new self(
+            name: $data['name'],
+            email: $data['email'],
+            password: $data['password'],
+            phone: $data['phone'] ?? null,
+        );
+    }
+}
+```
+
+## 4. Implement Proper API Resource Classes
+
+Use API resources for consistent data formatting:
+
+```php title="app/Http/Resources/UserResource.php"
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class UserResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'avatar' => $this->avatar_url,
+            'created_at' => $this->created_at->toISOString(),
+            'is_verified' => $this->email_verified_at !== null,
+            
+            // Conditional fields
+            'settings' => $this->when($this->hasSettings(), fn() => $this->settings),
+            'admin_notes' => $this->when($request->user()?->isAdmin(), $this->admin_notes),
+        ];
+    }
+}
+```
+
+## 5. Use Form Requests for Validation
+
+Centralize validation logic with form requests:
+
+```php title="app/Http/Requests/CreateUserRequest.php"
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
+
+class CreateUserRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', Password::min(8)->letters()->mixedCase()->numbers()],
+            'phone' => ['nullable', 'string', 'regex:/^[0-9+\-\s]+$/'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'This email address is already registered.',
+            'phone.regex' => 'Please enter a valid phone number.',
+        ];
+    }
+}
+```
+
+## 6. Implement Database Best Practices
+
+### Use Migrations Properly
+
+```php title="database/migrations/2024_09_30_create_users_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('phone')->nullable();
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            $table->timestamps();
+            
+            // Add indexes for performance
+            $table->index(['email', 'status']);
+            $table->index('created_at');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};
+```
+
+### Use Eloquent Relationships Efficiently
+
+```php title="app/Models/Post.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Post extends Model
+{
+    protected $with = ['author']; // Eager load by default
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // Scope for published posts
+    public function scopePublished($query)
+    {
+        return $query->where('published_at', '<=', now());
+    }
+}
+```
+
+## 7. Implement Caching Strategies
+
+Use caching effectively for better performance:
+
+```php title="app/Services/PostService.php"
+<?php
+
+namespace App\Services;
+
+use App\Models\Post;
+use Illuminate\Support\Facades\Cache;
+
+class PostService
+{
+    public function getFeaturedPosts(): Collection
+    {
+        return Cache::remember('posts.featured', 3600, function () {
+            return Post::published()
+                ->where('featured', true)
+                ->with(['author', 'tags'])
+                ->latest()
+                ->limit(10)
+                ->get();
+        });
+    }
+
+    public function clearPostCache(Post $post): void
+    {
+        Cache::forget('posts.featured');
+        Cache::forget("post.{$post->id}");
+        Cache::tags(['posts'])->flush();
+    }
+}
+```
+
+## 8. Use Events and Listeners
+
+Implement event-driven architecture:
+
+```php title="app/Events/UserRegistered.php"
+<?php
+
+namespace App\Events;
+
+use App\Models\User;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+class UserRegistered
+{
+    use Dispatchable, SerializesModels;
+
+    public function __construct(public User $user) {}
+}
+```
+
+```php title="app/Listeners/SendWelcomeEmail.php"
+<?php
+
+namespace App\Listeners;
+
+use App\Events\UserRegistered;
+use App\Mail\WelcomeEmail;
+use Illuminate\Support\Facades\Mail;
+
+class SendWelcomeEmail
+{
+    public function handle(UserRegistered $event): void
+    {
+        Mail::to($event->user->email)->queue(new WelcomeEmail($event->user));
+    }
+}
+```
+
+## 9. Implement Proper Testing
+
+Write comprehensive tests:
+
+```php title="tests/Feature/UserControllerTest.php"
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class UserControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_user_can_be_created(): void
+    {
+        $userData = [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'password' => 'SecurePassword123!',
+        ];
+
+        $response = $this->postJson('/api/users', $userData);
+
+        $response->assertStatus(201)
+            ->assertJsonStructure([
+                'data' => ['id', 'name', 'email', 'created_at']
+            ]);
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'john@example.com'
+        ]);
+    }
+}
+```
+
+## 10. Security Best Practices
+
+### Implement Rate Limiting
+
+```php title="routes/api.php"
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::middleware(['throttle:api'])->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:5,1'); // 5 attempts per minute
+    
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
+});
+```
+
+### Use Mass Assignment Protection
+
+```php title="app/Models/User.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+}
+```
+
+## 11. Environment Configuration
+
+Use proper environment configuration:
+
+```bash title=".env.example"
+# Application
+APP_NAME="My Laravel App"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://myapp.com
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=my_app
+DB_USERNAME=db_user
+DB_PASSWORD=secure_password
+
+# Cache & Sessions
+CACHE_DRIVER=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+# Mail
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.postmarkapp.com
+MAIL_PORT=587
+MAIL_USERNAME=your_token
+MAIL_PASSWORD=your_token
+```
+
+## 12. Use Queues for Heavy Operations
+
+Implement background processing:
+
+```php title="app/Jobs/ProcessUserExport.php"
+<?php
+
+namespace App\Jobs;
+
+use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+
+class ProcessUserExport implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(
+        private User $user,
+        private array $filters
+    ) {}
+
+    public function handle(): void
+    {
+        // Process the export
+        $exportService = app(ExportService::class);
+        $exportService->exportUsers($this->user, $this->filters);
+    }
+}
+```
+
+## Conclusion
+
+Following these Laravel best practices will help you build robust, scalable applications that are easy to maintain and extend. Remember to:
+
+- Stay updated with Laravel releases
+- Write tests for your code
+- Use static analysis tools like PHPStan
+- Follow PSR standards
+- Monitor application performance
+- Keep dependencies updated
+
+These practices form the foundation of professional Laravel development and will serve you well in any project size or complexity.

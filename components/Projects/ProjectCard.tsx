@@ -31,7 +31,7 @@ export default function ProjectCard({
       <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-800 bg-gray-900/50 shadow-lg backdrop-blur-sm transition-all hover:shadow-2xl hover:shadow-purple-500/10">
         <div className="relative h-60 w-full overflow-hidden bg-gray-800">
           <Image
-            src={imageError ? '/placeholder-project.jpg' : imageUrl}
+            src={imageError ? '/images/placeholder-project.svg' : imageUrl}
             alt={title}
             width={1600}
             height={900}
@@ -42,6 +42,11 @@ export default function ProjectCard({
             onError={() => setImageError(true)}
             priority
           />
+          {date === 'Coming Soon' && (
+            <div className="absolute top-4 right-4 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 px-3 py-1 text-sm font-semibold text-white shadow-lg">
+              Coming Soon
+            </div>
+          )}
         </div>
         <div className="flex h-full flex-col justify-between gap-4 p-6">
           <div>

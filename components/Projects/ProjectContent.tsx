@@ -1,8 +1,9 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, ArrowLeft } from 'lucide-react';
 import Markdown from 'react-markdown';
 import RelatedProjects from './RelatedProjects';
 import { Project, projectsData } from './Projects';
@@ -23,6 +24,17 @@ export default function ProjectContent({
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Back Button */}
+      <div className="relative z-[9999] flex items-center">
+        <Link
+          href="/#projects"
+          className="group flex items-center gap-2 rounded-full py-3 px-6 text-center text-sm text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta xl:px-8 xl:py-3 xl:text-base"
+        >
+          <ArrowLeft className="h-4 w-4 transition-all group-hover:brightness-0" />
+          Back to Projects
+        </Link>
+      </div>
+
       {/* Hero Image */}
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-900">
         {/* Loading Placeholder */}

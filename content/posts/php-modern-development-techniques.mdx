@@ -1,0 +1,995 @@
+---
+title: Modern PHP Development Techniques Every Developer Should Know in 2024
+date: '2024-09-28'
+description: Explore modern PHP development practices including PHP 8.3 features, dependency injection, testing, and performance optimization techniques.
+imageUrl: /images/png/PlaceholderBlogFeaturedImage3.png
+featured: true
+published: true
+---
+
+# Modern PHP Development Techniques Every Developer Should Know in 2024
+
+PHP has evolved dramatically over the past few years. Modern PHP development is clean, efficient, and follows industry best practices. Let's explore the essential techniques every PHP developer should master in 2024.
+
+## PHP 8.3 Features and Modern Syntax
+
+### 1. Typed Properties and Union Types
+
+PHP 8+ brings powerful type system improvements:
+
+```php title="src/Models/User.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+class User
+{
+    public function __construct(
+        public readonly int $id,
+        public string $name,
+        public string $email,
+        public ?string $phone = null,
+        public array|string $preferences = [],
+        public UserStatus $status = UserStatus::ACTIVE,
+    ) {}
+
+    public function getFormattedName(): string
+    {
+        return ucwords(strtolower($this->name));
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === UserStatus::ACTIVE;
+    }
+}
+```
+
+### 2. Enums for Better Type Safety
+
+```php title="src/Enums/UserStatus.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Enums;
+
+enum UserStatus: string
+{
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+    case SUSPENDED = 'suspended';
+    case PENDING = 'pending';
+
+    public function getLabel(): string
+    {
+        return match($this) {
+            self::ACTIVE => 'Active User',
+            self::INACTIVE => 'Inactive User',
+            self::SUSPENDED => 'Suspended User',
+            self::PENDING => 'Pending Approval',
+        };
+    }
+
+    public function canLogin(): bool
+    {
+        return $this === self::ACTIVE;
+    }
+
+    public static function getActiveStatuses(): array
+    {
+        return [self::ACTIVE, self::PENDING];
+    }
+}
+```
+
+### 3. Attributes for Metadata
+
+```php title="src/Attributes/Route.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Attributes;
+
+use Attribute;
+
+#[Attribute(Attribute::TARGET_METHOD)]
+class Route
+{
+    public function __construct(
+        public string $path,
+        public string $method = 'GET',
+        public array $middleware = [],
+    ) {}
+}
+
+#[Attribute(Attribute::TARGET_PROPERTY)]
+class Validate
+{
+    public function __construct(
+        public array $rules,
+        public ?string $message = null,
+    ) {}
+}
+```
+
+Using attributes in controllers:
+
+```php title="src/Controllers/UserController.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controllers;
+
+use App\Attributes\Route;
+use App\Attributes\Validate;
+
+class UserController
+{
+    #[Route('/users', 'GET', ['auth'])]
+    public function index(): array
+    {
+        return $this->userService->getAllUsers();
+    }
+
+    #[Route('/users', 'POST', ['auth', 'admin'])]
+    public function store(
+        #[Validate(['required', 'string', 'max:255'])]
+        string $name,
+        
+        #[Validate(['required', 'email', 'unique:users'])]
+        string $email
+    ): User {
+        return $this->userService->createUser($name, $email);
+    }
+}
+```
+
+## Dependency Injection and Container
+
+### 1. Simple DI Container Implementation
+
+```php title="src/Container/Container.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Container;
+
+use ReflectionClass;
+use ReflectionParameter;
+
+class Container
+{
+    private array $bindings = [];
+    private array $instances = [];
+
+    public function bind(string $abstract, callable|string $concrete = null): void
+    {
+        $this->bindings[$abstract] = $concrete ?? $abstract;
+    }
+
+    public function singleton(string $abstract, callable|string $concrete = null): void
+    {
+        $this->bind($abstract, $concrete);
+        // Mark as singleton
+        $this->instances[$abstract] = null;
+    }
+
+    public function get(string $abstract): mixed
+    {
+        // Return existing singleton instance
+        if (array_key_exists($abstract, $this->instances) && $this->instances[$abstract] !== null) {
+            return $this->instances[$abstract];
+        }
+
+        $concrete = $this->bindings[$abstract] ?? $abstract;
+
+        if (is_callable($concrete)) {
+            $instance = $concrete($this);
+        } else {
+            $instance = $this->resolve($concrete);
+        }
+
+        // Store singleton instance
+        if (array_key_exists($abstract, $this->instances)) {
+            $this->instances[$abstract] = $instance;
+        }
+
+        return $instance;
+    }
+
+    private function resolve(string $class): object
+    {
+        $reflection = new ReflectionClass($class);
+
+        if (!$reflection->isInstantiable()) {
+            throw new \Exception("Class {$class} is not instantiable");
+        }
+
+        $constructor = $reflection->getConstructor();
+
+        if ($constructor === null) {
+            return new $class();
+        }
+
+        $dependencies = array_map(
+            fn(ReflectionParameter $param) => $this->resolveDependency($param),
+            $constructor->getParameters()
+        );
+
+        return $reflection->newInstanceArgs($dependencies);
+    }
+
+    private function resolveDependency(ReflectionParameter $parameter): mixed
+    {
+        $type = $parameter->getType();
+
+        if ($type === null) {
+            if ($parameter->isDefaultValueAvailable()) {
+                return $parameter->getDefaultValue();
+            }
+            throw new \Exception("Cannot resolve parameter {$parameter->getName()}");
+        }
+
+        if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+            return $this->get($type->getName());
+        }
+
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        throw new \Exception("Cannot resolve parameter {$parameter->getName()}");
+    }
+}
+```
+
+### 2. Service Registration
+
+```php title="src/ServiceProvider.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App;
+
+use App\Container\Container;
+use App\Services\UserService;
+use App\Services\EmailService;
+use App\Repositories\UserRepository;
+
+class ServiceProvider
+{
+    public static function register(Container $container): void
+    {
+        // Database connection
+        $container->singleton(PDO::class, function() {
+            return new PDO(
+                'mysql:host=localhost;dbname=myapp',
+                $_ENV['DB_USERNAME'],
+                $_ENV['DB_PASSWORD'],
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+        });
+
+        // Repositories
+        $container->singleton(UserRepository::class);
+
+        // Services
+        $container->singleton(UserService::class);
+        $container->singleton(EmailService::class);
+
+        // External APIs
+        $container->bind('mailer', function() {
+            return new \PHPMailer\PHPMailer\PHPMailer(true);
+        });
+    }
+}
+```
+
+## Repository Pattern Implementation
+
+### 1. Base Repository
+
+```php title="src/Repositories/BaseRepository.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repositories;
+
+abstract class BaseRepository
+{
+    public function __construct(
+        protected PDO $pdo
+    ) {}
+
+    abstract protected function getTableName(): string;
+    abstract protected function getModelClass(): string;
+
+    public function find(int $id): ?object
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$this->getTableName()} WHERE id = :id LIMIT 1"
+        );
+        $stmt->execute(['id' => $id]);
+        
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $data ? $this->mapToModel($data) : null;
+    }
+
+    public function findAll(array $conditions = [], int $limit = null, int $offset = 0): array
+    {
+        $sql = "SELECT * FROM {$this->getTableName()}";
+        $params = [];
+
+        if (!empty($conditions)) {
+            $whereClauses = [];
+            foreach ($conditions as $field => $value) {
+                $whereClauses[] = "{$field} = :{$field}";
+                $params[$field] = $value;
+            }
+            $sql .= " WHERE " . implode(' AND ', $whereClauses);
+        }
+
+        if ($limit !== null) {
+            $sql .= " LIMIT {$limit} OFFSET {$offset}";
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        
+        return array_map(
+            fn($data) => $this->mapToModel($data),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
+    public function create(array $data): object
+    {
+        $fields = array_keys($data);
+        $placeholders = array_map(fn($field) => ":{$field}", $fields);
+        
+        $sql = "INSERT INTO {$this->getTableName()} (" . 
+               implode(', ', $fields) . ") VALUES (" . 
+               implode(', ', $placeholders) . ")";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($data);
+        
+        $id = $this->pdo->lastInsertId();
+        return $this->find((int)$id);
+    }
+
+    public function update(int $id, array $data): ?object
+    {
+        $fields = array_keys($data);
+        $setClauses = array_map(fn($field) => "{$field} = :{$field}", $fields);
+        
+        $sql = "UPDATE {$this->getTableName()} SET " . 
+               implode(', ', $setClauses) . " WHERE id = :id";
+
+        $data['id'] = $id;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($data);
+        
+        return $this->find($id);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "DELETE FROM {$this->getTableName()} WHERE id = :id"
+        );
+        return $stmt->execute(['id' => $id]);
+    }
+
+    abstract protected function mapToModel(array $data): object;
+}
+```
+
+### 2. Specific Repository Implementation
+
+```php title="src/Repositories/UserRepository.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repositories;
+
+use App\Models\User;
+use App\Enums\UserStatus;
+
+class UserRepository extends BaseRepository
+{
+    protected function getTableName(): string
+    {
+        return 'users';
+    }
+
+    protected function getModelClass(): string
+    {
+        return User::class;
+    }
+
+    protected function mapToModel(array $data): User
+    {
+        return new User(
+            id: (int)$data['id'],
+            name: $data['name'],
+            email: $data['email'],
+            phone: $data['phone'],
+            preferences: json_decode($data['preferences'], true) ?: [],
+            status: UserStatus::from($data['status']),
+        );
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$this->getTableName()} WHERE email = :email LIMIT 1"
+        );
+        $stmt->execute(['email' => $email]);
+        
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        return $data ? $this->mapToModel($data) : null;
+    }
+
+    public function getActiveUsers(): array
+    {
+        return $this->findAll(['status' => UserStatus::ACTIVE->value]);
+    }
+
+    public function searchUsers(string $query, int $limit = 20): array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM {$this->getTableName()} 
+             WHERE name LIKE :query OR email LIKE :query 
+             LIMIT :limit"
+        );
+        
+        $stmt->bindValue(':query', "%{$query}%", PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return array_map(
+            fn($data) => $this->mapToModel($data),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+}
+```
+
+## Modern Testing with PHPUnit
+
+### 1. Test Configuration
+
+```xml title="phpunit.xml"
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+    <coverage>
+        <report>
+            <html outputDirectory="coverage/html"/>
+            <text outputFile="coverage/coverage.txt"/>
+        </report>
+    </coverage>
+</phpunit>
+```
+
+### 2. Unit Testing Example
+
+```php title="tests/Unit/UserServiceTest.php"
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use App\Services\UserService;
+use App\Repositories\UserRepository;
+use App\Services\EmailService;
+use App\Models\User;
+use App\Enums\UserStatus;
+
+class UserServiceTest extends TestCase
+{
+    private UserService $userService;
+    private MockObject $userRepository;
+    private MockObject $emailService;
+
+    protected function setUp(): void
+    {
+        $this->userRepository = $this->createMock(UserRepository::class);
+        $this->emailService = $this->createMock(EmailService::class);
+        
+        $this->userService = new UserService(
+            $this->userRepository,
+            $this->emailService
+        );
+    }
+
+    public function test_create_user_with_valid_data(): void
+    {
+        // Arrange
+        $userData = [
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '+1234567890',
+        ];
+
+        $expectedUser = new User(
+            id: 1,
+            name: 'John Doe',
+            email: 'john@example.com',
+            phone: '+1234567890',
+            status: UserStatus::ACTIVE
+        );
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findByEmail')
+            ->with('john@example.com')
+            ->willReturn(null);
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('create')
+            ->with($userData)
+            ->willReturn($expectedUser);
+
+        $this->emailService
+            ->expects($this->once())
+            ->method('sendWelcomeEmail')
+            ->with($expectedUser);
+
+        // Act
+        $result = $this->userService->createUser($userData);
+
+        // Assert
+        $this->assertInstanceOf(User::class, $result);
+        $this->assertEquals('John Doe', $result->name);
+        $this->assertEquals('john@example.com', $result->email);
+    }
+
+    public function test_create_user_throws_exception_for_duplicate_email(): void
+    {
+        // Arrange
+        $userData = ['email' => 'existing@example.com'];
+        $existingUser = new User(1, 'Existing', 'existing@example.com');
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('findByEmail')
+            ->with('existing@example.com')
+            ->willReturn($existingUser);
+
+        // Expect exception
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('User with this email already exists');
+
+        // Act
+        $this->userService->createUser($userData);
+    }
+
+    /**
+     * @dataProvider invalidUserDataProvider
+     */
+    public function test_create_user_validates_input(array $userData, string $expectedError): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage($expectedError);
+
+        $this->userService->createUser($userData);
+    }
+
+    public static function invalidUserDataProvider(): array
+    {
+        return [
+            'empty name' => [
+                ['name' => '', 'email' => 'test@example.com'],
+                'Name is required'
+            ],
+            'invalid email' => [
+                ['name' => 'John', 'email' => 'invalid-email'],
+                'Valid email is required'
+            ],
+            'invalid phone' => [
+                ['name' => 'John', 'email' => 'john@example.com', 'phone' => 'invalid'],
+                'Valid phone number is required'
+            ],
+        ];
+    }
+}
+```
+
+### 3. Integration Testing
+
+```php title="tests/Integration/UserRepositoryTest.php"
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Integration;
+
+use PHPUnit\Framework\TestCase;
+use App\Repositories\UserRepository;
+use App\Enums\UserStatus;
+
+class UserRepositoryTest extends TestCase
+{
+    private UserRepository $repository;
+    private PDO $pdo;
+
+    protected function setUp(): void
+    {
+        // Use SQLite in-memory database for testing
+        $this->pdo = new PDO('sqlite::memory:');
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Create test table
+        $this->pdo->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                phone TEXT,
+                preferences TEXT DEFAULT "{}",
+                status TEXT DEFAULT "active",
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ');
+
+        $this->repository = new UserRepository($this->pdo);
+    }
+
+    public function test_create_and_find_user(): void
+    {
+        // Arrange
+        $userData = [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'phone' => '+1234567890',
+            'status' => UserStatus::ACTIVE->value,
+        ];
+
+        // Act
+        $createdUser = $this->repository->create($userData);
+        $foundUser = $this->repository->find($createdUser->id);
+
+        // Assert
+        $this->assertNotNull($foundUser);
+        $this->assertEquals('Test User', $foundUser->name);
+        $this->assertEquals('test@example.com', $foundUser->email);
+        $this->assertEquals(UserStatus::ACTIVE, $foundUser->status);
+    }
+
+    public function test_find_by_email(): void
+    {
+        // Arrange
+        $this->repository->create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'status' => UserStatus::ACTIVE->value,
+        ]);
+
+        // Act
+        $user = $this->repository->findByEmail('john@example.com');
+
+        // Assert
+        $this->assertNotNull($user);
+        $this->assertEquals('John Doe', $user->name);
+    }
+
+    public function test_search_users(): void
+    {
+        // Arrange
+        $this->repository->create(['name' => 'John Doe', 'email' => 'john@example.com', 'status' => 'active']);
+        $this->repository->create(['name' => 'Jane Smith', 'email' => 'jane@example.com', 'status' => 'active']);
+        $this->repository->create(['name' => 'Bob Johnson', 'email' => 'bob@test.com', 'status' => 'active']);
+
+        // Act
+        $results = $this->repository->searchUsers('john');
+
+        // Assert
+        $this->assertCount(2, $results); // John Doe and Bob Johnson
+        $this->assertEquals('John Doe', $results[0]->name);
+        $this->assertEquals('Bob Johnson', $results[1]->name);
+    }
+}
+```
+
+## Performance Optimization
+
+### 1. Query Optimization
+
+```php title="src/Services/OptimizedUserService.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+class OptimizedUserService
+{
+    private array $cache = [];
+
+    public function __construct(
+        private UserRepository $userRepository,
+        private CacheInterface $cache
+    ) {}
+
+    public function getUsersWithPosts(array $userIds): array
+    {
+        // Use single query instead of N+1
+        $sql = "
+            SELECT 
+                u.id, u.name, u.email,
+                p.id as post_id, p.title, p.created_at as post_created_at
+            FROM users u
+            LEFT JOIN posts p ON u.id = p.user_id
+            WHERE u.id IN (" . implode(',', array_fill(0, count($userIds), '?')) . ")
+            ORDER BY u.id, p.created_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($userIds);
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Group results by user
+        $users = [];
+        foreach ($results as $row) {
+            $userId = $row['id'];
+            
+            if (!isset($users[$userId])) {
+                $users[$userId] = [
+                    'id' => $userId,
+                    'name' => $row['name'],
+                    'email' => $row['email'],
+                    'posts' => []
+                ];
+            }
+
+            if ($row['post_id']) {
+                $users[$userId]['posts'][] = [
+                    'id' => $row['post_id'],
+                    'title' => $row['title'],
+                    'created_at' => $row['post_created_at']
+                ];
+            }
+        }
+
+        return array_values($users);
+    }
+
+    public function getCachedUser(int $userId): ?User
+    {
+        $cacheKey = "user:{$userId}";
+        
+        return $this->cache->remember($cacheKey, 3600, function() use ($userId) {
+            return $this->userRepository->find($userId);
+        });
+    }
+
+    public function bulkUpdateUserStatus(array $userIds, UserStatus $status): int
+    {
+        if (empty($userIds)) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+        $sql = "UPDATE users SET status = ? WHERE id IN ({$placeholders})";
+        
+        $params = [$status->value, ...$userIds];
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        
+        // Clear cache for updated users
+        foreach ($userIds as $userId) {
+            $this->cache->forget("user:{$userId}");
+        }
+
+        return $stmt->rowCount();
+    }
+}
+```
+
+### 2. Memory Management
+
+```php title="src/Services/LargeDataProcessor.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+class LargeDataProcessor
+{
+    public function processLargeFile(string $filePath): void
+    {
+        $handle = fopen($filePath, 'r');
+        
+        if (!$handle) {
+            throw new \RuntimeException("Cannot open file: {$filePath}");
+        }
+
+        try {
+            // Process file line by line to avoid memory issues
+            while (($line = fgets($handle)) !== false) {
+                $this->processLine(trim($line));
+                
+                // Free memory periodically
+                if (memory_get_usage() > 128 * 1024 * 1024) { // 128MB
+                    gc_collect_cycles();
+                }
+            }
+        } finally {
+            fclose($handle);
+        }
+    }
+
+    public function processBatchData(array $data, int $batchSize = 1000): \Generator
+    {
+        $batch = [];
+        
+        foreach ($data as $item) {
+            $batch[] = $item;
+            
+            if (count($batch) >= $batchSize) {
+                yield $batch;
+                $batch = []; // Clear batch to free memory
+            }
+        }
+        
+        // Yield remaining items
+        if (!empty($batch)) {
+            yield $batch;
+        }
+    }
+
+    private function processLine(string $line): void
+    {
+        // Process individual line
+        $data = json_decode($line, true);
+        
+        if ($data) {
+            $this->saveToDatabase($data);
+        }
+    }
+}
+```
+
+## Error Handling and Logging
+
+### 1. Custom Exception Classes
+
+```php title="src/Exceptions/UserException.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App\Exceptions;
+
+class UserException extends \Exception
+{
+    public static function notFound(int $userId): self
+    {
+        return new self("User with ID {$userId} not found", 404);
+    }
+
+    public static function emailAlreadyExists(string $email): self
+    {
+        return new self("User with email {$email} already exists", 409);
+    }
+
+    public static function invalidStatus(string $status): self
+    {
+        return new self("Invalid user status: {$status}", 400);
+    }
+}
+```
+
+### 2. Centralized Error Handling
+
+```php title="src/ErrorHandler.php"
+<?php
+
+declare(strict_types=1);
+
+namespace App;
+
+use Psr\Log\LoggerInterface;
+
+class ErrorHandler
+{
+    public function __construct(
+        private LoggerInterface $logger
+    ) {
+        set_exception_handler([$this, 'handleException']);
+        set_error_handler([$this, 'handleError']);
+    }
+
+    public function handleException(\Throwable $exception): void
+    {
+        $this->logger->error('Uncaught exception', [
+            'message' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'trace' => $exception->getTraceAsString(),
+        ]);
+
+        if ($this->isProduction()) {
+            echo "Something went wrong. Please try again later.";
+        } else {
+            echo $exception->getMessage() . "\n" . $exception->getTraceAsString();
+        }
+    }
+
+    public function handleError(int $severity, string $message, string $file, int $line): bool
+    {
+        if (!(error_reporting() & $severity)) {
+            return false;
+        }
+
+        $this->logger->warning('PHP Error', [
+            'severity' => $severity,
+            'message' => $message,
+            'file' => $file,
+            'line' => $line,
+        ]);
+
+        return true;
+    }
+
+    private function isProduction(): bool
+    {
+        return ($_ENV['APP_ENV'] ?? 'production') === 'production';
+    }
+}
+```
+
+## Conclusion
+
+Modern PHP development in 2024 emphasizes:
+
+- **Type Safety**: Use typed properties, union types, and enums
+- **Clean Architecture**: Implement dependency injection and repository patterns
+- **Testing**: Write comprehensive unit and integration tests
+- **Performance**: Optimize queries and manage memory efficiently
+- **Error Handling**: Implement proper exception handling and logging
+
+These techniques will help you build robust, maintainable PHP applications that follow industry best practices and can scale with your project's needs.
+
+Key takeaways:
+- Embrace PHP 8.3+ features for better code quality
+- Use dependency injection for testable code
+- Implement proper testing strategies
+- Optimize for performance from the start
+- Handle errors gracefully with proper logging
+
+Master these techniques to become a proficient modern PHP developer!

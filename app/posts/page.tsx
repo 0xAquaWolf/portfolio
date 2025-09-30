@@ -6,12 +6,11 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
 export default function Posts() {
   return (
-    <div className="lg:mt-30 relative z-10 mb-8 mt-10 px-2">
-      <div className="mx-auto mb-8 mt-4 max-w-[1440px]">
-        <h1 className="text-center text-4xl font-bold">Posts</h1>
-        <h2 className="mb-12 text-center">
-          Thoughts, ideas, and insights about web development, web3, AI, and
-          machine learning.
+    <div className="lg:mt-30 relative z-10 mb-8 mt-10 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto mb-12 mt-8 max-w-[1440px]">
+        <h1 className="text-center text-4xl font-bold text-white mb-6">Posts</h1>
+        <h2 className="mb-16 text-center text-white px-4">
+          Thoughts, ideas, and insights about PHP, WordPress, Laravel, and modern web development.
         </h2>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, index) => (

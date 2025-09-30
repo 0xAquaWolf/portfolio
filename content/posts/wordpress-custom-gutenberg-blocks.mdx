@@ -1,0 +1,699 @@
+---
+title: Building Custom Gutenberg Blocks for WordPress - Complete Guide
+date: '2024-09-29'
+description: Learn how to create custom Gutenberg blocks for WordPress using modern JavaScript and PHP. Step-by-step guide with examples.
+imageUrl: /images/png/PlaceholderBlogFeaturedImage2.png
+featured: true
+published: true
+---
+
+# Building Custom Gutenberg Blocks for WordPress - Complete Guide
+
+Creating custom Gutenberg blocks allows you to extend WordPress with tailored content elements. This guide covers everything from setup to deployment of professional custom blocks.
+
+## Prerequisites
+
+Before we start, make sure you have:
+
+- WordPress 6.0 or higher
+- Node.js 16+ and npm
+- Basic knowledge of JavaScript and PHP
+- Code editor with WordPress development setup
+
+## Setting Up Your Development Environment
+
+### 1. Install WordPress Tools
+
+First, install the official WordPress block creation tool:
+
+```bash
+npm install -g @wordpress/create-block
+```
+
+### 2. Create Your First Block
+
+Navigate to your WordPress plugins directory and create a new block:
+
+```bash
+cd /path/to/wordpress/wp-content/plugins
+npx @wordpress/create-block my-custom-block
+cd my-custom-block
+npm start
+```
+
+This creates a basic block structure with all necessary files.
+
+## Understanding Block Structure
+
+A custom block consists of several key files:
+
+```
+my-custom-block/
+├── block.json          # Block configuration
+├── src/
+│   ├── index.js        # Block registration
+│   ├── edit.js         # Editor component
+│   ├── save.js         # Frontend output
+│   └── style.scss      # Block styles
+├── my-custom-block.php # Main PHP file
+└── build/             # Compiled assets
+```
+
+## Block Configuration
+
+The `block.json` file defines your block's metadata:
+
+```json title="block.json"
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "my-namespace/testimonial-block",
+    "version": "1.0.0",
+    "title": "Testimonial Block",
+    "category": "widgets",
+    "icon": "format-quote",
+    "description": "Display customer testimonials with image and rating.",
+    "example": {
+        "attributes": {
+            "testimonial": "This product changed my life!",
+            "author": "John Doe",
+            "rating": 5
+        }
+    },
+    "supports": {
+        "html": false,
+        "align": ["left", "center", "right"],
+        "color": {
+            "background": true,
+            "text": true
+        }
+    },
+    "attributes": {
+        "testimonial": {
+            "type": "string",
+            "source": "html",
+            "selector": ".testimonial-text"
+        },
+        "author": {
+            "type": "string",
+            "source": "html",
+            "selector": ".testimonial-author"
+        },
+        "authorImage": {
+            "type": "object",
+            "default": null
+        },
+        "rating": {
+            "type": "number",
+            "default": 5
+        }
+    },
+    "textdomain": "my-custom-block",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css"
+}
+```
+
+## Creating the Edit Component
+
+The edit component defines how your block appears in the editor:
+
+```jsx title="src/edit.js"
+import { __ } from '@wordpress/i18n';
+import {
+    useBlockProps,
+    RichText,
+    MediaUpload,
+    MediaUploadCheck,
+    InspectorControls,
+} from '@wordpress/block-editor';
+import {
+    PanelBody,
+    Button,
+    RangeControl,
+} from '@wordpress/components';
+import { useState } from '@wordpress/element';
+
+export default function Edit({ attributes, setAttributes }) {
+    const { testimonial, author, authorImage, rating } = attributes;
+    
+    const blockProps = useBlockProps({
+        className: 'testimonial-block-editor',
+    });
+
+    const onSelectImage = (image) => {
+        setAttributes({
+            authorImage: {
+                id: image.id,
+                url: image.url,
+                alt: image.alt,
+            },
+        });
+    };
+
+    const removeImage = () => {
+        setAttributes({ authorImage: null });
+    };
+
+    const renderStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <span
+                    key={i}
+                    className={`star ${i <= rating ? 'filled' : 'empty'}`}
+                >
+                    ★
+                </span>
+            );
+        }
+        return stars;
+    };
+
+    return (
+        <>
+            <InspectorControls>
+                <PanelBody title={__('Testimonial Settings', 'my-custom-block')}>
+                    <RangeControl
+                        label={__('Rating', 'my-custom-block')}
+                        value={rating}
+                        onChange={(value) => setAttributes({ rating: value })}
+                        min={1}
+                        max={5}
+                    />
+                </PanelBody>
+            </InspectorControls>
+
+            <div {...blockProps}>
+                <div className="testimonial-content">
+                    <RichText
+                        tagName="blockquote"
+                        className="testimonial-text"
+                        placeholder={__('Enter testimonial text...', 'my-custom-block')}
+                        value={testimonial}
+                        onChange={(value) => setAttributes({ testimonial: value })}
+                    />
+                    
+                    <div className="testimonial-rating">
+                        {renderStars(rating)}
+                    </div>
+
+                    <div className="testimonial-author-section">
+                        <MediaUploadCheck>
+                            <MediaUpload
+                                onSelect={onSelectImage}
+                                allowedTypes={['image']}
+                                value={authorImage?.id}
+                                render={({ open }) => (
+                                    <div className="author-image-section">
+                                        {authorImage ? (
+                                            <div className="author-image-preview">
+                                                <img
+                                                    src={authorImage.url}
+                                                    alt={authorImage.alt}
+                                                    className="author-image"
+                                                />
+                                                <Button
+                                                    onClick={removeImage}
+                                                    className="remove-image"
+                                                    isDestructive
+                                                >
+                                                    {__('Remove Image', 'my-custom-block')}
+                                                </Button>
+                                            </div>
+                                        ) : (
+                                            <Button
+                                                onClick={open}
+                                                className="add-author-image"
+                                                variant="secondary"
+                                            >
+                                                {__('Add Author Image', 'my-custom-block')}
+                                            </Button>
+                                        )}
+                                    </div>
+                                )}
+                            />
+                        </MediaUploadCheck>
+
+                        <RichText
+                            tagName="cite"
+                            className="testimonial-author"
+                            placeholder={__('Author name...', 'my-custom-block')}
+                            value={author}
+                            onChange={(value) => setAttributes({ author: value })}
+                        />
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+```
+
+## Creating the Save Component
+
+The save component defines the frontend HTML output:
+
+```jsx title="src/save.js"
+import { useBlockProps, RichText } from '@wordpress/block-editor';
+
+export default function Save({ attributes }) {
+    const { testimonial, author, authorImage, rating } = attributes;
+    
+    const blockProps = useBlockProps.save({
+        className: 'testimonial-block',
+    });
+
+    const renderStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <span
+                    key={i}
+                    className={`star ${i <= rating ? 'filled' : 'empty'}`}
+                >
+                    ★
+                </span>
+            );
+        }
+        return stars;
+    };
+
+    return (
+        <div {...blockProps}>
+            <div className="testimonial-content">
+                <RichText.Content
+                    tagName="blockquote"
+                    className="testimonial-text"
+                    value={testimonial}
+                />
+                
+                <div className="testimonial-rating">
+                    {renderStars(rating)}
+                </div>
+
+                <div className="testimonial-author-section">
+                    {authorImage && (
+                        <img
+                            src={authorImage.url}
+                            alt={authorImage.alt}
+                            className="author-image"
+                        />
+                    )}
+                    <RichText.Content
+                        tagName="cite"
+                        className="testimonial-author"
+                        value={author}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+```
+
+## Adding Styles
+
+Create attractive styles for your block:
+
+```scss title="src/style.scss"
+.testimonial-block {
+    background: #f9f9f9;
+    border-left: 4px solid #0073aa;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+    .testimonial-content {
+        text-align: center;
+    }
+
+    .testimonial-text {
+        font-size: 1.2em;
+        font-style: italic;
+        margin: 0 0 1rem;
+        line-height: 1.6;
+        color: #333;
+
+        &::before {
+            content: '"';
+            font-size: 2em;
+            color: #0073aa;
+            line-height: 1;
+        }
+
+        &::after {
+            content: '"';
+            font-size: 2em;
+            color: #0073aa;
+            line-height: 1;
+        }
+    }
+
+    .testimonial-rating {
+        margin: 1rem 0;
+
+        .star {
+            font-size: 1.5em;
+            margin: 0 2px;
+
+            &.filled {
+                color: #ffd700;
+            }
+
+            &.empty {
+                color: #ddd;
+            }
+        }
+    }
+
+    .testimonial-author-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+
+        .author-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0073aa;
+        }
+
+        .testimonial-author {
+            font-weight: bold;
+            color: #0073aa;
+            font-style: normal;
+        }
+    }
+}
+
+// Editor-specific styles
+.testimonial-block-editor {
+    border: 2px dashed #ccc;
+    min-height: 200px;
+
+    .author-image-section {
+        margin: 1rem 0;
+
+        .author-image-preview {
+            position: relative;
+            display: inline-block;
+
+            .remove-image {
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                border-radius: 50%;
+            }
+        }
+
+        .add-author-image {
+            padding: 1rem;
+            border: 2px dashed #ccc;
+            background: transparent;
+        }
+    }
+}
+```
+
+## PHP Integration
+
+Register your block in the main PHP file:
+
+```php title="my-custom-block.php"
+<?php
+/**
+ * Plugin Name: My Custom Block
+ * Description: Custom testimonial block for WordPress.
+ * Version: 1.0.0
+ * Author: Your Name
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class MyCustomBlock {
+    
+    public function __construct() {
+        add_action('init', [$this, 'register_block']);
+        add_action('enqueue_block_assets', [$this, 'enqueue_assets']);
+    }
+
+    public function register_block() {
+        register_block_type(__DIR__ . '/build');
+    }
+
+    public function enqueue_assets() {
+        // Enqueue additional scripts if needed
+        wp_enqueue_style(
+            'my-custom-block-frontend',
+            plugin_dir_url(__FILE__) . 'build/style-index.css',
+            [],
+            filemtime(plugin_dir_path(__FILE__) . 'build/style-index.css')
+        );
+    }
+}
+
+new MyCustomBlock();
+
+// Add custom block category
+function my_custom_block_categories($categories, $post) {
+    return array_merge(
+        $categories,
+        [
+            [
+                'slug' => 'my-custom-blocks',
+                'title' => __('My Custom Blocks', 'my-custom-block'),
+                'icon' => 'wordpress',
+            ],
+        ]
+    );
+}
+add_filter('block_categories_all', 'my_custom_block_categories', 10, 2);
+```
+
+## Advanced Features
+
+### Dynamic Blocks with Server-Side Rendering
+
+For blocks that need to fetch data dynamically:
+
+```php title="dynamic-block.php"
+<?php
+
+function render_testimonial_block($attributes, $content, $block) {
+    $testimonial_id = $attributes['testimonialId'] ?? 0;
+    
+    if (!$testimonial_id) {
+        return '<p>No testimonial selected.</p>';
+    }
+
+    $testimonial = get_post($testimonial_id);
+    
+    if (!$testimonial) {
+        return '<p>Testimonial not found.</p>';
+    }
+
+    $author = get_post_meta($testimonial_id, 'author', true);
+    $rating = get_post_meta($testimonial_id, 'rating', true);
+    $author_image = get_post_meta($testimonial_id, 'author_image', true);
+
+    ob_start();
+    ?>
+    <div class="dynamic-testimonial-block">
+        <blockquote class="testimonial-text">
+            <?php echo wp_kses_post($testimonial->post_content); ?>
+        </blockquote>
+        
+        <div class="testimonial-rating">
+            <?php for ($i = 1; $i <= 5; $i++): ?>
+                <span class="star <?php echo $i <= $rating ? 'filled' : 'empty'; ?>">★</span>
+            <?php endfor; ?>
+        </div>
+
+        <div class="testimonial-author-section">
+            <?php if ($author_image): ?>
+                <img src="<?php echo esc_url($author_image); ?>" alt="<?php echo esc_attr($author); ?>" class="author-image">
+            <?php endif; ?>
+            <cite class="testimonial-author"><?php echo esc_html($author); ?></cite>
+        </div>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
+// Register dynamic block
+register_block_type('my-namespace/dynamic-testimonial', [
+    'render_callback' => 'render_testimonial_block',
+    'attributes' => [
+        'testimonialId' => [
+            'type' => 'number',
+            'default' => 0,
+        ],
+    ],
+]);
+```
+
+## Testing Your Block
+
+### 1. Unit Testing with Jest
+
+```javascript title="src/edit.test.js"
+import { render, screen } from '@testing-library/react';
+import Edit from './edit';
+
+const defaultAttributes = {
+    testimonial: 'Test testimonial',
+    author: 'Test Author',
+    rating: 5,
+    authorImage: null,
+};
+
+const defaultProps = {
+    attributes: defaultAttributes,
+    setAttributes: jest.fn(),
+};
+
+describe('Testimonial Block Edit Component', () => {
+    test('renders testimonial placeholder when empty', () => {
+        const props = {
+            ...defaultProps,
+            attributes: { ...defaultAttributes, testimonial: '' },
+        };
+
+        render(<Edit {...props} />);
+        
+        expect(screen.getByPlaceholderText('Enter testimonial text...')).toBeInTheDocument();
+    });
+
+    test('displays correct rating stars', () => {
+        render(<Edit {...defaultProps} />);
+        
+        const filledStars = screen.getAllByText('★').filter(star => 
+            star.classList.contains('filled')
+        );
+        
+        expect(filledStars).toHaveLength(5);
+    });
+});
+```
+
+### 2. PHP Unit Testing
+
+```php title="tests/TestimonialBlockTest.php"
+<?php
+
+class TestimonialBlockTest extends WP_UnitTestCase {
+    
+    public function test_block_registration() {
+        $registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
+        
+        $this->assertArrayHasKey('my-namespace/testimonial-block', $registered_blocks);
+    }
+
+    public function test_render_callback() {
+        $attributes = [
+            'testimonialId' => 1,
+        ];
+
+        // Create test post
+        $post_id = $this->factory->post->create([
+            'post_content' => 'Test testimonial content',
+            'post_type' => 'testimonial',
+        ]);
+
+        update_post_meta($post_id, 'author', 'Test Author');
+        update_post_meta($post_id, 'rating', 5);
+
+        $attributes['testimonialId'] = $post_id;
+        
+        $output = render_testimonial_block($attributes, '', null);
+        
+        $this->assertStringContains('Test testimonial content', $output);
+        $this->assertStringContains('Test Author', $output);
+    }
+}
+```
+
+## Best Practices
+
+### 1. Performance Optimization
+
+- Use `useCallback` and `useMemo` for expensive operations
+- Implement proper loading states
+- Optimize images and assets
+- Use server-side rendering when appropriate
+
+### 2. Accessibility
+
+```jsx
+// Add proper ARIA labels
+<button
+    onClick={open}
+    aria-label={__('Add author image', 'my-custom-block')}
+    className="add-author-image"
+>
+    {__('Add Author Image', 'my-custom-block')}
+</button>
+
+// Use semantic HTML
+<blockquote
+    role="blockquote"
+    aria-labelledby="testimonial-author"
+>
+    {testimonial}
+</blockquote>
+```
+
+### 3. Internationalization
+
+Always use WordPress i18n functions:
+
+```jsx
+import { __ } from '@wordpress/i18n';
+
+// In your components
+{__('Add Author Image', 'my-custom-block')}
+```
+
+## Deployment and Distribution
+
+### 1. Build for Production
+
+```bash
+npm run build
+```
+
+### 2. Create a Plugin Package
+
+```bash
+# Create distribution package
+zip -r my-custom-block.zip my-custom-block/ -x "*.git*" "node_modules/*" "src/*"
+```
+
+### 3. WordPress Plugin Directory
+
+If submitting to WordPress.org:
+
+- Follow WordPress coding standards
+- Include proper documentation
+- Test across multiple WordPress versions
+- Ensure accessibility compliance
+
+## Conclusion
+
+Custom Gutenberg blocks provide powerful ways to extend WordPress functionality. Key takeaways:
+
+- Use `@wordpress/create-block` for quick setup
+- Follow WordPress coding standards
+- Implement proper testing
+- Consider performance and accessibility
+- Use dynamic rendering for data-driven blocks
+
+This foundation will help you create professional, maintainable custom blocks that enhance the WordPress editing experience.

@@ -81,7 +81,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
                       {post.readTime} read
                     </span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center space-x-2">
                     <Image
                       src={BlogViewsIcon}
                       alt="Blog Views"
@@ -91,7 +91,7 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
                     <span className="bg-gradient-to-r from-[#FCD3ED] to-[#F690DF] bg-clip-text font-medium text-transparent">
                       53,000 views
                     </span>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mt-2 flex items-center justify-center space-x-1 text-sm lg:text-xl">
                   <div className="m-0">Written on</div>
