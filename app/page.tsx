@@ -4,7 +4,7 @@ import YoutubeGrid from '@/components/YoutubeGrid/YoutubeGrid';
 import Stats from '@/components/GlobalStats/Stats';
 import YoutubeVideos from '@/components/YoutubeVideos/YoutubeVideo';
 import { WavyBackgroundDemo } from '@/components/ui/WavyBackgroundDemo';
-import Timeline from '@/components/Timeline/Timeline';
+import TimelineComponent from '@/components/Timeline/Timeline';
 import AboutMe from '@/components/about-me/AboutMe';
 import SecondQuote from '@/components/SecondQuote/SecondQuote';
 import TheEnd from '@/components/TheEnd';
@@ -28,7 +28,7 @@ export default function Home() {
       <Stats />
       <YoutubeVideos />
       <WavyBackgroundDemo />
-      <Timeline />
+      <TimelineComponent />
       <AboutMe />
       <Projects />
       <SecondQuote />
