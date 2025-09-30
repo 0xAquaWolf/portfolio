@@ -109,7 +109,7 @@ export const projectsData: Project[] = [
       '- Active community engagement and positive feedback',
   },
   {
-    title: 'AquaStack - Universal React Monorepo',
+    title: 'AquaStack - Universal React Native + Next.js Mono Repo',
     description:
       'Universal React monorepo combining Next.js web app, Expo mobile client, and Convex backend with Better Auth. Features complete type safety, real-time database, and unified development workflow across platforms.',
     date: 'September 2025',
