@@ -36,7 +36,7 @@ export default function ProjectContent({
       </div>
 
       {/* Hero Image */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-900">
+      <div className="relative aspect-video w-full overflow-hidden rounded-[60px] bg-gray-900">
         {/* Loading Placeholder */}
         <div
           className={`absolute inset-0 flex items-center justify-center bg-gray-800 transition-opacity duration-300 ${
@@ -131,6 +131,28 @@ export default function ProjectContent({
             <iframe
               src="https://www.youtube.com/embed/videoseries?list=PLwbt1uBf9iqDQyGKEJVj2iA3FFsNxMiXj"
               title="AquaKit Development Live Streams"
+              className="absolute inset-0 h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
+
+      {/* YouTube Embed for Portfolio */}
+      {slug === 'personal-portfolio-nextjs' && (
+        <div className="mt-8">
+          <h2 className="mb-6 text-2xl font-bold text-gray-100">
+            🎥 Development Live Streams
+          </h2>
+          <p className="mb-6 text-gray-400">
+            Watch the complete development process of this portfolio website in this YouTube playlist.
+            See how this modern Next.js portfolio was built from scratch with Velite CMS, Drizzle ORM, and more.
+          </p>
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-900">
+            <iframe
+              src="https://www.youtube.com/embed/videoseries?list=PLwbt1uBf9iqDWt3IRiW-GhrXrASUG6wsX"
+              title="Portfolio Development Live Streams"
               className="absolute inset-0 h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen

@@ -78,6 +78,37 @@ export const projectsData: Project[] = [
       '- Positive feedback from developers following the live streams',
   },
   {
+    title: 'Personal Portfolio - Open Source Project',
+    description:
+      'Modern portfolio and blog website built with Next.js 14, featuring Velite CMS, Drizzle ORM with Turso database, and shadcn/ui components. Open-sourced with 76+ stars and 17 forks, complete development process live-streamed on YouTube.',
+    date: 'September 2025',
+    imageUrl: '/projects/portfolio.png',
+    tags: ['Next.js', 'TypeScript', 'Velite CMS', 'Drizzle ORM', 'Turso', 'Open Source', 'Portfolio'],
+    slug: 'personal-portfolio-nextjs',
+    links: [
+      { title: 'Live Site', url: 'https://0xaquawolf.com' },
+      { title: 'GitHub (76+ ⭐)', url: 'https://github.com/0xAquaWolf/portfolio' },
+      { title: 'Live Stream Playlist', url: 'https://www.youtube.com/watch?v=Jl4qtdWivgU&list=PLwbt1uBf9iqDWt3IRiW-GhrXrASUG6wsX' },
+    ],
+    fullDescription:
+      '## Problem\n\n' +
+      'Developers need a professional portfolio that showcases their technical skills while serving as a functional development playground. Most portfolio templates are either too simple or overly complex, lacking the balance between impressive visuals and practical functionality.\n\n' +
+      'The challenge was creating a portfolio that demonstrates advanced technical capabilities while remaining maintainable and providing real value through blog content and project showcases.\n\n' +
+      '## Action\n\n' +
+      'Built a comprehensive portfolio website using Next.js 14 with modern development patterns including Velite for content management, Drizzle ORM with Turso database for data persistence, and shadcn/ui for consistent design. The entire development process was documented through live streaming.\n\n' +
+      'Implemented advanced features like dynamic content processing, real-time project showcases, blog functionality with MDX support, and responsive design optimized for all devices. Focused on performance optimization, SEO, and modern development best practices.\n\n' +
+      '## Results\n\n' +
+      'The portfolio project has achieved significant community recognition:\n\n' +
+      '- 76+ GitHub stars from the developer community\n' +
+      '- 17 forks showing active interest and contributions\n' +
+      '- Complete development documentation through YouTube live streams\n' +
+      '- Modern tech stack showcasing current development capabilities\n' +
+      '- High-performance website with optimized loading speeds\n' +
+      '- Functional blog with advanced content management\n' +
+      '- Professional project showcases with detailed case studies\n' +
+      '- Active community engagement and positive feedback',
+  },
+  {
     title: 'WordPress Headless CMS with Next.js',
     description:
       'Creating a modern headless WordPress setup with Next.js frontend, featuring custom Gutenberg blocks, GraphQL API, and advanced page building capabilities for optimal performance.',
