@@ -19,7 +19,6 @@
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
-    "@rainbow-me/rainbowkit": "^2.2.0",
     "@rehype-pretty/transformers": "^0.13.2",
     "@shikijs/rehype": "^1.17.6",
     "@tabler/icons-react": "^3.14.0",
@@ -53,9 +52,7 @@
     "simplex-noise": "^4.0.3",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "velite": "^0.1.1",
-    "viem": "2.x",
-    "wagmi": "^2.13.0"
+    "velite": "^0.1.1"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",

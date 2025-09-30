@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import localFont from 'next/font/local';
 import SVGGradientBg from '@/components/Hero/SVGGradientBg';
 import Menu from '@/components/Hero/Menu/Menu';
-import { Providers } from '@/components/Providers/Providers';
+import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -96,13 +96,18 @@ export default function RootLayout({
           MonaLisa.variable,
         )}
       >
-        <Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           <div className="mx-auto max-w-[1440px] bg-transparent px-4 sm:px-6 lg:px-8">
             <SVGGradientBg />
             <Menu />
             {children}
           </div>
-        </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
