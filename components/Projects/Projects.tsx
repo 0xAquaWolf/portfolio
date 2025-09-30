@@ -69,12 +69,13 @@ export const projectsData: Project[] = [
       '## Results\n\n' +
       'AquaKit has gained significant traction in the developer community:\n\n' +
       '- 50+ GitHub stars from developers worldwide\n' +
+      '- Educational YouTube series documenting full development process\n' +
       '- Active community engagement and contributions\n' +
       '- Comprehensive documentation and examples\n' +
       '- Modern development workflow with TypeScript\n' +
       '- Optimized performance and responsive design\n' +
       '- Ready-to-deploy AI application foundation\n' +
-      '- Positive feedback from AI developers and startups',
+      '- Positive feedback from developers following the live streams',
   },
   {
     title: 'WordPress Headless CMS with Next.js',

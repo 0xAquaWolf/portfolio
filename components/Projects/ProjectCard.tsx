@@ -38,7 +38,7 @@ export default function ProjectCard({
             className={`h-full w-full object-cover transition-all duration-500 ${
               isLoading ? 'scale-110 blur-lg' : 'scale-100 blur-0'
             } group-hover:scale-110`}
-            onLoadingComplete={() => setIsLoading(false)}
+            onLoad={() => setIsLoading(false)}
             onError={() => setImageError(true)}
             priority
           />

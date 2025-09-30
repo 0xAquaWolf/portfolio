@@ -9,7 +9,7 @@ export default function FeaturedBlogs() {
     <div id="blog" className="mt-20 lg:mt-40">
       <SectionHeading
         heading="Blog"
-        subheading="Documenting all of my learnings and teachings in AI and technology."
+        subheading="Documenting my expertise in PHP, WordPress, and Laravel development, plus insights on AI integration."
       />
       <div className="rounded-2xllg:mt-40 mt-20">
         <div className="mt-8 overflow-x-auto rounded-2xl pb-4">

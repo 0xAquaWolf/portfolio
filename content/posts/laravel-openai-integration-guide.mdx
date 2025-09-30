@@ -1,0 +1,928 @@
+---
+title: Building Intelligent Laravel Applications with OpenAI GPT
+date: '2024-10-01'
+description: Complete guide to integrating OpenAI GPT with Laravel applications. Learn to build AI-powered features with practical examples and best practices.
+imageUrl: /images/blog/ai-laravel-coding.jpg
+featured: true
+published: true
+---
+
+# Building Intelligent Laravel Applications with OpenAI GPT
+
+Artificial Intelligence is revolutionizing web development, and Laravel provides an excellent foundation for building AI-powered applications. This comprehensive guide will show you how to integrate OpenAI's GPT models with Laravel to create intelligent features that enhance user experience.
+
+## Prerequisites
+
+Before we start, make sure you have:
+
+- Laravel 10+ application
+- OpenAI API key
+- Basic knowledge of Laravel and PHP 8.1+
+- Composer for package management
+
+## Setting Up OpenAI in Laravel
+
+### 1. Install the OpenAI PHP Client
+
+First, install the official OpenAI PHP client:
+
+```bash
+composer require openai-php/client
+```
+
+### 2. Environment Configuration
+
+Add your OpenAI API key to your `.env` file:
+
+```bash title=".env"
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_ORGANIZATION=your-organization-id # Optional
+```
+
+Update your `config/services.php`:
+
+```php title="config/services.php"
+<?php
+
+return [
+    // ... other services
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'organization' => env('OPENAI_ORGANIZATION'),
+    ],
+];
+```
+
+### 3. Create an OpenAI Service
+
+Create a service class to handle OpenAI interactions:
+
+```bash
+php artisan make:service OpenAIService
+```
+
+```php title="app/Services/OpenAIService.php"
+<?php
+
+namespace App\Services;
+
+use OpenAI;
+use OpenAI\Client;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+
+class OpenAIService
+{
+    private Client $client;
+
+    public function __construct()
+    {
+        $this->client = OpenAI::client(config('services.openai.api_key'));
+    }
+
+    public function generateText(string $prompt, array $options = []): ?string
+    {
+        try {
+            $response = $this->client->completions()->create([
+                'model' => $options['model'] ?? 'gpt-3.5-turbo-instruct',
+                'prompt' => $prompt,
+                'max_tokens' => $options['max_tokens'] ?? 1000,
+                'temperature' => $options['temperature'] ?? 0.7,
+                'top_p' => $options['top_p'] ?? 1,
+                'frequency_penalty' => $options['frequency_penalty'] ?? 0,
+                'presence_penalty' => $options['presence_penalty'] ?? 0,
+            ]);
+
+            return $response->choices[0]->text ?? null;
+        } catch (\Exception $e) {
+            Log::error('OpenAI API Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function chat(array $messages, array $options = []): ?string
+    {
+        try {
+            $response = $this->client->chat()->create([
+                'model' => $options['model'] ?? 'gpt-3.5-turbo',
+                'messages' => $messages,
+                'max_tokens' => $options['max_tokens'] ?? 1000,
+                'temperature' => $options['temperature'] ?? 0.7,
+            ]);
+
+            return $response->choices[0]->message->content ?? null;
+        } catch (\Exception $e) {
+            Log::error('OpenAI Chat API Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function generateEmbedding(string $text): ?array
+    {
+        try {
+            $response = $this->client->embeddings()->create([
+                'model' => 'text-embedding-ada-002',
+                'input' => $text,
+            ]);
+
+            return $response->embeddings[0]->embedding ?? null;
+        } catch (\Exception $e) {
+            Log::error('OpenAI Embedding API Error: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function moderateContent(string $content): bool
+    {
+        try {
+            $response = $this->client->moderations()->create([
+                'input' => $content,
+            ]);
+
+            return $response->results[0]->flagged ?? false;
+        } catch (\Exception $e) {
+            Log::error('OpenAI Moderation API Error: ' . $e->getMessage());
+            return false; // Assume safe if API fails
+        }
+    }
+}
+```
+
+## Building AI-Powered Features
+
+### 1. AI Content Generator
+
+Create a content generation feature for blog posts or articles:
+
+```php title="app/Http/Controllers/ContentController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\OpenAIService;
+use Illuminate\Http\Request;
+use App\Models\Post;
+use Illuminate\Support\Str;
+
+class ContentController extends Controller
+{
+    public function __construct(
+        private OpenAIService $openAIService
+    ) {}
+
+    public function generateContent(Request $request)
+    {
+        $request->validate([
+            'topic' => 'required|string|max:255',
+            'tone' => 'required|in:professional,casual,creative,technical',
+            'length' => 'required|in:short,medium,long',
+        ]);
+
+        $lengthMap = [
+            'short' => 300,
+            'medium' => 600,
+            'long' => 1000,
+        ];
+
+        $prompt = $this->buildContentPrompt(
+            $request->topic,
+            $request->tone,
+            $lengthMap[$request->length]
+        );
+
+        $content = $this->openAIService->generateText($prompt, [
+            'max_tokens' => $lengthMap[$request->length],
+            'temperature' => 0.8,
+        ]);
+
+        if (!$content) {
+            return response()->json(['error' => 'Failed to generate content'], 500);
+        }
+
+        // Check content for moderation
+        if ($this->openAIService->moderateContent($content)) {
+            return response()->json(['error' => 'Generated content violates guidelines'], 400);
+        }
+
+        return response()->json([
+            'content' => trim($content),
+            'word_count' => str_word_count($content),
+        ]);
+    }
+
+    private function buildContentPrompt(string $topic, string $tone, int $maxTokens): string
+    {
+        $toneInstructions = [
+            'professional' => 'Write in a professional, authoritative tone suitable for business communications.',
+            'casual' => 'Write in a casual, friendly tone as if talking to a friend.',
+            'creative' => 'Write in a creative, engaging tone with vivid descriptions and storytelling elements.',
+            'technical' => 'Write in a technical, precise tone with detailed explanations and industry terminology.',
+        ];
+
+        return "Write a high-quality article about '{$topic}'. {$toneInstructions[$tone]} 
+                The article should be approximately {$maxTokens} words long, well-structured with clear paragraphs, 
+                and include relevant examples where appropriate. Focus on providing valuable insights and actionable information.";
+    }
+}
+```
+
+### 2. Intelligent Search with Semantic Similarity
+
+Implement semantic search using OpenAI embeddings:
+
+```php title="app/Models/Post.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'content',
+        'embedding',
+        'user_id',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'embedding' => 'array',
+        'published_at' => 'datetime',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->whereNotNull('published_at');
+    }
+}
+```
+
+```php title="app/Services/SemanticSearchService.php"
+<?php
+
+namespace App\Services;
+
+use App\Models\Post;
+use Illuminate\Support\Collection;
+
+class SemanticSearchService
+{
+    public function __construct(
+        private OpenAIService $openAIService
+    ) {}
+
+    public function search(string $query, int $limit = 10): Collection
+    {
+        // Generate embedding for the search query
+        $queryEmbedding = $this->openAIService->generateEmbedding($query);
+
+        if (!$queryEmbedding) {
+            return collect();
+        }
+
+        // Get all posts with embeddings
+        $posts = Post::published()
+            ->whereNotNull('embedding')
+            ->get();
+
+        // Calculate cosine similarity and sort by relevance
+        $results = $posts->map(function ($post) use ($queryEmbedding) {
+            $similarity = $this->cosineSimilarity($queryEmbedding, $post->embedding);
+            $post->similarity_score = $similarity;
+            return $post;
+        })
+        ->sortByDesc('similarity_score')
+        ->take($limit);
+
+        return $results;
+    }
+
+    public function generatePostEmbedding(Post $post): void
+    {
+        $content = $post->title . ' ' . strip_tags($post->content);
+        $embedding = $this->openAIService->generateEmbedding($content);
+
+        if ($embedding) {
+            $post->update(['embedding' => $embedding]);
+        }
+    }
+
+    private function cosineSimilarity(array $vectorA, array $vectorB): float
+    {
+        $dotProduct = 0;
+        $magnitudeA = 0;
+        $magnitudeB = 0;
+
+        for ($i = 0; $i < count($vectorA); $i++) {
+            $dotProduct += $vectorA[$i] * $vectorB[$i];
+            $magnitudeA += $vectorA[$i] ** 2;
+            $magnitudeB += $vectorB[$i] ** 2;
+        }
+
+        $magnitudeA = sqrt($magnitudeA);
+        $magnitudeB = sqrt($magnitudeB);
+
+        if ($magnitudeA == 0 || $magnitudeB == 0) {
+            return 0;
+        }
+
+        return $dotProduct / ($magnitudeA * $magnitudeB);
+    }
+}
+```
+
+### 3. AI-Powered Chat Support
+
+Create an intelligent customer support chatbot:
+
+```php title="app/Models/Conversation.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Conversation extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'title',
+        'status',
+        'context',
+    ];
+
+    protected $casts = [
+        'context' => 'array',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(ChatMessage::class);
+    }
+}
+```
+
+```php title="app/Models/ChatMessage.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ChatMessage extends Model
+{
+    protected $fillable = [
+        'conversation_id',
+        'content',
+        'is_from_ai',
+        'metadata',
+    ];
+
+    protected $casts = [
+        'is_from_ai' => 'boolean',
+        'metadata' => 'array',
+    ];
+
+    public function conversation(): BelongsTo
+    {
+        return $this->belongsTo(Conversation::class);
+    }
+}
+```
+
+```php title="app/Services/ChatBotService.php"
+<?php
+
+namespace App\Services;
+
+use App\Models\Conversation;
+use App\Models\ChatMessage;
+use App\Jobs\ProcessChatResponse;
+
+class ChatBotService
+{
+    public function __construct(
+        private OpenAIService $openAIService
+    ) {}
+
+    public function processMessage(Conversation $conversation, string $message): ChatMessage
+    {
+        // Save user message
+        $userMessage = $conversation->messages()->create([
+            'content' => $message,
+            'is_from_ai' => false,
+        ]);
+
+        // Generate AI response asynchronously
+        ProcessChatResponse::dispatch($conversation, $message);
+
+        return $userMessage;
+    }
+
+    public function generateResponse(Conversation $conversation, string $userMessage): ?string
+    {
+        $context = $this->buildConversationContext($conversation);
+        
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => 'You are a helpful customer support assistant for our application. 
+                             Be friendly, professional, and provide accurate information. 
+                             If you cannot answer a question, politely direct the user to human support.'
+            ],
+            ...$context,
+            [
+                'role' => 'user',
+                'content' => $userMessage
+            ]
+        ];
+
+        return $this->openAIService->chat($messages, [
+            'temperature' => 0.7,
+            'max_tokens' => 500,
+        ]);
+    }
+
+    private function buildConversationContext(Conversation $conversation): array
+    {
+        return $conversation->messages()
+            ->latest()
+            ->take(10) // Keep last 10 messages for context
+            ->get()
+            ->reverse()
+            ->map(function ($message) {
+                return [
+                    'role' => $message->is_from_ai ? 'assistant' : 'user',
+                    'content' => $message->content,
+                ];
+            })
+            ->toArray();
+    }
+}
+```
+
+```php title="app/Jobs/ProcessChatResponse.php"
+<?php
+
+namespace App\Jobs;
+
+use App\Models\Conversation;
+use App\Services\ChatBotService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+
+class ProcessChatResponse implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public function __construct(
+        private Conversation $conversation,
+        private string $userMessage
+    ) {}
+
+    public function handle(ChatBotService $chatBotService): void
+    {
+        $response = $chatBotService->generateResponse($this->conversation, $this->userMessage);
+
+        if ($response) {
+            $this->conversation->messages()->create([
+                'content' => $response,
+                'is_from_ai' => true,
+                'metadata' => [
+                    'model' => 'gpt-3.5-turbo',
+                    'generated_at' => now(),
+                ]
+            ]);
+
+            // Broadcast the response to the user via WebSocket
+            broadcast(new \App\Events\ChatResponseGenerated($this->conversation, $response));
+        }
+    }
+}
+```
+
+## Database Migrations
+
+Create the necessary database tables:
+
+```php title="database/migrations/2024_10_01_000001_create_posts_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->longText('content');
+            $table->json('embedding')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamp('published_at')->nullable();
+            $table->timestamps();
+            
+            $table->index(['published_at']);
+            $table->fullText(['title', 'content']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('posts');
+    }
+};
+```
+
+```php title="database/migrations/2024_10_01_000002_create_conversations_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('conversations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->enum('status', ['active', 'closed', 'escalated'])->default('active');
+            $table->json('context')->nullable();
+            $table->timestamps();
+            
+            $table->index(['user_id', 'status']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('conversations');
+    }
+};
+```
+
+```php title="database/migrations/2024_10_01_000003_create_chat_messages_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('chat_messages', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+            $table->longText('content');
+            $table->boolean('is_from_ai')->default(false);
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+            
+            $table->index(['conversation_id', 'created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('chat_messages');
+    }
+};
+```
+
+## API Routes and Controllers
+
+```php title="routes/api.php"
+<?php
+
+use App\Http\Controllers\ContentController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SearchController;
+use Illuminate\Support\Facades\Route;
+
+Route::middleware('auth:sanctum')->group(function () {
+    // Content generation
+    Route::post('/content/generate', [ContentController::class, 'generateContent']);
+    
+    // Semantic search
+    Route::get('/search', [SearchController::class, 'search']);
+    
+    // Chat functionality
+    Route::post('/chat/conversations', [ChatController::class, 'createConversation']);
+    Route::post('/chat/conversations/{conversation}/messages', [ChatController::class, 'sendMessage']);
+    Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'getMessages']);
+});
+```
+
+```php title="app/Http/Controllers/SearchController.php"
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Services\SemanticSearchService;
+use Illuminate\Http\Request;
+
+class SearchController extends Controller
+{
+    public function __construct(
+        private SemanticSearchService $semanticSearchService
+    ) {}
+
+    public function search(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string|max:255',
+            'limit' => 'integer|min:1|max:50',
+        ]);
+
+        $results = $this->semanticSearchService->search(
+            $request->query,
+            $request->limit ?? 10
+        );
+
+        return response()->json([
+            'results' => $results->map(function ($post) {
+                return [
+                    'id' => $post->id,
+                    'title' => $post->title,
+                    'excerpt' => \Str::limit(strip_tags($post->content), 200),
+                    'similarity_score' => round($post->similarity_score, 4),
+                    'published_at' => $post->published_at,
+                ];
+            }),
+        ]);
+    }
+}
+```
+
+## Best Practices and Security
+
+### 1. Rate Limiting
+
+Implement rate limiting to prevent API abuse:
+
+```php title="app/Http/Middleware/OpenAIRateLimit.php"
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class OpenAIRateLimit
+{
+    public function __construct(
+        private RateLimiter $limiter
+    ) {}
+
+    public function handle(Request $request, Closure $next, string $key = 'openai'): Response
+    {
+        $userId = $request->user()?->id ?? $request->ip();
+        $limitKey = "{$key}:{$userId}";
+
+        if ($this->limiter->tooManyAttempts($limitKey, 60)) { // 60 requests per hour
+            return response()->json([
+                'error' => 'Too many requests. Please try again later.'
+            ], 429);
+        }
+
+        $this->limiter->hit($limitKey, 3600); // 1 hour
+
+        return $next($request);
+    }
+}
+```
+
+### 2. Input Validation and Sanitization
+
+```php title="app/Http/Requests/GenerateContentRequest.php"
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class GenerateContentRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    public function rules(): array
+    {
+        return [
+            'topic' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s\-\.\,\!\?]+$/',
+            'tone' => 'required|in:professional,casual,creative,technical',
+            'length' => 'required|in:short,medium,long',
+            'include_examples' => 'boolean',
+            'target_audience' => 'nullable|string|max:100',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'topic.regex' => 'Topic contains invalid characters.',
+            'tone.in' => 'Please select a valid tone.',
+        ];
+    }
+}
+```
+
+### 3. Error Handling and Logging
+
+```php title="app/Exceptions/OpenAIException.php"
+<?php
+
+namespace App\Exceptions;
+
+use Exception;
+
+class OpenAIException extends Exception
+{
+    public static function apiError(string $message, int $code = 0): self
+    {
+        return new self("OpenAI API Error: {$message}", $code);
+    }
+
+    public static function quotaExceeded(): self
+    {
+        return new self("OpenAI API quota exceeded", 429);
+    }
+
+    public static function invalidRequest(string $details): self
+    {
+        return new self("Invalid OpenAI request: {$details}", 400);
+    }
+}
+```
+
+### 4. Caching Strategies
+
+```php title="app/Services/CachedOpenAIService.php"
+<?php
+
+namespace App\Services;
+
+use Illuminate\Support\Facades\Cache;
+
+class CachedOpenAIService extends OpenAIService
+{
+    public function generateText(string $prompt, array $options = []): ?string
+    {
+        $cacheKey = 'openai:text:' . md5($prompt . serialize($options));
+        
+        return Cache::remember($cacheKey, 3600, function () use ($prompt, $options) {
+            return parent::generateText($prompt, $options);
+        });
+    }
+
+    public function generateEmbedding(string $text): ?array
+    {
+        $cacheKey = 'openai:embedding:' . md5($text);
+        
+        return Cache::remember($cacheKey, 86400, function () use ($text) { // Cache for 24 hours
+            return parent::generateEmbedding($text);
+        });
+    }
+}
+```
+
+## Testing Your AI Integration
+
+```php title="tests/Feature/OpenAIIntegrationTest.php"
+<?php
+
+namespace Tests\Feature;
+
+use App\Services\OpenAIService;
+use Tests\TestCase;
+use Mockery;
+
+class OpenAIIntegrationTest extends TestCase
+{
+    public function test_content_generation_with_valid_input()
+    {
+        $this->actingAs($this->createUser());
+
+        $response = $this->postJson('/api/content/generate', [
+            'topic' => 'Laravel best practices',
+            'tone' => 'professional',
+            'length' => 'medium',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'content',
+                'word_count'
+            ]);
+    }
+
+    public function test_semantic_search_returns_relevant_results()
+    {
+        $this->actingAs($this->createUser());
+
+        // Create test posts with embeddings
+        $this->createPostsWithEmbeddings();
+
+        $response = $this->getJson('/api/search?query=Laravel tutorial');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'results' => [
+                    '*' => ['id', 'title', 'excerpt', 'similarity_score']
+                ]
+            ]);
+    }
+
+    private function createUser()
+    {
+        return \App\Models\User::factory()->create();
+    }
+
+    private function createPostsWithEmbeddings()
+    {
+        // Implementation for creating test posts
+    }
+}
+```
+
+## Performance Optimization
+
+### 1. Queue Management
+
+```php title="config/queue.php"
+// Add specific queue for AI processing
+'connections' => [
+    'ai_processing' => [
+        'driver' => 'redis',
+        'connection' => 'default',
+        'queue' => 'ai-processing',
+        'retry_after' => 300,
+        'block_for' => null,
+    ],
+],
+```
+
+### 2. Database Optimization
+
+```sql
+-- Add indexes for better performance
+CREATE INDEX idx_posts_embedding ON posts USING gin(embedding);
+CREATE INDEX idx_chat_messages_conversation_created ON chat_messages(conversation_id, created_at);
+```
+
+## Conclusion
+
+Integrating OpenAI with Laravel opens up endless possibilities for creating intelligent applications. Key takeaways:
+
+- **Service Layer Architecture**: Separate AI logic into dedicated services
+- **Async Processing**: Use queues for time-consuming AI operations
+- **Caching**: Cache embeddings and frequent requests
+- **Error Handling**: Implement robust error handling and fallbacks
+- **Security**: Rate limiting, input validation, and content moderation
+- **Performance**: Optimize database queries and use appropriate indexes
+
+This foundation allows you to build sophisticated AI-powered features while maintaining Laravel's elegant architecture and performance standards.
+
+## Next Steps
+
+- Implement fine-tuning for domain-specific content
+- Add real-time streaming responses
+- Integrate with vector databases for large-scale semantic search
+- Build custom AI models for specialized use cases
+- Implement A/B testing for AI-generated content
+
+Happy coding with AI and Laravel! 🚀

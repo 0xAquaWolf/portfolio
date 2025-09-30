@@ -55,7 +55,7 @@ export default function ProjectContent({
             isLoading ? 'opacity-0' : 'opacity-100'
           }`}
           priority
-          onLoadingComplete={() => setIsLoading(false)}
+          onLoad={() => setIsLoading(false)}
         />
       </div>
 
@@ -116,6 +116,28 @@ export default function ProjectContent({
           </div>
         </div>
       </div>
+
+      {/* YouTube Embed for AquaKit */}
+      {slug === 'aquakit-ai-nextjs-starter' && (
+        <div className="mt-8">
+          <h2 className="mb-6 text-2xl font-bold text-gray-100">
+            🎥 Development Live Streams
+          </h2>
+          <p className="mb-6 text-gray-400">
+            Watch the complete development process of AquaKit in this YouTube playlist. 
+            See how the AI starter kit was built from scratch with real-time problem solving and explanations.
+          </p>
+          <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-900">
+            <iframe
+              src="https://www.youtube.com/embed/videoseries?list=PLwbt1uBf9iqDQyGKEJVj2iA3FFsNxMiXj"
+              title="AquaKit Development Live Streams"
+              className="absolute inset-0 h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      )}
 
       {/* Related Projects */}
       <RelatedProjects

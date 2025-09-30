@@ -23,8 +23,8 @@ export default function BlogCard({ blog }: BlogCardProps) {
         <Image
           src={blog.imageUrl}
           alt={blog.title}
-          layout="fill"
-          objectFit="cover"
+          fill
+          className="object-cover"
         />
         <div className="absolute inset-x-0 bottom-0 z-10 p-4">
           <div className="mb-2 flex items-center space-x-3">

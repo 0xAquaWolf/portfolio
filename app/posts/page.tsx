@@ -19,9 +19,8 @@ export default function Posts() {
                 <Image
                   src={post.imageUrl}
                   alt={post.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="absolute inset-0"
+                  fill
+                  className="absolute inset-0 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                 <div className="absolute inset-0 flex flex-col justify-end p-6">

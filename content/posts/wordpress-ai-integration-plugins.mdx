@@ -1,0 +1,1619 @@
+---
+title: "Supercharging WordPress with AI - Custom Plugins and Integrations"
+date: '2024-10-02'
+description: Learn how to build AI-powered WordPress plugins and integrate OpenAI with custom Gutenberg blocks. Complete guide with working examples.
+imageUrl: /images/blog/wordpress-plugin-development.jpg
+featured: true
+published: true
+---
+
+# Supercharging WordPress with AI: Custom Plugins and Integrations
+
+WordPress powers over 40% of the web, and with AI integration, you can create incredibly powerful and intelligent websites. This comprehensive guide will show you how to build AI-powered WordPress plugins and create custom Gutenberg blocks that leverage OpenAI's capabilities.
+
+## Prerequisites
+
+Before we start, ensure you have:
+
+- WordPress 6.0+ installation
+- Basic PHP and JavaScript knowledge
+- OpenAI API key
+- WordPress development environment
+- Node.js for Gutenberg block development
+
+## Setting Up the Foundation
+
+### 1. Create the Main Plugin Structure
+
+First, let's create our main plugin file:
+
+```php title="wp-ai-integration/wp-ai-integration.php"
+<?php
+/**
+ * Plugin Name: AI Integration for WordPress
+ * Plugin URI: https://yoursite.com/wp-ai-integration
+ * Description: Integrate OpenAI capabilities into WordPress with custom blocks and features.
+ * Version: 1.0.0
+ * Author: Your Name
+ * License: GPL v2 or later
+ * Text Domain: wp-ai-integration
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Define plugin constants
+define('WP_AI_INTEGRATION_VERSION', '1.0.0');
+define('WP_AI_INTEGRATION_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('WP_AI_INTEGRATION_PLUGIN_URL', plugin_dir_url(__FILE__));
+
+// Main plugin class
+class WP_AI_Integration {
+    
+    public function __construct() {
+        add_action('init', [$this, 'init']);
+        add_action('admin_menu', [$this, 'add_admin_menu']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
+        
+        // Initialize components
+        $this->load_dependencies();
+    }
+    
+    public function init() {
+        load_plugin_textdomain('wp-ai-integration', false, dirname(plugin_basename(__FILE__)) . '/languages');
+        
+        // Initialize AI service
+        new WP_AI_Service();
+        
+        // Initialize Gutenberg blocks
+        new WP_AI_Gutenberg_Blocks();
+        
+        // Initialize REST API endpoints
+        new WP_AI_REST_API();
+    }
+    
+    public function add_admin_menu() {
+        add_options_page(
+            __('AI Integration Settings', 'wp-ai-integration'),
+            __('AI Integration', 'wp-ai-integration'),
+            'manage_options',
+            'wp-ai-integration',
+            [$this, 'admin_page']
+        );
+    }
+    
+    public function admin_page() {
+        include WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/admin-page.php';
+    }
+    
+    public function enqueue_scripts() {
+        wp_enqueue_script(
+            'wp-ai-integration-frontend',
+            WP_AI_INTEGRATION_PLUGIN_URL . 'assets/js/frontend.js',
+            ['jquery'],
+            WP_AI_INTEGRATION_VERSION,
+            true
+        );
+        
+        wp_localize_script('wp-ai-integration-frontend', 'wpAiAjax', [
+            'ajaxurl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wp_ai_nonce'),
+            'restUrl' => rest_url('wp-ai/v1/'),
+            'restNonce' => wp_create_nonce('wp_rest'),
+        ]);
+    }
+    
+    public function enqueue_admin_scripts() {
+        wp_enqueue_script(
+            'wp-ai-integration-admin',
+            WP_AI_INTEGRATION_PLUGIN_URL . 'assets/js/admin.js',
+            ['jquery'],
+            WP_AI_INTEGRATION_VERSION,
+            true
+        );
+    }
+    
+    private function load_dependencies() {
+        require_once WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/class-ai-service.php';
+        require_once WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/class-gutenberg-blocks.php';
+        require_once WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/class-rest-api.php';
+        require_once WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/class-content-generator.php';
+        require_once WP_AI_INTEGRATION_PLUGIN_DIR . 'includes/class-seo-optimizer.php';
+    }
+}
+
+// Initialize the plugin
+new WP_AI_Integration();
+```
+
+### 2. AI Service Class
+
+Create the core AI service class:
+
+```php title="wp-ai-integration/includes/class-ai-service.php"
+<?php
+
+class WP_AI_Service {
+    
+    private $api_key;
+    private $api_url = 'https://api.openai.com/v1/';
+    
+    public function __construct() {
+        $this->api_key = get_option('wp_ai_integration_api_key');
+        add_action('wp_ajax_wp_ai_generate_content', [$this, 'ajax_generate_content']);
+        add_action('wp_ajax_wp_ai_optimize_seo', [$this, 'ajax_optimize_seo']);
+        add_action('wp_ajax_wp_ai_moderate_comment', [$this, 'ajax_moderate_comment']);
+    }
+    
+    public function generate_text($prompt, $options = []) {
+        if (empty($this->api_key)) {
+            return new WP_Error('no_api_key', __('OpenAI API key not configured.', 'wp-ai-integration'));
+        }
+        
+        $defaults = [
+            'model' => 'gpt-3.5-turbo',
+            'max_tokens' => 1000,
+            'temperature' => 0.7,
+            'top_p' => 1,
+            'frequency_penalty' => 0,
+            'presence_penalty' => 0,
+        ];
+        
+        $options = wp_parse_args($options, $defaults);
+        
+        $body = [
+            'model' => $options['model'],
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => $prompt
+                ]
+            ],
+            'max_tokens' => $options['max_tokens'],
+            'temperature' => $options['temperature'],
+            'top_p' => $options['top_p'],
+            'frequency_penalty' => $options['frequency_penalty'],
+            'presence_penalty' => $options['presence_penalty'],
+        ];
+        
+        $response = wp_remote_post($this->api_url . 'chat/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->api_key,
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode($body),
+            'timeout' => 60,
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['error'])) {
+            return new WP_Error('openai_error', $data['error']['message']);
+        }
+        
+        return $data['choices'][0]['message']['content'] ?? '';
+    }
+    
+    public function generate_embeddings($text) {
+        if (empty($this->api_key)) {
+            return new WP_Error('no_api_key', __('OpenAI API key not configured.', 'wp-ai-integration'));
+        }
+        
+        $body = [
+            'model' => 'text-embedding-ada-002',
+            'input' => $text,
+        ];
+        
+        $response = wp_remote_post($this->api_url . 'embeddings', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->api_key,
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode($body),
+            'timeout' => 30,
+        ]);
+        
+        if (is_wp_error($response)) {
+            return $response;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (isset($data['error'])) {
+            return new WP_Error('openai_error', $data['error']['message']);
+        }
+        
+        return $data['data'][0]['embedding'] ?? [];
+    }
+    
+    public function moderate_content($content) {
+        if (empty($this->api_key)) {
+            return false;
+        }
+        
+        $body = [
+            'input' => $content,
+        ];
+        
+        $response = wp_remote_post($this->api_url . 'moderations', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->api_key,
+                'Content-Type' => 'application/json',
+            ],
+            'body' => json_encode($body),
+            'timeout' => 30,
+        ]);
+        
+        if (is_wp_error($response)) {
+            return false;
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        return $data['results'][0]['flagged'] ?? false;
+    }
+    
+    public function ajax_generate_content() {
+        check_ajax_referer('wp_ai_nonce', 'nonce');
+        
+        if (!current_user_can('edit_posts')) {
+            wp_die(__('Permission denied.', 'wp-ai-integration'));
+        }
+        
+        $topic = sanitize_text_field($_POST['topic'] ?? '');
+        $tone = sanitize_text_field($_POST['tone'] ?? 'professional');
+        $length = sanitize_text_field($_POST['length'] ?? 'medium');
+        
+        if (empty($topic)) {
+            wp_die(__('Topic is required.', 'wp-ai-integration'));
+        }
+        
+        $prompt = $this->build_content_prompt($topic, $tone, $length);
+        $content = $this->generate_text($prompt);
+        
+        if (is_wp_error($content)) {
+            wp_die($content->get_error_message());
+        }
+        
+        wp_send_json_success([
+            'content' => $content,
+            'word_count' => str_word_count(strip_tags($content)),
+        ]);
+    }
+    
+    private function build_content_prompt($topic, $tone, $length) {
+        $length_map = [
+            'short' => '300-400 words',
+            'medium' => '600-800 words',
+            'long' => '1000-1200 words',
+        ];
+        
+        $tone_instructions = [
+            'professional' => 'professional and authoritative',
+            'casual' => 'casual and conversational',
+            'creative' => 'creative and engaging',
+            'technical' => 'technical and detailed',
+        ];
+        
+        return sprintf(
+            "Write a %s blog post about '%s' in a %s tone. The post should be %s long, well-structured with clear headings, and include practical examples where relevant. Make it engaging and informative for readers.",
+            $tone_instructions[$tone],
+            $topic,
+            $tone_instructions[$tone],
+            $length_map[$length]
+        );
+    }
+}
+```
+
+## Building AI-Powered Gutenberg Blocks
+
+### 1. AI Content Generator Block
+
+```php title="wp-ai-integration/includes/class-gutenberg-blocks.php"
+<?php
+
+class WP_AI_Gutenberg_Blocks {
+    
+    public function __construct() {
+        add_action('init', [$this, 'register_blocks']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueue_block_editor_assets']);
+    }
+    
+    public function register_blocks() {
+        // Register AI Content Generator block
+        register_block_type('wp-ai/content-generator', [
+            'editor_script' => 'wp-ai-content-generator-block',
+            'render_callback' => [$this, 'render_content_generator_block'],
+            'attributes' => [
+                'topic' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'tone' => [
+                    'type' => 'string',
+                    'default' => 'professional',
+                ],
+                'length' => [
+                    'type' => 'string',
+                    'default' => 'medium',
+                ],
+                'generatedContent' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'isGenerating' => [
+                    'type' => 'boolean',
+                    'default' => false,
+                ],
+            ],
+        ]);
+        
+        // Register AI SEO Optimizer block
+        register_block_type('wp-ai/seo-optimizer', [
+            'editor_script' => 'wp-ai-seo-optimizer-block',
+            'render_callback' => [$this, 'render_seo_optimizer_block'],
+            'attributes' => [
+                'content' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'targetKeyword' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'metaDescription' => [
+                    'type' => 'string',
+                    'default' => '',
+                ],
+                'suggestions' => [
+                    'type' => 'array',
+                    'default' => [],
+                ],
+            ],
+        ]);
+        
+        // Register AI Image Alt Text Generator block
+        register_block_type('wp-ai/image-alt-generator', [
+            'editor_script' => 'wp-ai-image-alt-block',
+            'render_callback' => [$this, 'render_image_alt_block'],
+        ]);
+    }
+    
+    public function enqueue_block_editor_assets() {
+        wp_enqueue_script(
+            'wp-ai-blocks',
+            WP_AI_INTEGRATION_PLUGIN_URL . 'assets/js/blocks.js',
+            ['wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-api-fetch'],
+            WP_AI_INTEGRATION_VERSION
+        );
+        
+        wp_enqueue_style(
+            'wp-ai-blocks-editor',
+            WP_AI_INTEGRATION_PLUGIN_URL . 'assets/css/blocks-editor.css',
+            ['wp-edit-blocks'],
+            WP_AI_INTEGRATION_VERSION
+        );
+        
+        wp_localize_script('wp-ai-blocks', 'wpAiBlocks', [
+            'apiUrl' => rest_url('wp-ai/v1/'),
+            'nonce' => wp_create_nonce('wp_rest'),
+        ]);
+    }
+    
+    public function render_content_generator_block($attributes) {
+        if (empty($attributes['generatedContent'])) {
+            return '';
+        }
+        
+        return '<div class="wp-ai-generated-content">' . 
+               wp_kses_post($attributes['generatedContent']) . 
+               '</div>';
+    }
+    
+    public function render_seo_optimizer_block($attributes) {
+        // This block is editor-only, no frontend rendering
+        return '';
+    }
+    
+    public function render_image_alt_block($attributes) {
+        // This block enhances existing image blocks, no direct rendering
+        return '';
+    }
+}
+```
+
+### 2. JavaScript for Gutenberg Blocks
+
+```javascript title="wp-ai-integration/assets/js/blocks.js"
+(function(wp) {
+    const { registerBlockType } = wp.blocks;
+    const { createElement: e, Component, Fragment } = wp.element;
+    const { 
+        PanelBody, 
+        TextControl, 
+        SelectControl, 
+        Button, 
+        Spinner,
+        Notice,
+        TextareaControl
+    } = wp.components;
+    const { InspectorControls, RichText, useBlockProps } = wp.blockEditor;
+    const { apiFetch } = wp;
+
+    // AI Content Generator Block
+    registerBlockType('wp-ai/content-generator', {
+        title: 'AI Content Generator',
+        icon: 'admin-post',
+        category: 'widgets',
+        description: 'Generate content using AI based on topic and preferences.',
+        
+        attributes: {
+            topic: {
+                type: 'string',
+                default: '',
+            },
+            tone: {
+                type: 'string',
+                default: 'professional',
+            },
+            length: {
+                type: 'string',
+                default: 'medium',
+            },
+            generatedContent: {
+                type: 'string',
+                default: '',
+            },
+            isGenerating: {
+                type: 'boolean',
+                default: false,
+            },
+        },
+
+        edit: function(props) {
+            const { attributes, setAttributes } = props;
+            const { topic, tone, length, generatedContent, isGenerating } = attributes;
+            const blockProps = useBlockProps();
+
+            const generateContent = async () => {
+                if (!topic.trim()) {
+                    alert('Please enter a topic first.');
+                    return;
+                }
+
+                setAttributes({ isGenerating: true });
+
+                try {
+                    const response = await apiFetch({
+                        path: '/wp-ai/v1/generate-content',
+                        method: 'POST',
+                        data: {
+                            topic: topic,
+                            tone: tone,
+                            length: length,
+                        },
+                    });
+
+                    setAttributes({
+                        generatedContent: response.content,
+                        isGenerating: false,
+                    });
+                } catch (error) {
+                    console.error('Error generating content:', error);
+                    alert('Failed to generate content. Please try again.');
+                    setAttributes({ isGenerating: false });
+                }
+            };
+
+            const clearContent = () => {
+                setAttributes({ generatedContent: '' });
+            };
+
+            return e(Fragment, {},
+                e(InspectorControls, {},
+                    e(PanelBody, { title: 'Content Settings', initialOpen: true },
+                        e(TextControl, {
+                            label: 'Topic',
+                            value: topic,
+                            onChange: (value) => setAttributes({ topic: value }),
+                            placeholder: 'Enter the topic for content generation...',
+                        }),
+                        e(SelectControl, {
+                            label: 'Tone',
+                            value: tone,
+                            options: [
+                                { label: 'Professional', value: 'professional' },
+                                { label: 'Casual', value: 'casual' },
+                                { label: 'Creative', value: 'creative' },
+                                { label: 'Technical', value: 'technical' },
+                            ],
+                            onChange: (value) => setAttributes({ tone: value }),
+                        }),
+                        e(SelectControl, {
+                            label: 'Length',
+                            value: length,
+                            options: [
+                                { label: 'Short (300-400 words)', value: 'short' },
+                                { label: 'Medium (600-800 words)', value: 'medium' },
+                                { label: 'Long (1000-1200 words)', value: 'long' },
+                            ],
+                            onChange: (value) => setAttributes({ length: value }),
+                        }),
+                        e(Button, {
+                            isPrimary: true,
+                            onClick: generateContent,
+                            disabled: isGenerating || !topic.trim(),
+                        }, isGenerating ? 'Generating...' : 'Generate Content'),
+                        generatedContent && e(Button, {
+                            isDestructive: true,
+                            onClick: clearContent,
+                            style: { marginTop: '10px' },
+                        }, 'Clear Content')
+                    )
+                ),
+                e('div', blockProps,
+                    isGenerating && e('div', { className: 'wp-ai-generating' },
+                        e(Spinner),
+                        e('p', {}, 'Generating content with AI...')
+                    ),
+                    !isGenerating && !generatedContent && e('div', { className: 'wp-ai-placeholder' },
+                        e('h4', {}, 'AI Content Generator'),
+                        e('p', {}, 'Configure settings in the sidebar and click "Generate Content" to create AI-powered content.'),
+                        topic && e('p', {}, `Topic: ${topic}`)
+                    ),
+                    !isGenerating && generatedContent && e(RichText, {
+                        tagName: 'div',
+                        className: 'wp-ai-generated-content',
+                        value: generatedContent,
+                        onChange: (value) => setAttributes({ generatedContent: value }),
+                        placeholder: 'Generated content will appear here...',
+                    })
+                )
+            );
+        },
+
+        save: function(props) {
+            const { attributes } = props;
+            const { generatedContent } = attributes;
+            const blockProps = useBlockProps.save();
+
+            if (!generatedContent) {
+                return null;
+            }
+
+            return e(RichText.Content, {
+                ...blockProps,
+                tagName: 'div',
+                className: 'wp-ai-generated-content',
+                value: generatedContent,
+            });
+        },
+    });
+
+    // AI SEO Optimizer Block
+    registerBlockType('wp-ai/seo-optimizer', {
+        title: 'AI SEO Optimizer',
+        icon: 'search',
+        category: 'widgets',
+        description: 'Optimize your content for SEO using AI suggestions.',
+        
+        attributes: {
+            content: {
+                type: 'string',
+                default: '',
+            },
+            targetKeyword: {
+                type: 'string',
+                default: '',
+            },
+            metaDescription: {
+                type: 'string',
+                default: '',
+            },
+            suggestions: {
+                type: 'array',
+                default: [],
+            },
+        },
+
+        edit: function(props) {
+            const { attributes, setAttributes } = props;
+            const { content, targetKeyword, metaDescription, suggestions } = attributes;
+            const blockProps = useBlockProps();
+
+            const analyzeSEO = async () => {
+                if (!content.trim() || !targetKeyword.trim()) {
+                    alert('Please enter content and target keyword.');
+                    return;
+                }
+
+                try {
+                    const response = await apiFetch({
+                        path: '/wp-ai/v1/analyze-seo',
+                        method: 'POST',
+                        data: {
+                            content: content,
+                            targetKeyword: targetKeyword,
+                        },
+                    });
+
+                    setAttributes({
+                        suggestions: response.suggestions,
+                        metaDescription: response.metaDescription,
+                    });
+                } catch (error) {
+                    console.error('Error analyzing SEO:', error);
+                    alert('Failed to analyze SEO. Please try again.');
+                }
+            };
+
+            return e(Fragment, {},
+                e(InspectorControls, {},
+                    e(PanelBody, { title: 'SEO Analysis', initialOpen: true },
+                        e(TextControl, {
+                            label: 'Target Keyword',
+                            value: targetKeyword,
+                            onChange: (value) => setAttributes({ targetKeyword: value }),
+                            placeholder: 'Enter your target keyword...',
+                        }),
+                        e(Button, {
+                            isPrimary: true,
+                            onClick: analyzeSEO,
+                            disabled: !content.trim() || !targetKeyword.trim(),
+                        }, 'Analyze SEO')
+                    )
+                ),
+                e('div', blockProps,
+                    e('h4', {}, 'AI SEO Optimizer'),
+                    e(TextareaControl, {
+                        label: 'Content to Analyze',
+                        value: content,
+                        onChange: (value) => setAttributes({ content: value }),
+                        placeholder: 'Paste your content here for SEO analysis...',
+                        rows: 6,
+                    }),
+                    suggestions.length > 0 && e('div', { className: 'wp-ai-seo-suggestions' },
+                        e('h5', {}, 'SEO Suggestions:'),
+                        e('ul', {},
+                            suggestions.map((suggestion, index) =>
+                                e('li', { key: index }, suggestion)
+                            )
+                        )
+                    ),
+                    metaDescription && e('div', { className: 'wp-ai-meta-description' },
+                        e('h5', {}, 'Suggested Meta Description:'),
+                        e('p', {}, metaDescription)
+                    )
+                )
+            );
+        },
+
+        save: function() {
+            // This block doesn't render on frontend
+            return null;
+        },
+    });
+
+})(window.wp);
+```
+
+## REST API Endpoints
+
+```php title="wp-ai-integration/includes/class-rest-api.php"
+<?php
+
+class WP_AI_REST_API {
+    
+    public function __construct() {
+        add_action('rest_api_init', [$this, 'register_routes']);
+    }
+    
+    public function register_routes() {
+        register_rest_route('wp-ai/v1', '/generate-content', [
+            'methods' => 'POST',
+            'callback' => [$this, 'generate_content'],
+            'permission_callback' => [$this, 'check_permissions'],
+            'args' => [
+                'topic' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'tone' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'professional',
+                    'enum' => ['professional', 'casual', 'creative', 'technical'],
+                ],
+                'length' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'medium',
+                    'enum' => ['short', 'medium', 'long'],
+                ],
+            ],
+        ]);
+        
+        register_rest_route('wp-ai/v1', '/analyze-seo', [
+            'methods' => 'POST',
+            'callback' => [$this, 'analyze_seo'],
+            'permission_callback' => [$this, 'check_permissions'],
+            'args' => [
+                'content' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'wp_kses_post',
+                ],
+                'targetKeyword' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+            ],
+        ]);
+        
+        register_rest_route('wp-ai/v1', '/moderate-comment', [
+            'methods' => 'POST',
+            'callback' => [$this, 'moderate_comment'],
+            'permission_callback' => [$this, 'check_permissions'],
+            'args' => [
+                'comment' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_textarea_field',
+                ],
+            ],
+        ]);
+        
+        register_rest_route('wp-ai/v1', '/enhance-images', [
+            'methods' => 'POST',
+            'callback' => [$this, 'enhance_images'],
+            'permission_callback' => [$this, 'check_permissions'],
+            'args' => [
+                'post_id' => [
+                    'required' => true,
+                    'type' => 'integer',
+                    'sanitize_callback' => 'absint',
+                ],
+            ],
+        ]);
+    }
+    
+    public function check_permissions() {
+        return current_user_can('edit_posts');
+    }
+    
+    public function generate_content(WP_REST_Request $request) {
+        $ai_service = new WP_AI_Service();
+        
+        $topic = $request->get_param('topic');
+        $tone = $request->get_param('tone');
+        $length = $request->get_param('length');
+        
+        $prompt = $this->build_content_prompt($topic, $tone, $length);
+        $content = $ai_service->generate_text($prompt);
+        
+        if (is_wp_error($content)) {
+            return new WP_Error(
+                'generation_failed',
+                $content->get_error_message(),
+                ['status' => 500]
+            );
+        }
+        
+        // Check if content needs moderation
+        $flagged = $ai_service->moderate_content($content);
+        if ($flagged) {
+            return new WP_Error(
+                'content_flagged',
+                __('Generated content was flagged by moderation. Please try a different topic.', 'wp-ai-integration'),
+                ['status' => 400]
+            );
+        }
+        
+        return rest_ensure_response([
+            'content' => $content,
+            'word_count' => str_word_count(strip_tags($content)),
+            'character_count' => strlen($content),
+        ]);
+    }
+    
+    public function analyze_seo(WP_REST_Request $request) {
+        $ai_service = new WP_AI_Service();
+        
+        $content = $request->get_param('content');
+        $target_keyword = $request->get_param('targetKeyword');
+        
+        $seo_prompt = sprintf(
+            "Analyze the following content for SEO optimization with the target keyword '%s'. Provide specific suggestions for improvement and generate an optimized meta description (150-160 characters):\n\n%s",
+            $target_keyword,
+            $content
+        );
+        
+        $analysis = $ai_service->generate_text($seo_prompt, [
+            'max_tokens' => 800,
+            'temperature' => 0.3,
+        ]);
+        
+        if (is_wp_error($analysis)) {
+            return new WP_Error(
+                'analysis_failed',
+                $analysis->get_error_message(),
+                ['status' => 500]
+            );
+        }
+        
+        // Parse the analysis into suggestions and meta description
+        $parsed = $this->parse_seo_analysis($analysis);
+        
+        return rest_ensure_response($parsed);
+    }
+    
+    public function moderate_comment(WP_REST_Request $request) {
+        $ai_service = new WP_AI_Service();
+        
+        $comment = $request->get_param('comment');
+        $flagged = $ai_service->moderate_content($comment);
+        
+        return rest_ensure_response([
+            'flagged' => $flagged,
+            'action' => $flagged ? 'hold_for_review' : 'approve',
+        ]);
+    }
+    
+    public function enhance_images(WP_REST_Request $request) {
+        $post_id = $request->get_param('post_id');
+        $post = get_post($post_id);
+        
+        if (!$post) {
+            return new WP_Error('post_not_found', 'Post not found', ['status' => 404]);
+        }
+        
+        $enhanced_count = $this->generate_alt_text_for_post($post);
+        
+        return rest_ensure_response([
+            'enhanced_images' => $enhanced_count,
+            'message' => sprintf(__('Enhanced %d images with AI-generated alt text.', 'wp-ai-integration'), $enhanced_count),
+        ]);
+    }
+    
+    private function build_content_prompt($topic, $tone, $length) {
+        $length_map = [
+            'short' => '300-400 words',
+            'medium' => '600-800 words',
+            'long' => '1000-1200 words',
+        ];
+        
+        $tone_instructions = [
+            'professional' => 'professional and authoritative',
+            'casual' => 'casual and conversational',
+            'creative' => 'creative and engaging',
+            'technical' => 'technical and detailed',
+        ];
+        
+        return sprintf(
+            "Write a %s blog post about '%s' in a %s tone. The post should be %s long, well-structured with clear headings, and include practical examples where relevant. Make it engaging and informative for readers. Format it in HTML with proper heading tags (h2, h3) and paragraph tags.",
+            $tone_instructions[$tone],
+            $topic,
+            $tone_instructions[$tone],
+            $length_map[$length]
+        );
+    }
+    
+    private function parse_seo_analysis($analysis) {
+        // Simple parsing logic - in production, you might want more sophisticated parsing
+        $lines = explode("\n", $analysis);
+        $suggestions = [];
+        $meta_description = '';
+        
+        $in_suggestions = false;
+        $in_meta = false;
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line)) continue;
+            
+            if (stripos($line, 'suggestion') !== false || stripos($line, 'recommendation') !== false) {
+                $in_suggestions = true;
+                $in_meta = false;
+                continue;
+            }
+            
+            if (stripos($line, 'meta description') !== false) {
+                $in_meta = true;
+                $in_suggestions = false;
+                continue;
+            }
+            
+            if ($in_suggestions && (strpos($line, '•') === 0 || strpos($line, '-') === 0 || strpos($line, '1.') === 0)) {
+                $suggestions[] = ltrim($line, '•- 0123456789.');
+            }
+            
+            if ($in_meta && strlen($line) >= 120 && strlen($line) <= 160) {
+                $meta_description = $line;
+            }
+        }
+        
+        return [
+            'suggestions' => $suggestions,
+            'metaDescription' => $meta_description,
+            'fullAnalysis' => $analysis,
+        ];
+    }
+    
+    private function generate_alt_text_for_post($post) {
+        $ai_service = new WP_AI_Service();
+        $enhanced_count = 0;
+        
+        // Find all images in post content
+        preg_match_all('/<img[^>]+>/i', $post->post_content, $img_tags);
+        
+        foreach ($img_tags[0] as $img_tag) {
+            // Extract src and existing alt
+            preg_match('/src="([^"]+)"/i', $img_tag, $src_match);
+            preg_match('/alt="([^"]*)"/i', $img_tag, $alt_match);
+            
+            if (!isset($src_match[1])) continue;
+            
+            $src = $src_match[1];
+            $existing_alt = isset($alt_match[1]) ? $alt_match[1] : '';
+            
+            // Skip if alt text already exists and is meaningful
+            if (!empty($existing_alt) && strlen($existing_alt) > 10) {
+                continue;
+            }
+            
+            // Generate AI alt text based on context
+            $context = sprintf(
+                "Post title: %s\nPost excerpt: %s\nImage URL: %s",
+                $post->post_title,
+                wp_trim_words($post->post_content, 50),
+                $src
+            );
+            
+            $prompt = "Based on the following context, generate a descriptive alt text (maximum 125 characters) for an image. Focus on what would be most relevant for accessibility and SEO:\n\n" . $context;
+            
+            $alt_text = $ai_service->generate_text($prompt, [
+                'max_tokens' => 50,
+                'temperature' => 0.3,
+            ]);
+            
+            if (!is_wp_error($alt_text)) {
+                $alt_text = trim(strip_tags($alt_text));
+                $alt_text = substr($alt_text, 0, 125); // Ensure max length
+                
+                // Update the image tag with new alt text
+                $new_img_tag = preg_replace('/alt="[^"]*"/i', 'alt="' . esc_attr($alt_text) . '"', $img_tag);
+                if (!preg_match('/alt=/i', $img_tag)) {
+                    $new_img_tag = str_replace('<img', '<img alt="' . esc_attr($alt_text) . '"', $img_tag);
+                }
+                
+                // Replace in post content
+                $post->post_content = str_replace($img_tag, $new_img_tag, $post->post_content);
+                $enhanced_count++;
+            }
+        }
+        
+        // Update post if images were enhanced
+        if ($enhanced_count > 0) {
+            wp_update_post([
+                'ID' => $post->ID,
+                'post_content' => $post->post_content,
+            ]);
+        }
+        
+        return $enhanced_count;
+    }
+}
+```
+
+## Advanced Features
+
+### 1. Comment Moderation with AI
+
+```php title="wp-ai-integration/includes/class-comment-moderator.php"
+<?php
+
+class WP_AI_Comment_Moderator {
+    
+    public function __construct() {
+        add_filter('pre_comment_approved', [$this, 'moderate_comment'], 10, 2);
+        add_action('comment_post', [$this, 'analyze_comment_sentiment'], 10, 3);
+    }
+    
+    public function moderate_comment($approved, $comment_data) {
+        $ai_service = new WP_AI_Service();
+        
+        $comment_content = $comment_data['comment_content'];
+        $flagged = $ai_service->moderate_content($comment_content);
+        
+        if ($flagged) {
+            // Hold for manual review
+            return 0;
+        }
+        
+        // Additional AI-based spam detection
+        $spam_score = $this->detect_spam($comment_content, $comment_data);
+        
+        if ($spam_score > 0.8) {
+            return 'spam';
+        } elseif ($spam_score > 0.5) {
+            return 0; // Hold for review
+        }
+        
+        return $approved;
+    }
+    
+    private function detect_spam($content, $comment_data) {
+        $ai_service = new WP_AI_Service();
+        
+        $prompt = sprintf(
+            "Analyze this comment for spam likelihood (0.0 = definitely not spam, 1.0 = definitely spam). Consider factors like promotional content, irrelevant links, generic messages, and suspicious patterns. Return only a number between 0.0 and 1.0.\n\nComment: %s\nAuthor: %s\nEmail: %s",
+            $content,
+            $comment_data['comment_author'],
+            $comment_data['comment_author_email']
+        );
+        
+        $response = $ai_service->generate_text($prompt, [
+            'max_tokens' => 10,
+            'temperature' => 0.1,
+        ]);
+        
+        if (is_wp_error($response)) {
+            return 0; // Default to not spam if AI fails
+        }
+        
+        // Extract numeric value
+        preg_match('/([0-9]*\.?[0-9]+)/', $response, $matches);
+        return isset($matches[1]) ? (float)$matches[1] : 0;
+    }
+    
+    public function analyze_comment_sentiment($comment_id, $approved, $comment_data) {
+        if ($approved !== 1) {
+            return; // Only analyze approved comments
+        }
+        
+        $ai_service = new WP_AI_Service();
+        
+        $prompt = sprintf(
+            "Analyze the sentiment of this comment and categorize it as: positive, negative, or neutral. Also provide a confidence score (0-100). Format: sentiment|confidence\n\nComment: %s",
+            $comment_data['comment_content']
+        );
+        
+        $response = $ai_service->generate_text($prompt, [
+            'max_tokens' => 20,
+            'temperature' => 0.1,
+        ]);
+        
+        if (!is_wp_error($response)) {
+            $parts = explode('|', strtolower(trim($response)));
+            if (count($parts) >= 2) {
+                update_comment_meta($comment_id, 'ai_sentiment', $parts[0]);
+                update_comment_meta($comment_id, 'ai_confidence', intval($parts[1]));
+            }
+        }
+    }
+}
+
+new WP_AI_Comment_Moderator();
+```
+
+### 2. Smart Content Recommendations
+
+```php title="wp-ai-integration/includes/class-content-recommendations.php"
+<?php
+
+class WP_AI_Content_Recommendations {
+    
+    public function __construct() {
+        add_action('wp_footer', [$this, 'add_recommendation_widget']);
+        add_action('wp_ajax_get_ai_recommendations', [$this, 'get_recommendations']);
+        add_action('wp_ajax_nopriv_get_ai_recommendations', [$this, 'get_recommendations']);
+    }
+    
+    public function add_recommendation_widget() {
+        if (!is_single()) {
+            return;
+        }
+        
+        global $post;
+        ?>
+        <div id="ai-recommendations" style="margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <h3><?php _e('You might also like:', 'wp-ai-integration'); ?></h3>
+            <div id="ai-recommendations-content">
+                <p><?php _e('Loading personalized recommendations...', 'wp-ai-integration'); ?></p>
+            </div>
+        </div>
+        
+        <script>
+        jQuery(document).ready(function($) {
+            $.post('<?php echo admin_url('admin-ajax.php'); ?>', {
+                action: 'get_ai_recommendations',
+                post_id: <?php echo $post->ID; ?>,
+                nonce: '<?php echo wp_create_nonce('ai_recommendations'); ?>'
+            }, function(response) {
+                if (response.success) {
+                    $('#ai-recommendations-content').html(response.data.html);
+                }
+            });
+        });
+        </script>
+        <?php
+    }
+    
+    public function get_recommendations() {
+        check_ajax_referer('ai_recommendations', 'nonce');
+        
+        $post_id = intval($_POST['post_id']);
+        $post = get_post($post_id);
+        
+        if (!$post) {
+            wp_die();
+        }
+        
+        $recommendations = $this->generate_recommendations($post);
+        
+        ob_start();
+        if (!empty($recommendations)) {
+            echo '<ul>';
+            foreach ($recommendations as $rec_post) {
+                printf(
+                    '<li><a href="%s">%s</a></li>',
+                    get_permalink($rec_post->ID),
+                    esc_html($rec_post->post_title)
+                );
+            }
+            echo '</ul>';
+        } else {
+            echo '<p>' . __('No recommendations available at this time.', 'wp-ai-integration') . '</p>';
+        }
+        $html = ob_get_clean();
+        
+        wp_send_json_success(['html' => $html]);
+    }
+    
+    private function generate_recommendations($post) {
+        $ai_service = new WP_AI_Service();
+        
+        // Get post content and metadata
+        $content = $post->post_title . ' ' . strip_tags($post->post_content);
+        $categories = wp_get_post_categories($post->ID, ['fields' => 'names']);
+        $tags = wp_get_post_tags($post->ID, ['fields' => 'names']);
+        
+        // Generate content embedding
+        $embedding = $ai_service->generate_embeddings($content);
+        
+        if (is_wp_error($embedding)) {
+            return [];
+        }
+        
+        // Get all published posts
+        $all_posts = get_posts([
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'numberposts' => 100,
+            'exclude' => [$post->ID],
+            'meta_query' => [
+                [
+                    'key' => 'ai_embedding',
+                    'compare' => 'EXISTS',
+                ],
+            ],
+        ]);
+        
+        $similarities = [];
+        
+        foreach ($all_posts as $candidate_post) {
+            $candidate_embedding = get_post_meta($candidate_post->ID, 'ai_embedding', true);
+            
+            if (empty($candidate_embedding)) {
+                continue;
+            }
+            
+            $similarity = $this->cosine_similarity($embedding, $candidate_embedding);
+            $similarities[] = [
+                'post' => $candidate_post,
+                'similarity' => $similarity,
+            ];
+        }
+        
+        // Sort by similarity and return top 5
+        usort($similarities, function($a, $b) {
+            return $b['similarity'] <=> $a['similarity'];
+        });
+        
+        return array_slice(array_column($similarities, 'post'), 0, 5);
+    }
+    
+    private function cosine_similarity($vector_a, $vector_b) {
+        $dot_product = 0;
+        $magnitude_a = 0;
+        $magnitude_b = 0;
+        
+        for ($i = 0; $i < count($vector_a); $i++) {
+            $dot_product += $vector_a[$i] * $vector_b[$i];
+            $magnitude_a += $vector_a[$i] ** 2;
+            $magnitude_b += $vector_b[$i] ** 2;
+        }
+        
+        $magnitude_a = sqrt($magnitude_a);
+        $magnitude_b = sqrt($magnitude_b);
+        
+        if ($magnitude_a == 0 || $magnitude_b == 0) {
+            return 0;
+        }
+        
+        return $dot_product / ($magnitude_a * $magnitude_b);
+    }
+}
+
+new WP_AI_Content_Recommendations();
+```
+
+## Plugin Settings Page
+
+```php title="wp-ai-integration/includes/admin-page.php"
+<?php
+if (!current_user_can('manage_options')) {
+    wp_die(__('You do not have sufficient permissions to access this page.'));
+}
+
+// Handle form submission
+if (isset($_POST['submit'])) {
+    check_admin_referer('wp_ai_integration_settings');
+    
+    update_option('wp_ai_integration_api_key', sanitize_text_field($_POST['api_key']));
+    update_option('wp_ai_integration_model', sanitize_text_field($_POST['model']));
+    update_option('wp_ai_integration_auto_moderation', isset($_POST['auto_moderation']));
+    update_option('wp_ai_integration_auto_alt_text', isset($_POST['auto_alt_text']));
+    
+    echo '<div class="notice notice-success"><p>' . __('Settings saved successfully!', 'wp-ai-integration') . '</p></div>';
+}
+
+$api_key = get_option('wp_ai_integration_api_key', '');
+$model = get_option('wp_ai_integration_model', 'gpt-3.5-turbo');
+$auto_moderation = get_option('wp_ai_integration_auto_moderation', false);
+$auto_alt_text = get_option('wp_ai_integration_auto_alt_text', false);
+?>
+
+<div class="wrap">
+    <h1><?php _e('AI Integration Settings', 'wp-ai-integration'); ?></h1>
+    
+    <form method="post" action="">
+        <?php wp_nonce_field('wp_ai_integration_settings'); ?>
+        
+        <table class="form-table">
+            <tr>
+                <th scope="row">
+                    <label for="api_key"><?php _e('OpenAI API Key', 'wp-ai-integration'); ?></label>
+                </th>
+                <td>
+                    <input type="password" id="api_key" name="api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text" />
+                    <p class="description">
+                        <?php _e('Get your API key from OpenAI dashboard.', 'wp-ai-integration'); ?>
+                        <a href="https://platform.openai.com/api-keys" target="_blank"><?php _e('Get API Key', 'wp-ai-integration'); ?></a>
+                    </p>
+                </td>
+            </tr>
+            
+            <tr>
+                <th scope="row">
+                    <label for="model"><?php _e('Default AI Model', 'wp-ai-integration'); ?></label>
+                </th>
+                <td>
+                    <select id="model" name="model">
+                        <option value="gpt-3.5-turbo" <?php selected($model, 'gpt-3.5-turbo'); ?>>GPT-3.5 Turbo</option>
+                        <option value="gpt-4" <?php selected($model, 'gpt-4'); ?>>GPT-4</option>
+                        <option value="gpt-4-turbo-preview" <?php selected($model, 'gpt-4-turbo-preview'); ?>>GPT-4 Turbo</option>
+                    </select>
+                    <p class="description"><?php _e('Choose the default AI model for content generation.', 'wp-ai-integration'); ?></p>
+                </td>
+            </tr>
+            
+            <tr>
+                <th scope="row"><?php _e('Features', 'wp-ai-integration'); ?></th>
+                <td>
+                    <fieldset>
+                        <label>
+                            <input type="checkbox" name="auto_moderation" value="1" <?php checked($auto_moderation); ?> />
+                            <?php _e('Enable automatic comment moderation', 'wp-ai-integration'); ?>
+                        </label>
+                        <br />
+                        <label>
+                            <input type="checkbox" name="auto_alt_text" value="1" <?php checked($auto_alt_text); ?> />
+                            <?php _e('Auto-generate alt text for images', 'wp-ai-integration'); ?>
+                        </label>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+        
+        <?php submit_button(); ?>
+    </form>
+    
+    <h2><?php _e('Usage Statistics', 'wp-ai-integration'); ?></h2>
+    <div class="ai-stats">
+        <?php
+        $content_generated = get_option('wp_ai_content_generated_count', 0);
+        $comments_moderated = get_option('wp_ai_comments_moderated_count', 0);
+        $images_enhanced = get_option('wp_ai_images_enhanced_count', 0);
+        ?>
+        <p><strong><?php _e('Content pieces generated:', 'wp-ai-integration'); ?></strong> <?php echo number_format($content_generated); ?></p>
+        <p><strong><?php _e('Comments moderated:', 'wp-ai-integration'); ?></strong> <?php echo number_format($comments_moderated); ?></p>
+        <p><strong><?php _e('Images enhanced:', 'wp-ai-integration'); ?></strong> <?php echo number_format($images_enhanced); ?></p>
+    </div>
+</div>
+```
+
+## CSS Styling
+
+```css title="wp-ai-integration/assets/css/blocks-editor.css"
+.wp-ai-generating {
+    text-align: center;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.wp-ai-generating .components-spinner {
+    margin-bottom: 10px;
+}
+
+.wp-ai-placeholder {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f9f9f9;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    color: #666;
+}
+
+.wp-ai-generated-content {
+    background: #fff;
+    border: 1px solid #e1e1e1;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 10px 0;
+}
+
+.wp-ai-seo-suggestions {
+    background: #e7f3ff;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.wp-ai-seo-suggestions ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.wp-ai-meta-description {
+    background: #f0f8e7;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.ai-stats {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.ai-stats p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+#ai-recommendations {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+#ai-recommendations h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+#ai-recommendations ul {
+    list-style: none;
+    padding: 0;
+}
+
+#ai-recommendations li {
+    margin: 10px 0;
+    padding: 10px;
+    background: #fff;
+    border-radius: 4px;
+    border-left: 3px solid #0073aa;
+}
+
+#ai-recommendations a {
+    text-decoration: none;
+    color: #0073aa;
+    font-weight: 500;
+}
+
+#ai-recommendations a:hover {
+    text-decoration: underline;
+}
+```
+
+## Database Schema
+
+```sql title="wp-ai-integration/database/schema.sql"
+-- Add custom tables for AI functionality
+
+-- AI Usage Logs
+CREATE TABLE IF NOT EXISTS {$wpdb->prefix}ai_usage_logs (
+    id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    user_id bigint(20) unsigned NOT NULL,
+    action varchar(50) NOT NULL,
+    tokens_used int(11) DEFAULT 0,
+    cost decimal(10,6) DEFAULT 0.000000,
+    model varchar(50) DEFAULT '',
+    prompt_hash varchar(64) DEFAULT '',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY user_id (user_id),
+    KEY action (action),
+    KEY created_at (created_at)
+);
+
+-- Content embeddings cache
+CREATE TABLE IF NOT EXISTS {$wpdb->prefix}ai_embeddings (
+    id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    content_hash varchar(64) NOT NULL,
+    content_type varchar(50) NOT NULL,
+    object_id bigint(20) unsigned NOT NULL,
+    embedding longtext NOT NULL,
+    model varchar(50) DEFAULT 'text-embedding-ada-002',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY content_hash (content_hash),
+    KEY object_id (object_id),
+    KEY content_type (content_type)
+);
+
+-- AI moderation results
+CREATE TABLE IF NOT EXISTS {$wpdb->prefix}ai_moderation (
+    id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    content_id bigint(20) unsigned NOT NULL,
+    content_type varchar(50) NOT NULL,
+    flagged tinyint(1) DEFAULT 0,
+    categories text,
+    confidence decimal(3,2) DEFAULT 0.00,
+    action_taken varchar(50) DEFAULT 'none',
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY content_id (content_id),
+    KEY content_type (content_type),
+    KEY flagged (flagged)
+);
+```
+
+## Security Best Practices
+
+### 1. Rate Limiting
+
+```php title="wp-ai-integration/includes/class-rate-limiter.php"
+<?php
+
+class WP_AI_Rate_Limiter {
+    
+    public static function check_rate_limit($user_id, $action, $limit = 10, $window = 3600) {
+        $transient_key = "ai_rate_limit_{$user_id}_{$action}";
+        $current_count = get_transient($transient_key);
+        
+        if ($current_count === false) {
+            set_transient($transient_key, 1, $window);
+            return true;
+        }
+        
+        if ($current_count >= $limit) {
+            return false;
+        }
+        
+        set_transient($transient_key, $current_count + 1, $window);
+        return true;
+    }
+    
+    public static function get_remaining_requests($user_id, $action, $limit = 10) {
+        $transient_key = "ai_rate_limit_{$user_id}_{$action}";
+        $current_count = get_transient($transient_key);
+        
+        return max(0, $limit - ($current_count ?: 0));
+    }
+}
+```
+
+### 2. Content Validation
+
+```php title="wp-ai-integration/includes/class-content-validator.php"
+<?php
+
+class WP_AI_Content_Validator {
+    
+    public static function validate_prompt($prompt) {
+        // Remove potential injection attempts
+        $cleaned = sanitize_textarea_field($prompt);
+        
+        // Check for suspicious patterns
+        $suspicious_patterns = [
+            '/ignore\s+previous\s+instructions/i',
+            '/system\s*:/i',
+            '/assistant\s*:/i',
+            '/\[.*system.*\]/i',
+            '/\{.*system.*\}/i',
+        ];
+        
+        foreach ($suspicious_patterns as $pattern) {
+            if (preg_match($pattern, $cleaned)) {
+                return new WP_Error('suspicious_prompt', __('Prompt contains suspicious content.', 'wp-ai-integration'));
+            }
+        }
+        
+        // Check length
+        if (strlen($cleaned) > 4000) {
+            return new WP_Error('prompt_too_long', __('Prompt is too long.', 'wp-ai-integration'));
+        }
+        
+        return $cleaned;
+    }
+    
+    public static function validate_generated_content($content) {
+        // Check for potential issues in generated content
+        $content = wp_kses_post($content);
+        
+        // Remove any potential script injections
+        $content = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/mi', '', $content);
+        
+        // Validate content length
+        if (strlen($content) < 50) {
+            return new WP_Error('content_too_short', __('Generated content is too short.', 'wp-ai-integration'));
+        }
+        
+        return $content;
+    }
+}
+```
+
+## Conclusion
+
+This comprehensive WordPress AI integration plugin provides:
+
+- **Custom Gutenberg Blocks**: AI-powered content generation and SEO optimization blocks
+- **Automated Moderation**: AI-based comment filtering and content moderation
+- **Smart Recommendations**: Personalized content suggestions using embeddings
+- **SEO Enhancement**: AI-generated meta descriptions and optimization suggestions
+- **Image Enhancement**: Automatic alt text generation for accessibility
+- **Security Features**: Rate limiting, content validation, and prompt injection protection
+
+## Next Steps
+
+- Add multilingual support for international websites
+- Implement fine-tuning capabilities for domain-specific content
+- Create analytics dashboard for AI usage insights
+- Add integration with popular page builders
+- Develop premium features like advanced analytics and priority support
+
+This plugin demonstrates how AI can significantly enhance WordPress functionality while maintaining security and user experience standards. 🚀

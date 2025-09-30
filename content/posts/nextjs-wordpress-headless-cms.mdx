@@ -1,0 +1,1791 @@
+---
+title: "Building Modern Websites with Next.js and WordPress as a Headless CMS"
+date: '2024-10-03'
+description: Complete guide to creating headless WordPress websites with Next.js. Learn static generation, ISR, authentication, and SEO optimization.
+imageUrl: /images/blog/nextjs-wordpress-headless.jpg
+featured: true
+published: true
+---
+
+# Building Modern Websites with Next.js and WordPress as a Headless CMS
+
+WordPress has evolved from a traditional CMS into a powerful headless content management system. When combined with Next.js, you get the best of both worlds: WordPress's familiar content management interface and Next.js's modern performance capabilities. This comprehensive guide will show you how to build a blazing-fast website using WordPress as a headless CMS with Next.js.
+
+## Prerequisites
+
+Before we start, ensure you have:
+
+- WordPress 6.0+ installation
+- Node.js 18+ and npm/yarn
+- Basic knowledge of React and Next.js
+- WordPress REST API and GraphQL knowledge (helpful but not required)
+- Code editor and terminal access
+
+## Setting Up WordPress for Headless Use
+
+### 1. Install Required WordPress Plugins
+
+```bash
+# Install via WordPress admin or WP-CLI
+wp plugin install wp-graphql
+wp plugin install wp-rest-api
+wp plugin install advanced-custom-fields
+wp plugin install wp-custom-post-type-ui
+wp plugin install wp-graphql-acf
+wp plugin install wp-graphql-gutenberg
+```
+
+Activate all plugins after installation.
+
+### 2. Configure WordPress REST API
+
+```php title="functions.php (Theme or Custom Plugin)"
+<?php
+// Enable REST API for all post types
+add_action('init', function() {
+    add_post_type_support('page', 'custom-fields');
+    add_post_type_support('post', 'custom-fields');
+});
+
+// Add custom fields to REST API response
+add_action('rest_api_init', function() {
+    register_rest_field('post', 'featured_image_url', [
+        'get_callback' => function($post) {
+            $featured_image = get_the_post_thumbnail_url($post['id'], 'large');
+            return $featured_image ?: null;
+        },
+        'update_callback' => null,
+        'schema' => null,
+    ]);
+    
+    register_rest_field('post', 'author_name', [
+        'get_callback' => function($post) {
+            $author = get_user_by('id', $post['author']);
+            return $author ? $author->display_name : null;
+        },
+        'update_callback' => null,
+        'schema' => null,
+    ]);
+    
+    register_rest_field('post', 'categories_info', [
+        'get_callback' => function($post) {
+            $categories = get_the_category($post['id']);
+            return array_map(function($cat) {
+                return [
+                    'id' => $cat->term_id,
+                    'name' => $cat->name,
+                    'slug' => $cat->slug,
+                ];
+            }, $categories);
+        },
+        'update_callback' => null,
+        'schema' => null,
+    ]);
+});
+
+// Remove unnecessary WordPress features
+remove_action('wp_head', 'wp_generator');
+remove_action('wp_head', 'wlwmanifest_link');
+remove_action('wp_head', 'rsd_link');
+remove_action('wp_head', 'wp_shortlink_wp_head');
+remove_action('wp_head', 'adjacent_posts_rel_link_wp_head');
+remove_action('wp_head', 'feed_links_extra', 3);
+remove_action('wp_head', 'feed_links', 2);
+```
+
+### 3. Configure GraphQL Schema
+
+```graphql title="GraphQL Query for Posts"
+query GetAllPosts {
+  posts {
+    nodes {
+      id
+      title
+      slug
+      content
+      excerpt
+      date
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+      author {
+        node {
+          name
+          avatar {
+            url
+          }
+        }
+      }
+      categories {
+        nodes {
+          id
+          name
+          slug
+        }
+      }
+      tags {
+        nodes {
+          name
+          slug
+        }
+      }
+      seo {
+        title
+        metaDesc
+        focuskw
+        opengraphTitle
+        opengraphDescription
+        twitterTitle
+        twitterDescription
+      }
+    }
+  }
+}
+```
+
+## Setting Up Next.js
+
+### 1. Create Next.js Application
+
+```bash
+npx create-next-app@latest wp-headless-site
+cd wp-headless-site
+```
+
+### 2. Install Required Dependencies
+
+```bash
+npm install @apollo/client graphql
+npm install axios
+npm install next-seo
+npm install @next/bundle-analyzer
+npm install react-markdown remark-gfm
+npm install gray-matter date-fns
+npm install sass
+npm install @headlessui/react
+npm install @heroicons/react
+```
+
+### 3. Environment Configuration
+
+```bash title=".env.local"
+NEXT_PUBLIC_WORDPRESS_URL=https://your-wordpress-site.com
+NEXT_PUBLIC_WORDPRESS_API_URL=https://your-wordpress-site.com/wp-json
+NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL=https://your-wordpress-site.com/graphql
+NEXT_PUBLIC_SITE_URL=https://your-nextjs-site.com
+
+# Optional: For protected content
+WORDPRESS_APPLICATION_USERNAME=your_app_username
+WORDPRESS_APPLICATION_PASSWORD=your_app_password
+```
+
+### 4. Next.js Configuration
+
+```javascript title="next.config.mjs"
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: ['your-wordpress-site.com'],
+    formats: ['image/webp', 'image/avif'],
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap',
+      },
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      // Example: redirect old WordPress URLs
+      {
+        source: '/blog/:path*',
+        destination: '/posts/:path*',
+        permanent: true,
+      },
+    ];
+  },
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+};
+
+export default nextConfig;
+```
+
+## Creating the WordPress API Service
+
+### 1. WordPress API Client
+
+```typescript title="lib/wordpress.ts"
+import axios from 'axios';
+
+export interface WordPressPost {
+  id: number;
+  title: {
+    rendered: string;
+  };
+  slug: string;
+  content: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  date: string;
+  modified: string;
+  featured_image_url?: string;
+  author_name?: string;
+  categories_info?: Array<{
+    id: number;
+    name: string;
+    slug: string;
+  }>;
+  _embedded?: {
+    'wp:featuredmedia'?: Array<{
+      source_url: string;
+      alt_text: string;
+    }>;
+  };
+}
+
+export interface WordPressCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  parent: number;
+  count: number;
+}
+
+export interface WordPressTag {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  count: number;
+}
+
+export interface WordPressPage {
+  id: number;
+  title: {
+    rendered: string;
+  };
+  slug: string;
+  content: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  date: string;
+  modified: string;
+  parent: number;
+  template: string;
+}
+
+export interface WordPressMedia {
+  id: number;
+  source_url: string;
+  alt_text: string;
+  media_type: string;
+  mime_type: string;
+  caption: {
+    rendered: string;
+  };
+}
+
+class WordPressAPI {
+  private baseURL: string;
+  private auth?: { username: string; password: string };
+
+  constructor() {
+    this.baseURL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || '';
+    
+    if (process.env.WORDPRESS_APPLICATION_USERNAME && 
+        process.env.WORDPRESS_APPLICATION_PASSWORD) {
+      this.auth = {
+        username: process.env.WORDPRESS_APPLICATION_USERNAME,
+        password: process.env.WORDPRESS_APPLICATION_PASSWORD,
+      };
+    }
+  }
+
+  private async fetch(endpoint: string, options: RequestInit = {}) {
+    const url = `${this.baseURL}${endpoint}`;
+    
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    };
+
+    if (this.auth) {
+      const credentials = Buffer.from(
+        `${this.auth.username}:${this.auth.password}`
+      ).toString('base64');
+      config.headers = {
+        ...config.headers,
+        Authorization: `Basic ${credentials}`,
+      };
+    }
+
+    try {
+      const response = await fetch(url, config);
+      
+      if (!response.ok) {
+        throw new Error(`WordPress API Error: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('WordPress API fetch error:', error);
+      throw error;
+    }
+  }
+
+  async getPosts(params: {
+    page?: number;
+    per_page?: number;
+    category?: number;
+    tag?: number;
+    search?: string;
+    embed?: boolean;
+  } = {}) {
+    const searchParams = new URLSearchParams();
+    
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        searchParams.append(key, value.toString());
+      }
+    });
+
+    const endpoint = `/wp/v2/posts?${searchParams.toString()}`;
+    const posts = await this.fetch(endpoint);
+    
+    return posts as WordPressPost[];
+  }
+
+  async getPost(slug: string, embed: boolean = true) {
+    const endpoint = `/wp/v2/posts?slug=${slug}&embed=${embed ? 1 : 0}`;
+    const posts = await this.fetch(endpoint);
+    
+    if (posts.length === 0) {
+      return null;
+    }
+    
+    return posts[0] as WordPressPost;
+  }
+
+  async getCategories() {
+    const endpoint = '/wp/v2/categories?per_page=100';
+    return await this.fetch(endpoint) as WordPressCategory[];
+  }
+
+  async getTags() {
+    const endpoint = '/wp/v2/tags?per_page=100';
+    return await this.fetch(endpoint) as WordPressTag[];
+  }
+
+  async getPages() {
+    const endpoint = '/wp/v2/pages?per_page=100';
+    return await this.fetch(endpoint) as WordPressPage[];
+  }
+
+  async getPage(slug: string) {
+    const endpoint = `/wp/v2/pages?slug=${slug}`;
+    const pages = await this.fetch(endpoint);
+    
+    if (pages.length === 0) {
+      return null;
+    }
+    
+    return pages[0] as WordPressPage;
+  }
+
+  async getMedia(id: number) {
+    const endpoint = `/wp/v2/media/${id}`;
+    return await this.fetch(endpoint) as WordPressMedia;
+  }
+
+  async getMenu(location: string = 'primary') {
+    const endpoint = `/wp/v2/menu?location=${location}`;
+    return await this.fetch(endpoint);
+  }
+}
+
+export const wordpressAPI = new WordPressAPI();
+```
+
+### 2. GraphQL Client Setup
+
+```typescript title="lib/apollo.ts"
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
+
+const httpLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_WORDPRESS_GRAPHQL_URL,
+});
+
+const authLink = setContext((_, { headers }) => {
+  // Add authentication if needed
+  return {
+    headers: {
+      ...headers,
+    },
+  };
+});
+
+export const apolloClient = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      errorPolicy: 'all',
+    },
+    query: {
+      errorPolicy: 'all',
+    },
+  },
+});
+```
+
+## Creating Next.js Pages
+
+### 1. Post Listing Page
+
+```typescript title="pages/posts/index.tsx"
+import { GetStaticProps } from 'next';
+import Head from 'next/head';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import { wordpressAPI } from '../../lib/wordpress';
+import { WordPressPost, WordPressCategory } from '../../lib/wordpress';
+import Layout from '../../components/Layout';
+import Pagination from '../../components/Pagination';
+import SearchBar from '../../components/SearchBar';
+import CategoryFilter from '../../components/CategoryFilter';
+
+interface PostsPageProps {
+  posts: WordPressPost[];
+  categories: WordPressCategory[];
+  currentPage: number;
+  totalPages: number;
+}
+
+export default function PostsPage({
+  posts,
+  categories,
+  currentPage,
+  totalPages,
+}: PostsPageProps) {
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredPosts = posts.filter(post => {
+    const matchesCategory = selectedCategory === null || 
+      post.categories_info?.some(cat => cat.id === selectedCategory);
+    const matchesSearch = searchQuery === '' || 
+      post.title.rendered.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    return matchesCategory && matchesSearch;
+  });
+
+  return (
+    <Layout>
+      <Head>
+        <title>Blog - My WordPress Headless Site</title>
+        <meta name="description" content="Latest articles and insights" />
+      </Head>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Latest Articles
+          </h1>
+          <p className="text-xl text-gray-600">
+            Discover insights, tutorials, and industry news
+          </p>
+        </div>
+
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <SearchBar 
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search articles..."
+            />
+            <CategoryFilter
+              categories={categories}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+          </div>
+        </div>
+
+        {filteredPosts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {filteredPosts.map((post) => (
+              <article key={post.id} className="group">
+                <Link href={`/posts/${post.slug}`}>
+                  <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    {post.featured_image_url ? (
+                      <div className="relative h-48 w-full">
+                        <Image
+                          src={post.featured_image_url}
+                          alt={post.title.rendered}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-48 bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400">No image</span>
+                      </div>
+                    )}
+                    
+                    <div className="p-6">
+                      <div className="mb-3">
+                        {post.categories_info?.map((category) => (
+                          <span
+                            key={category.id}
+                            className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2"
+                          >
+                            {category.name}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <h2 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {post.title.rendered}
+                      </h2>
+                      
+                      <div
+                        className="text-gray-600 mb-4 line-clamp-3"
+                        dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                      />
+                      
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>{post.author_name}</span>
+                        <time dateTime={post.date}>
+                          {new Date(post.date).toLocaleDateString()}
+                        </time>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-xl text-gray-600 mb-4">
+              No articles found
+            </h3>
+            <p className="text-gray-500">
+              Try adjusting your search or filter criteria
+            </p>
+          </div>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath="/posts"
+        />
+      </div>
+    </Layout>
+  );
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  try {
+    const [posts, categories] = await Promise.all([
+      wordpressAPI.getPosts({ per_page: 12, embed: true }),
+      wordpressAPI.getCategories(),
+    ]);
+
+    return {
+      props: {
+        posts,
+        categories,
+        currentPage: 1,
+        totalPages: Math.ceil(posts.length / 12),
+      },
+      revalidate: 60, // Revalidate every minute
+    };
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    
+    return {
+      props: {
+        posts: [],
+        categories: [],
+        currentPage: 1,
+        totalPages: 1,
+      },
+      revalidate: 60,
+    };
+  }
+};
+```
+
+### 2. Single Post Page
+
+```typescript title="pages/posts/[slug].tsx"
+import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { wordpressAPI } from '../../../lib/wordpress';
+import { WordPressPost } from '../../../lib/wordpress';
+import Layout from '../../../components/Layout';
+import RelatedPosts from '../../../components/RelatedPosts';
+import ShareButtons from '../../../components/ShareButtons';
+import TableOfContents from '../../../components/TableOfContents';
+
+interface PostPageProps {
+  post: WordPressPost;
+  relatedPosts: WordPressPost[];
+}
+
+export default function PostPage({ post, relatedPosts }: PostPageProps) {
+  const router = useRouter();
+  const [activeHeading, setActiveHeading] = useState('');
+
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
+
+  if (!post) {
+    return (
+      <Layout>
+        <div className="text-center py-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Post Not Found
+          </h1>
+          <Link href="/posts" className="text-blue-600 hover:text-blue-800">
+            ← Back to all posts
+          </Link>
+        </div>
+      </Layout>
+    );
+  }
+
+  const headings = Array.from(
+    post.content.rendered.matchAll(/<h([2-4])[^>]*>(.*?)<\/h[2-4]>/gi)
+  ).map((match, index) => ({
+    id: `heading-${index}`,
+    level: parseInt(match[1]),
+    text: match[2].replace(/<[^>]*>/g, ''),
+  }));
+
+  return (
+    <Layout>
+      <Head>
+        <title>{post.title.rendered} - My WordPress Headless Site</title>
+        <meta name="description" content={post.excerpt.rendered.replace(/<[^>]*>/g, '')} />
+        <meta property="og:title" content={post.title.rendered} />
+        <meta property="og:description" content={post.excerpt.rendered.replace(/<[^>]*>/g, '')} />
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:modified_time" content={post.modified} />
+        {post.categories_info?.map((category) => (
+          <meta key={category.id} property="article:section" content={category.name} />
+        ))}
+      </Head>
+
+      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <header className="mb-8">
+          <div className="mb-6">
+            {post.categories_info?.map((category) => (
+              <Link
+                key={category.id}
+                href={`/posts?category=${category.slug}`}
+                className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mr-2 mb-2"
+              >
+                {category.name}
+              </Link>
+            ))}
+          </div>
+          
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {post.title.rendered}
+          </h1>
+          
+          <div className="flex items-center justify-between text-gray-600 mb-6">
+            <div className="flex items-center">
+              <span className="font-medium">{post.author_name}</span>
+              <span className="mx-2">•</span>
+              <time dateTime={post.date}>
+                {new Date(post.date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            </div>
+            
+            <ShareButtons
+              title={post.title.rendered}
+              url={`${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}`}
+              description={post.excerpt.rendered.replace(/<[^>]*>/g, '')}
+            />
+          </div>
+        </header>
+
+        {post.featured_image_url && (
+          <div className="mb-8">
+            <div className="relative h-96 w-full">
+              <Image
+                src={post.featured_image_url}
+                alt={post.title.rendered}
+                fill
+                className="object-cover rounded-lg"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            {headings.length > 0 && (
+              <TableOfContents
+                headings={headings}
+                activeHeading={activeHeading}
+                onHeadingClick={setActiveHeading}
+              />
+            )}
+          </div>
+
+          <div className="lg:col-span-3">
+            <div
+              className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-blue-50 prose-blockquote:p-4"
+              dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+            />
+
+            <footer className="mt-12 pt-8 border-t border-gray-200">
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Share this article</h3>
+                <ShareButtons
+                  title={post.title.rendered}
+                  url={`${process.env.NEXT_PUBLIC_SITE_URL}/posts/${post.slug}`}
+                  description={post.excerpt.rendered.replace(/<[^>]*>/g, '')}
+                />
+              </div>
+
+              <div className="flex justify-between items-center">
+                <Link
+                  href="/posts"
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  ← Back to all posts
+                </Link>
+                
+                <div className="text-sm text-gray-500">
+                  Last updated: {new Date(post.modified).toLocaleDateString()}
+                </div>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </article>
+
+      {relatedPosts.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+            Related Articles
+          </h2>
+          <RelatedPosts posts={relatedPosts} />
+        </section>
+      )}
+    </Layout>
+  );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    const posts = await wordpressAPI.getPosts({ per_page: 100 });
+    const paths = posts.map((post) => ({
+      params: { slug: post.slug },
+    }));
+
+    return {
+      paths,
+      fallback: 'blocking', // Generate pages on-demand if not found
+    };
+  } catch (error) {
+    console.error('Error fetching post paths:', error);
+    
+    return {
+      paths: [],
+      fallback: 'blocking',
+    };
+  }
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  try {
+    const post = await wordpressAPI.getPost(params?.slug as string);
+    
+    if (!post) {
+      return {
+        notFound: true,
+      };
+    }
+
+    // Get related posts based on categories
+    const categoryIds = post.categories_info?.map(cat => cat.id) || [];
+    const relatedPosts = categoryIds.length > 0 
+      ? await wordpressAPI.getPosts({ 
+          per_page: 3, 
+          category: categoryIds[0],
+          exclude: [post.id] 
+        })
+      : [];
+
+    return {
+      props: {
+        post,
+        relatedPosts,
+      },
+      revalidate: 60, // Revalidate every minute
+    };
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    
+    return {
+      notFound: true,
+    };
+  }
+};
+```
+
+### 3. Dynamic Category Pages
+
+```typescript title="pages/category/[slug].tsx"
+import { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
+import { useState } from 'react';
+import { wordpressAPI } from '../../../lib/wordpress';
+import { WordPressPost, WordPressCategory } from '../../../lib/wordpress';
+import Layout from '../../../components/Layout';
+import PostCard from '../../../components/PostCard';
+import Pagination from '../../../components/Pagination';
+
+interface CategoryPageProps {
+  category: WordPressCategory;
+  posts: WordPressPost[];
+  currentPage: number;
+  totalPages: number;
+}
+
+export default function CategoryPage({
+  category,
+  posts,
+  currentPage,
+  totalPages,
+}: CategoryPageProps) {
+  return (
+    <Layout>
+      <Head>
+        <title>{category.name} - Category</title>
+        <meta name="description" content={category.description} />
+      </Head>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            {category.name}
+          </h1>
+          {category.description && (
+            <p className="text-xl text-gray-600">
+              {category.description}
+            </p>
+          )}
+          <p className="text-gray-500 mt-2">
+            {category.count} articles in this category
+          </p>
+        </div>
+
+        {posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <h3 className="text-xl text-gray-600 mb-4">
+              No articles found in this category
+            </h3>
+          </div>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath={`/category/${category.slug}`}
+        />
+      </div>
+    </Layout>
+  );
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    const categories = await wordpressAPI.getCategories();
+    const paths = categories.map((category) => ({
+      params: { slug: category.slug },
+    }));
+
+    return {
+      paths,
+      fallback: 'blocking',
+    };
+  } catch (error) {
+    console.error('Error fetching category paths:', error);
+    
+    return {
+      paths: [],
+      fallback: 'blocking',
+    };
+  }
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  try {
+    const categories = await wordpressAPI.getCategories();
+    const category = categories.find(cat => cat.slug === params?.slug);
+    
+    if (!category) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const posts = await wordpressAPI.getPosts({
+      per_page: 12,
+      category: category.id,
+      embed: true,
+    });
+
+    return {
+      props: {
+        category,
+        posts,
+        currentPage: 1,
+        totalPages: Math.ceil(posts.length / 12),
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error fetching category:', error);
+    
+    return {
+      notFound: true,
+    };
+  }
+};
+```
+
+## Building Reusable Components
+
+### 1. Layout Component
+
+```typescript title="components/Layout.tsx"
+import { ReactNode } from 'react';
+import Head from 'next/head';
+import Link from 'next/link';
+import { useState } from 'react';
+import Navigation from './Navigation';
+import Footer from './Footer';
+
+interface LayoutProps {
+  children: ReactNode;
+  title?: string;
+  description?: string;
+}
+
+export default function Layout({ children, title, description }: LayoutProps) {
+  return (
+    <div className="min-h-screen bg-white">
+      <Head>
+        <title>{title ? `${title} - My WordPress Headless Site` : 'My WordPress Headless Site'}</title>
+        {description && <meta name="description" content={description} />}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="utf-8" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Navigation />
+
+      <main>{children}</main>
+
+      <Footer />
+    </div>
+  );
+}
+```
+
+### 2. Navigation Component
+
+```typescript title="components/Navigation.tsx"
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Disclosure } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { wordpressAPI } from '../lib/wordpress';
+
+interface NavigationItem {
+  id: number;
+  title: string;
+  url: string;
+  children?: NavigationItem[];
+}
+
+export default function Navigation() {
+  const [menuItems, setMenuItems] = useState<NavigationItem[]>([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchMenu();
+  }, []);
+
+  const fetchMenu = async () => {
+    try {
+      const items = await wordpressAPI.getMenu('primary');
+      setMenuItems(items || []);
+    } catch (error) {
+      console.error('Error fetching menu:', error);
+    }
+  };
+
+  const isActive = (url: string) => {
+    if (url === '/') {
+      return router.pathname === '/';
+    }
+    return router.pathname.startsWith(url);
+  };
+
+  return (
+    <Disclosure as="nav" className="bg-white shadow-sm sticky top-0 z-50">
+      {({ open }) => (
+        <>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between h-16">
+              <div className="flex">
+                <div className="flex-shrink-0 flex items-center">
+                  <Link href="/" className="text-xl font-bold text-gray-900">
+                    MySite
+                  </Link>
+                </div>
+                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.url}
+                      className={`${
+                        isActive(item.url)
+                          ? 'border-blue-500 text-gray-900'
+                          : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                      } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                <Link
+                  href="/search"
+                  className="p-2 text-gray-400 hover:text-gray-500"
+                >
+                  Search
+                </Link>
+              </div>
+
+              <div className="-mr-2 flex items-center sm:hidden">
+                <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                  <span className="sr-only">Open main menu</span>
+                  {open ? (
+                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                  ) : (
+                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                  )}
+                </Disclosure.Button>
+              </div>
+            </div>
+          </div>
+
+          <Disclosure.Panel className="sm:hidden">
+            <div className="pt-2 pb-3 space-y-1">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.id}
+                  href={item.url}
+                  className={`${
+                    isActive(item.url)
+                      ? 'bg-blue-50 border-blue-500 text-blue-700'
+                      : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                  } block pl-3 pr-4 py-2 border-l-4 text-base font-medium`}
+                >
+                  {item.title}
+                </Link>
+              ))}
+            </div>
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              <div className="px-4">
+                <Link
+                  href="/search"
+                  className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                >
+                  Search
+                </Link>
+              </div>
+            </div>
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
+  );
+}
+```
+
+### 3. SEO Optimization Component
+
+```typescript title="components/SEO.tsx"
+import Head from 'next/head';
+import { NextSeo, ArticleJsonLd, BreadcrumbJsonLd } from 'next-seo';
+
+interface SEOProps {
+  title: string;
+  description: string;
+  canonical?: string;
+  openGraph?: {
+    type?: string;
+    locale?: string;
+    url?: string;
+    title?: string;
+    description?: string;
+    images?: Array<{
+      url: string;
+      width?: number;
+      height?: number;
+      alt?: string;
+    }>;
+    site_name?: string;
+  };
+  article?: {
+    publishedTime?: string;
+    modifiedTime?: string;
+    authors?: string[];
+    section?: string;
+    tags?: string[];
+  };
+  breadcrumb?: Array<{
+    name: string;
+    url: string;
+  }>;
+}
+
+export default function SEO({
+  title,
+  description,
+  canonical,
+  openGraph,
+  article,
+  breadcrumb,
+}: SEOProps) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
+
+  return (
+    <>
+      <NextSeo
+        title={title}
+        description={description}
+        canonical={fullCanonical}
+        openGraph={{
+          type: openGraph?.type || 'website',
+          locale: openGraph?.locale || 'en_US',
+          url: openGraph?.url || fullCanonical,
+          title: openGraph?.title || title,
+          description: openGraph?.description || description,
+          images: openGraph?.images || [],
+          siteName: openGraph?.site_name || 'My WordPress Headless Site',
+        }}
+        twitter={{
+          handle: '@yoursite',
+          site: '@yoursite',
+          cardType: 'summary_large_image',
+        }}
+      />
+
+      {article && (
+        <ArticleJsonLd
+          url={fullCanonical}
+          title={title}
+          images={openGraph?.images?.map(img => img.url) || []}
+          datePublished={article.publishedTime}
+          dateModified={article.modifiedTime}
+          authorName={article.authors || []}
+          description={description}
+        />
+      )}
+
+      {breadcrumb && (
+        <BreadcrumbJsonLd
+          itemListElements={breadcrumb.map((item, index) => ({
+            position: index + 1,
+            name: item.name,
+            item: item.url,
+          }))}
+        />
+      )}
+    </>
+  );
+}
+```
+
+## API Routes for Dynamic Content
+
+### 1. Sitemap Generation
+
+```typescript title="pages/api/sitemap.ts"
+import { NextApiRequest, NextApiResponse } from 'next';
+import { wordpressAPI } from '../../lib/wordpress';
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  try {
+    const [posts, pages] = await Promise.all([
+      wordpressAPI.getPosts({ per_page: 1000 }),
+      wordpressAPI.getPages(),
+    ]);
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${siteUrl}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${siteUrl}/posts</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  ${posts
+    .map(
+      (post) => `
+  <url>
+    <loc>${siteUrl}/posts/${post.slug}</loc>
+    <lastmod>${new Date(post.modified).toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`
+    )
+    .join('')}
+  ${pages
+    .map(
+      (page) => `
+  <url>
+    <loc>${siteUrl}/${page.slug}</loc>
+    <lastmod>${new Date(page.modified).toISOString()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+    )
+    .join('')}
+</urlset>`;
+
+    res.setHeader('Content-Type', 'text/xml');
+    res.status(200).send(sitemap);
+  } catch (error) {
+    console.error('Error generating sitemap:', error);
+    res.status(500).json({ error: 'Failed to generate sitemap' });
+  }
+}
+```
+
+### 2. Search API
+
+```typescript title="pages/api/search.ts"
+import { NextApiRequest, NextApiResponse } from 'next';
+import { wordpressAPI } from '../../lib/wordpress';
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  try {
+    const { q: query, page = '1', per_page = '10' } = req.query;
+
+    if (!query || typeof query !== 'string') {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    const posts = await wordpressAPI.getPosts({
+      search: query,
+      page: parseInt(page as string),
+      per_page: parseInt(per_page as string),
+      embed: true,
+    });
+
+    const totalPosts = posts.length;
+    const totalPages = Math.ceil(totalPosts / parseInt(per_page as string));
+
+    res.status(200).json({
+      posts,
+      pagination: {
+        currentPage: parseInt(page as string),
+        totalPages,
+        totalPosts,
+        hasMore: parseInt(page as string) < totalPages,
+      },
+    });
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ error: 'Search failed' });
+  }
+}
+```
+
+## Performance Optimization
+
+### 1. ISR (Incremental Static Regeneration)
+
+```typescript title="lib/revalidation.ts"
+export async function revalidatePost(slug: string) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          path: `/posts/${slug}`,
+        }),
+      }
+    );
+
+    if (response.ok) {
+      console.log(`Successfully revalidated post: ${slug}`);
+    } else {
+      console.error(`Failed to revalidate post: ${slug}`);
+    }
+  } catch (error) {
+    console.error('Revalidation error:', error);
+  }
+}
+
+export async function revalidateHomepage() {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SITE_URL}/api/revalidate`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          path: '/',
+        }),
+      }
+    );
+
+    if (response.ok) {
+      console.log('Successfully revalidated homepage');
+    } else {
+      console.error('Failed to revalidate homepage');
+    }
+  } catch (error) {
+    console.error('Revalidation error:', error);
+  }
+}
+```
+
+### 2. Image Optimization
+
+```typescript title="components/OptimizedImage.tsx"
+import Image from 'next/image';
+import { useState } from 'react';
+
+interface OptimizedImageProps {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  priority?: boolean;
+  className?: string;
+}
+
+export default function OptimizedImage({
+  src,
+  alt,
+  width,
+  height,
+  priority = false,
+  className = '',
+}: OptimizedImageProps) {
+  const [imageSrc, setImageSrc] = useState(src);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleError = () => {
+    // Fallback to placeholder image
+    setImageSrc('/images/placeholder.jpg');
+  };
+
+  const handleLoad = () => {
+    setIsLoading(false);
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {isLoading && (
+        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded" />
+      )}
+      <Image
+        src={imageSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        priority={priority}
+        className={`transition-opacity duration-300 ${
+          isLoading ? 'opacity-0' : 'opacity-100'
+        }`}
+        onError={handleError}
+        onLoad={handleLoad}
+        placeholder="blur"
+        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+      />
+    </div>
+  );
+}
+```
+
+## Deployment Strategies
+
+### 1. Vercel Configuration
+
+```json title="vercel.json"
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "pages/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=86400"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/wp-admin",
+      "destination": "https://your-wordpress-site.com/wp-admin",
+      "permanent": false
+    },
+    {
+      "source": "/wp-login.php",
+      "destination": "https://your-wordpress-site.com/wp-login.php",
+      "permanent": false
+    }
+  ]
+}
+```
+
+### 2. Docker Configuration
+
+```dockerfile title="Dockerfile"
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
+```
+
+## Testing Strategy
+
+### 1. Unit Tests
+
+```typescript title="__tests__/wordpress.test.ts"
+import { wordpressAPI } from '../lib/wordpress';
+
+// Mock fetch
+global.fetch = jest.fn();
+
+describe('WordPress API', () => {
+  beforeEach(() => {
+    (fetch as jest.Mock).mockClear();
+  });
+
+  it('should fetch posts successfully', async () => {
+    const mockPosts = [
+      {
+        id: 1,
+        title: { rendered: 'Test Post' },
+        slug: 'test-post',
+        content: { rendered: 'Test content' },
+        excerpt: { rendered: 'Test excerpt' },
+        date: '2024-01-01T00:00:00',
+        modified: '2024-01-01T00:00:00',
+      },
+    ];
+
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockPosts,
+    });
+
+    const posts = await wordpressAPI.getPosts();
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/wp/v2/posts'),
+      expect.any(Object)
+    );
+    expect(posts).toEqual(mockPosts);
+  });
+
+  it('should handle API errors', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      statusText: 'Not Found',
+    });
+
+    await expect(wordpressAPI.getPost('nonexistent')).rejects.toThrow();
+  });
+});
+```
+
+### 2. Integration Tests
+
+```typescript title="__tests__/pages/posts.test.tsx"
+import { render, screen } from '@testing-library/react';
+import Home from '../../pages/posts';
+import { wordpressAPI } from '../../lib/wordpress';
+
+jest.mock('../../lib/wordpress');
+
+const mockPosts = [
+  {
+    id: 1,
+    title: { rendered: 'Test Post' },
+    slug: 'test-post',
+    excerpt: { rendered: 'Test excerpt' },
+    date: '2024-01-01T00:00:00',
+    featured_image_url: 'https://example.com/image.jpg',
+    categories_info: [{ id: 1, name: 'Test Category', slug: 'test-category' }],
+  },
+];
+
+describe('Posts Page', () => {
+  it('should render posts correctly', async () => {
+    (wordpressAPI.getPosts as jest.Mock).mockResolvedValue(mockPosts);
+    (wordpressAPI.getCategories as jest.Mock).mockResolvedValue([]);
+
+    render(<Home posts={mockPosts} categories={[]} currentPage={1} totalPages={1} />);
+
+    expect(screen.getByText('Test Post')).toBeInTheDocument();
+    expect(screen.getByText('Test Category')).toBeInTheDocument();
+  });
+
+  it('should show empty state when no posts', () => {
+    render(<Home posts={[]} categories={[]} currentPage={1} totalPages={1} />);
+
+    expect(screen.getByText('No articles found')).toBeInTheDocument();
+  });
+});
+```
+
+## Security Considerations
+
+### 1. API Security
+
+```typescript title="lib/security.ts"
+import rateLimit from 'express-rate-limit';
+
+export const apiRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP',
+});
+
+export function validateInput(input: string): string {
+  // Remove potentially harmful characters
+  return input.replace(/[<>]/g, '');
+}
+
+export function sanitizeUrl(url: string): string {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.toString();
+  } catch {
+    return '';
+  }
+}
+```
+
+### 2. Content Security Policy
+
+```typescript title="next.config.mjs (additional security headers)"
+const securityHeaders = [
+  {
+    key: 'Content-Security-Policy',
+    value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;",
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'origin-when-cross-origin',
+  },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()',
+  },
+];
+
+const nextConfig = {
+  // ... other config
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: securityHeaders,
+      },
+    ];
+  },
+};
+```
+
+## Conclusion
+
+Building a headless WordPress website with Next.js provides numerous benefits:
+
+### Key Advantages:
+- **Performance**: Static generation and ISR for lightning-fast page loads
+- **Security**: Headless architecture reduces attack surface
+- **Scalability**: CDN-friendly static assets and API responses
+- **Developer Experience**: Modern React development with TypeScript
+- **SEO**: Server-side rendering and optimized metadata
+- **Flexibility**: Custom frontend with familiar WordPress CMS
+
+### Best Practices Implemented:
+- **Incremental Static Regeneration** for fresh content without full rebuilds
+- **Optimized images** with Next.js Image component
+- **SEO optimization** with proper metadata and structured data
+- **Security headers** and input validation
+- **Performance monitoring** and error handling
+- **Responsive design** with mobile-first approach
+
+### Next Steps:
+- Implement analytics with tools like Google Analytics 4
+- Add search functionality with Algolia or Elasticsearch
+- Set up automated testing with CI/CD
+- Implement caching strategies with Redis
+- Add internationalization (i18n) support
+- Create custom WordPress REST API endpoints
+- Set up monitoring and error tracking
+
+This architecture provides a solid foundation for building high-performance, secure, and maintainable websites that leverage WordPress's content management capabilities while delivering modern web experiences with Next.js. 🚀

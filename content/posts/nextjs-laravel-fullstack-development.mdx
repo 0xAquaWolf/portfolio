@@ -1,0 +1,2442 @@
+---
+title: "Full-Stack Development: Next.js Frontend with Laravel API Backend"
+date: '2024-10-04'
+description: Complete guide to building modern full-stack applications with Next.js frontend and Laravel API backend. Learn authentication, real-time features, and deployment.
+imageUrl: /images/blog/laravel-api-development.jpg
+featured: true
+published: true
+---
+
+# Full-Stack Development: Next.js Frontend with Laravel API Backend
+
+Building modern full-stack applications requires a robust backend API and a performant frontend. Laravel and Next.js form a powerful combination: Laravel provides a secure, feature-rich API backend while Next.js delivers exceptional frontend performance with server-side rendering. This comprehensive guide will show you how to build a complete full-stack application from scratch.
+
+## Prerequisites
+
+Before we start, ensure you have:
+
+- PHP 8.2+ and Composer installed
+- Node.js 18+ and npm/yarn installed
+- MySQL or PostgreSQL database
+- Basic knowledge of Laravel and React/Next.js
+- Redis for real-time features (optional)
+- Docker for containerization (optional)
+
+## Setting Up the Laravel Backend
+
+### 1. Create Laravel Application
+
+```bash
+composer create-project laravel/laravel laravel-api
+cd laravel-api
+```
+
+### 2. Install Required Packages
+
+```bash
+composer require laravel/sanctum
+composer require pusher/pusher-php-server
+composer require laravel/websockets
+composer require spatie/laravel-permission
+composer require intervention/image
+composer require league/flysystem-aws-s3-v3
+```
+
+### 3. Environment Configuration
+
+```bash title=".env"
+APP_NAME="Laravel API"
+APP_ENV=local
+APP_KEY=base64:your-app-key-here
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_api
+DB_USERNAME=root
+DB_PASSWORD=
+
+BROADCAST_DRIVER=pusher
+CACHE_DRIVER=redis
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=database
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+PUSHER_APP_ID=your-pusher-app-id
+PUSHER_APP_KEY=your-pusher-key
+PUSHER_APP_SECRET=your-pusher-secret
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+```
+
+### 4. Laravel API Configuration
+
+```php title="config/cors.php"
+<?php
+
+return [
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'allowed_methods' => ['*'],
+    'allowed_origins' => ['http://localhost:3000', 'https://your-frontend-domain.com'],
+    'allowed_origins_patterns' => [],
+    'allowed_headers' => ['*'],
+    'exposed_headers' => [],
+    'max_age' => 0,
+    'supports_credentials' => true,
+];
+```
+
+```php title="config/sanctum.php"
+<?php
+
+return [
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
+        '%s%s%s',
+        'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
+        env('APP_URL') ? ','.parse_url(env('APP_URL'), PHP_URL_HOST) : '',
+        env('FRONTEND_URL') ? ','.parse_url(env('FRONTEND_URL'), PHP_URL_HOST) : ''
+    ))),
+    'expiration' => null,
+    'middleware' => [
+        'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
+        'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
+        'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+    ],
+];
+```
+
+## Database Setup
+
+### 1. Create Database Migrations
+
+```php title="database/migrations/2024_01_01_000001_create_users_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->json('preferences')->nullable();
+            $table->timestamp('last_login_at')->nullable();
+            $table->rememberToken();
+            $table->timestamps();
+            
+            $table->index(['email']);
+            $table->index(['created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('users');
+    }
+};
+```
+
+```php title="database/migrations/2024_01_01_000002_create_posts_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->string('slug')->unique();
+            $table->text('excerpt');
+            $table->longText('content');
+            $table->string('featured_image')->nullable();
+            $table->enum('status', ['draft', 'published', 'archived'])->default('draft');
+            $table->json('meta')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->softDeletes();
+            $table->timestamps();
+            
+            $table->index(['user_id']);
+            $table->index(['status']);
+            $table->index(['published_at']);
+            $table->fullText(['title', 'content']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('posts');
+    }
+};
+```
+
+```php title="database/migrations/2024_01_01_000003_create_comments_table.php"
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
+            $table->text('content');
+            $table->boolean('is_approved')->default(false);
+            $table->timestamps();
+            
+            $table->index(['post_id']);
+            $table->index(['user_id']);
+            $table->index(['is_approved']);
+            $table->index(['created_at']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('comments');
+    }
+};
+```
+
+### 2. Create Models and Relationships
+
+```php title="app/Models/User.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    use HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'avatar',
+        'preferences',
+        'last_login_at',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'preferences' => 'array',
+        'last_login_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'avatar_url',
+    ];
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function approvedComments(): HasMany
+    {
+        return $this->comments()->where('is_approved', true);
+    }
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable')->orderBy('created_at', 'desc');
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar) {
+            return Storage::url($this->avatar);
+        }
+
+        $hash = md5(strtolower(trim($this->email)));
+        return "https://www.gravatar.com/avatar/{$hash}?s=200&d=identicon";
+    }
+
+    public function updateLastLogin(): void
+    {
+        $this->update(['last_login_at' => now()]);
+    }
+
+    public function getPreference(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->preferences, $key, $default);
+    }
+
+    public function setPreference(string $key, mixed $value): void
+    {
+        $preferences = $this->preferences ?? [];
+        data_set($preferences, $key, $value);
+        $this->update(['preferences' => $preferences]);
+    }
+}
+```
+
+```php title="app/Models/Post.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
+
+class Post extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'user_id',
+        'title',
+        'slug',
+        'excerpt',
+        'content',
+        'featured_image',
+        'status',
+        'meta',
+        'published_at',
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
+        'published_at' => 'datetime',
+    ];
+
+    protected $appends = [
+        'featured_image_url',
+        'reading_time',
+    ];
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function approvedComments(): HasMany
+    {
+        return $this->comments()->where('is_approved', true)->whereNull('parent_id');
+    }
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
+
+    public function getFeaturedImageUrlAttribute(): ?string
+    {
+        return $this->featured_image ? Storage::url($this->featured_image) : null;
+    }
+
+    public function getReadingTimeAttribute(): int
+    {
+        $wordCount = str_word_count(strip_tags($this->content));
+        return max(1, ceil($wordCount / 200)); // Assuming 200 words per minute
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', 'published')
+                    ->whereNotNull('published_at')
+                    ->where('published_at', '<=', now());
+    }
+
+    public function scopeDraft(Builder $query): Builder
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeByAuthor(Builder $query, User $user): Builder
+    {
+        return $query->where('user_id', $user->id);
+    }
+
+    public function publish(): void
+    {
+        $this->update([
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+    }
+
+    public function archive(): void
+    {
+        $this->update(['status' => 'archived']);
+    }
+
+    public function createSlug(string $title): string
+    {
+        $slug = str()->slug($title);
+        $original = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id)->exists()) {
+            $slug = "{$original}-{$count}";
+            $count++;
+        }
+
+        return $slug;
+    }
+}
+```
+
+```php title="app/Models/Comment.php"
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Comment extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'parent_id',
+        'content',
+        'is_approved',
+    ];
+
+    protected $casts = [
+        'is_approved' => 'boolean',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function replies(): HasMany
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
+
+    public function approvedReplies(): HasMany
+    {
+        return $this->replies()->where('is_approved', true);
+    }
+
+    public function approve(): void
+    {
+        $this->update(['is_approved' => true]);
+    }
+
+    public function reject(): void
+    {
+        $this->update(['is_approved' => false]);
+    }
+}
+```
+
+## API Routes and Controllers
+
+### 1. API Routes
+
+```php title="routes/api.php"
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\PostController;
+use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\UploadController;
+use App\Http\Controllers\API\SearchController;
+
+// Public routes
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/{post}', [PostController::class, 'show']);
+Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
+Route::get('/search', [SearchController::class, 'search']);
+
+// Authentication routes
+Route::prefix('auth')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/email/verification-notification', [AuthController::class, 'sendEmailVerification']);
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+        ->middleware('signed')
+        ->name('verification.verify');
+});
+
+// Protected routes
+Route::middleware('auth:sanctum')->group(function () {
+    // User routes
+    Route::get('/user', [UserController::class, 'show']);
+    Route::put('/user', [UserController::class, 'update']);
+    Route::post('/user/avatar', [UserController::class, 'updateAvatar']);
+    
+    // Post routes
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::put('/posts/{post}', [PostController::class, 'update']);
+    Route::delete('/posts/{post}', [PostController::class, 'destroy']);
+    Route::post('/posts/{post}/publish', [PostController::class, 'publish']);
+    Route::post('/posts/{post}/archive', [PostController::class, 'archive']);
+    
+    // Comment routes
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
+    Route::put('/comments/{comment}', [CommentController::class, 'update']);
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
+    
+    // Upload routes
+    Route::post('/upload', [UploadController::class, 'upload']);
+    
+    // Authentication
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+});
+
+// Admin routes
+Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
+    Route::delete('/users/{user}', [UserController::class, 'destroy']);
+    
+    Route::get('/comments', [CommentController::class, 'adminIndex']);
+    Route::post('/comments/{comment}/approve', [CommentController::class, 'approve']);
+    Route::post('/comments/{comment}/reject', [CommentController::class, 'reject']);
+});
+```
+
+### 2. Authentication Controller
+
+```php title="app/Http/Controllers/API/AuthController.php"
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as PasswordRule;
+
+class AuthController extends Controller
+{
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json([
+            'message' => 'User registered successfully. Please check your email for verification.',
+            'user' => $user,
+        ], 201);
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+            'remember' => ['boolean'],
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Please verify your email address',
+            ], 403);
+        }
+
+        $user->updateLastLogin();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
+        ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Logged out successfully',
+        ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => 'Password reset link sent to your email',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Unable to send password reset link',
+        ], 400);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $status = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->setRememberToken(Str::random(60));
+
+                $user->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        if ($status == Password::PASSWORD_RESET) {
+            return response()->json([
+                'message' => 'Password reset successfully',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Invalid password reset token',
+        ], 400);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'Current password is incorrect',
+            ], 400);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'message' => 'Password changed successfully',
+        ]);
+    }
+
+    public function sendEmailVerification(Request $request)
+    {
+        $request->user()->sendEmailVerificationNotification();
+
+        return response()->json([
+            'message' => 'Verification link sent to your email',
+        ]);
+    }
+
+    public function verifyEmail(Request $request)
+    {
+        $user = User::find($request->route('id'));
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Email already verified',
+            ]);
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new \Illuminate\Auth\Events\Verified($user));
+        }
+
+        return response()->json([
+            'message' => 'Email verified successfully',
+        ]);
+    }
+}
+```
+
+### 3. Post Controller
+
+```php title="app/Http/Controllers/API/PostController.php"
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use App\Models\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
+class PostController extends Controller
+{
+    public function index(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'page' => 'integer|min:1',
+            'per_page' => 'integer|min:1|max:50',
+            'search' => 'string|max:255',
+            'status' => 'in:draft,published,archived',
+            'author' => 'integer|exists:users,id',
+            'sort' => 'in:created_at,updated_at,published_at,title',
+            'order' => 'in:asc,desc',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $query = Post::with(['author:id,name,avatar', 'approvedComments']);
+
+        // Filter by status (only published posts for public access)
+        if (!$request->user() || !$request->user()->tokenCan('admin')) {
+            $query->published();
+        } elseif ($request->input('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Search functionality
+        if ($request->input('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('content', 'LIKE', "%{$search}%")
+                  ->orWhere('excerpt', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by author
+        if ($request->input('author')) {
+            $query->where('user_id', $request->input('author'));
+        }
+
+        // Sorting
+        $sort = $request->input('sort', 'created_at');
+        $order = $request->input('order', 'desc');
+        $query->orderBy($sort, $order);
+
+        $perPage = min($request->input('per_page', 12), 50);
+        $posts = $query->paginate($perPage);
+
+        return response()->json($posts);
+    }
+
+    public function show(Request $request, $slug)
+    {
+        $post = Post::with(['author:id,name,avatar', 'approvedComments.user:id,name,avatar'])
+                    ->where('slug', $slug);
+
+        // Only show published posts to non-admin users
+        if (!$request->user() || !$request->user()->tokenCan('admin')) {
+            $post->published();
+        }
+
+        $post = $post->firstOrFail();
+
+        // Check if user can view draft posts
+        if ($post->status === 'draft' && 
+            (!$request->user() || ($request->user()->id !== $post->user_id && !$request->user()->tokenCan('admin')))) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($post);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'excerpt' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|string',
+            'status' => 'in:draft,published',
+            'meta' => 'nullable|array',
+            'publish_at' => 'nullable|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+        $data['user_id'] = $request->user()->id;
+        $data['slug'] = (new Post())->createSlug($data['title']);
+
+        if ($data['status'] === 'published' && !isset($data['publish_at'])) {
+            $data['published_at'] = now();
+        }
+
+        if (isset($data['publish_at']) && $data['status'] === 'published') {
+            $data['published_at'] = $data['publish_at'];
+            unset($data['publish_at']);
+        }
+
+        $post = Post::create($data);
+
+        return response()->json([
+            'message' => 'Post created successfully',
+            'post' => $post->load('author:id,name,avatar'),
+        ], 201);
+    }
+
+    public function update(Request $request, Post $post)
+    {
+        // Authorization check
+        if ($request->user()->id !== $post->user_id && !$request->user()->tokenCan('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'sometimes|required|string|max:255',
+            'content' => 'sometimes|required|string',
+            'excerpt' => 'nullable|string|max:500',
+            'featured_image' => 'nullable|string',
+            'status' => 'in:draft,published,archived',
+            'meta' => 'nullable|array',
+            'publish_at' => 'nullable|date',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        // Update slug if title changed
+        if (isset($data['title']) && $data['title'] !== $post->title) {
+            $data['slug'] = $post->createSlug($data['title']);
+        }
+
+        // Handle publishing
+        if (isset($data['status']) && $data['status'] === 'published' && !$post->published_at) {
+            $data['published_at'] = isset($data['publish_at']) ? $data['publish_at'] : now();
+            unset($data['publish_at']);
+        }
+
+        $post->update($data);
+
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'post' => $post->load('author:id,name,avatar'),
+        ]);
+    }
+
+    public function destroy(Request $request, Post $post)
+    {
+        // Authorization check
+        if ($request->user()->id !== $post->user_id && !$request->user()->tokenCan('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $post->delete();
+
+        return response()->json([
+            'message' => 'Post deleted successfully',
+        ]);
+    }
+
+    public function publish(Request $request, Post $post)
+    {
+        // Authorization check
+        if ($request->user()->id !== $post->user_id && !$request->user()->tokenCan('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $post->publish();
+
+        return response()->json([
+            'message' => 'Post published successfully',
+            'post' => $post->load('author:id,name,avatar'),
+        ]);
+    }
+
+    public function archive(Request $request, Post $post)
+    {
+        // Authorization check
+        if ($request->user()->id !== $post->user_id && !$request->user()->tokenCan('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $post->archive();
+
+        return response()->json([
+            'message' => 'Post archived successfully',
+            'post' => $post->load('author:id,name,avatar'),
+        ]);
+    }
+}
+```
+
+## Setting Up the Next.js Frontend
+
+### 1. Create Next.js Application
+
+```bash
+npx create-next-app@latest frontend
+cd frontend
+```
+
+### 2. Install Required Dependencies
+
+```bash
+npm install axios
+npm install @headlessui/react
+npm install @heroicons/react
+npm install react-hook-form
+npm install @hookform/resolvers
+npm install zod
+npm install react-query
+npm install react-hot-toast
+npm install date-fns
+npm install @tailwindcss/typography
+npm install clsx
+npm install tailwind-merge
+```
+
+### 3. Environment Configuration
+
+```bash title=".env.local"
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_WS_HOST=localhost
+NEXT_PUBLIC_WS_PORT=6001
+NEXT_PUBLIC_WS_KEY=your-pusher-key
+NEXT_PUBLIC_APP_NAME=Next.js Laravel App
+```
+
+### 4. API Client Setup
+
+```typescript title="lib/api.ts"
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+
+interface ApiClientConfig {
+  baseURL: string;
+  token?: string;
+}
+
+class ApiClient {
+  private client: AxiosInstance;
+
+  constructor(config: ApiClientConfig) {
+    this.client = axios.create({
+      baseURL: config.baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (config.token) {
+      this.setAuthToken(config.token);
+    }
+
+    this.setupInterceptors();
+  }
+
+  private setupInterceptors() {
+    // Request interceptor
+    this.client.interceptors.request.use(
+      (config) => {
+        const token = this.getAuthToken();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
+
+    // Response interceptor
+    this.client.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          this.handleUnauthorized();
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  private getAuthToken(): string | null {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token');
+    }
+    return null;
+  }
+
+  private setAuthToken(token: string): void {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('auth_token', token);
+    }
+    this.client.defaults.headers.Authorization = `Bearer ${token}`;
+  }
+
+  private removeAuthToken(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+    }
+    delete this.client.defaults.headers.Authorization;
+  }
+
+  private handleUnauthorized(): void {
+    this.removeAuthToken();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/auth/login';
+    }
+  }
+
+  public async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.get(url, config);
+    return response.data;
+  }
+
+  public async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.post(url, data, config);
+    return response.data;
+  }
+
+  public async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.put(url, data, config);
+    return response.data;
+  }
+
+  public async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.patch(url, data, config);
+    return response.data;
+  }
+
+  public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    const response: AxiosResponse<T> = await this.client.delete(url, config);
+    return response.data;
+  }
+
+  public setToken(token: string): void {
+    this.setAuthToken(token);
+  }
+
+  public removeToken(): void {
+    this.removeAuthToken();
+  }
+
+  public isAuthenticated(): boolean {
+    return !!this.getAuthToken();
+  }
+}
+
+export const apiClient = new ApiClient({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api',
+});
+
+export default apiClient;
+```
+
+### 5. Authentication Context
+
+```typescript title="contexts/AuthContext.tsx"
+'use client';
+
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { User } from '@/types';
+import { apiClient } from '@/lib/api';
+
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+type AuthAction =
+  | { type: 'AUTH_START' }
+  | { type: 'AUTH_SUCCESS'; payload: User }
+  | { type: 'AUTH_FAILURE'; payload: string }
+  | { type: 'LOGOUT' }
+  | { type: 'CLEAR_ERROR' };
+
+const initialState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
+  error: null,
+};
+
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  switch (action.type) {
+    case 'AUTH_START':
+      return {
+        ...state,
+        isLoading: true,
+        error: null,
+      };
+    case 'AUTH_SUCCESS':
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      };
+    case 'AUTH_FAILURE':
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: action.payload,
+      };
+    case 'LOGOUT':
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+      };
+    case 'CLEAR_ERROR':
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
+
+interface AuthContextType extends AuthState {
+  login: (email: string, password: string, remember?: boolean) => Promise<void>;
+  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
+  logout: () => void;
+  clearError: () => void;
+  updateUser: (user: User) => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    if (!apiClient.isAuthenticated()) {
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Not authenticated' });
+      return;
+    }
+
+    try {
+      const user = await apiClient.get<User>('/user');
+      dispatch({ type: 'AUTH_SUCCESS', payload: user });
+    } catch (error) {
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Session expired' });
+      apiClient.removeToken();
+    }
+  };
+
+  const login = async (email: string, password: string, remember: boolean = false) => {
+    dispatch({ type: 'AUTH_START' });
+
+    try {
+      const response = await apiClient.post<{
+        message: string;
+        access_token: string;
+        token_type: string;
+        user: User;
+      }>('/auth/login', { email, password, remember });
+
+      apiClient.setToken(response.access_token);
+      dispatch({ type: 'AUTH_SUCCESS', payload: response.user });
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Login failed';
+      dispatch({ type: 'AUTH_FAILURE', payload: message });
+      throw error;
+    }
+  };
+
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string
+  ) => {
+    dispatch({ type: 'AUTH_START' });
+
+    try {
+      await apiClient.post('/auth/register', {
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+      });
+
+      // Don't log in automatically, require email verification
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Please verify your email address' });
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Registration failed';
+      dispatch({ type: 'AUTH_FAILURE', payload: message });
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    try {
+      apiClient.post('/auth/logout');
+    } catch (error) {
+      // Ignore logout errors
+    } finally {
+      apiClient.removeToken();
+      dispatch({ type: 'LOGOUT' });
+    }
+  };
+
+  const clearError = () => {
+    dispatch({ type: 'CLEAR_ERROR' });
+  };
+
+  const updateUser = (user: User) => {
+    dispatch({ type: 'AUTH_SUCCESS', payload: user });
+  };
+
+  const value: AuthContextType = {
+    ...state,
+    login,
+    register,
+    logout,
+    clearError,
+    updateUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+```
+
+### 6. Types Definition
+
+```typescript title="types/index.ts"
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+  avatar_url: string;
+  preferences: Record<string, any>;
+  last_login_at: string | null;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Post {
+  id: number;
+  user_id: number;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  featured_image: string | null;
+  featured_image_url: string | null;
+  status: 'draft' | 'published' | 'archived';
+  meta: Record<string, any>;
+  published_at: string | null;
+  reading_time: number;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  author?: User;
+  approved_comments?: Comment[];
+}
+
+export interface Comment {
+  id: number;
+  user_id: number;
+  post_id: number;
+  parent_id: number | null;
+  content: string;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+  user?: User;
+  replies?: Comment[];
+}
+
+export interface PaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  links: {
+    first: string;
+    last: string;
+    prev: string | null;
+    next: string | null;
+  };
+  meta: PaginationMeta;
+}
+
+export interface ApiResponse<T = any> {
+  message: string;
+  data?: T;
+  errors?: Record<string, string[]>;
+}
+```
+
+### 7. Custom Hooks
+
+```typescript title="hooks/usePosts.ts
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Post, PaginatedResponse } from '@/types';
+import { apiClient } from '@/lib/api';
+import { useQuery } from 'react-query';
+
+interface UsePostsOptions {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  status?: string;
+  author?: number;
+  sort?: string;
+  order?: string;
+  enabled?: boolean;
+}
+
+export const usePosts = (options: UsePostsOptions = {}) => {
+  const {
+    page = 1,
+    perPage = 12,
+    search,
+    status,
+    author,
+    sort = 'created_at',
+    order = 'desc',
+    enabled = true,
+  } = options;
+
+  return useQuery(
+    ['posts', { page, perPage, search, status, author, sort, order }],
+    async () => {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        per_page: perPage.toString(),
+        sort,
+        order,
+      });
+
+      if (search) params.append('search', search);
+      if (status) params.append('status', status);
+      if (author) params.append('author', author.toString());
+
+      const response = await apiClient.get<PaginatedResponse<Post>>(`/posts?${params}`);
+      return response;
+    },
+    {
+      enabled,
+      keepPreviousData: true,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    }
+  );
+};
+
+export const usePost = (slug: string) => {
+  return useQuery(
+    ['post', slug],
+    async () => {
+      const response = await apiClient.get<Post>(`/posts/${slug}`);
+      return response;
+    },
+    {
+      enabled: !!slug,
+      staleTime: 10 * 60 * 1000, // 10 minutes
+    }
+  );
+};
+```
+
+## Real-Time Features with WebSockets
+
+### 1. Laravel WebSocket Configuration
+
+```php title="routes/channels.php"
+<?php
+
+use Illuminate\Support\Facades\Broadcast;
+
+Broadcast::channel('posts.{postId}', function ($user, $postId) {
+    if ($user->tokenCan('admin')) {
+        return true;
+    }
+    
+    $post = \App\Models\Post::find($postId);
+    return $post && $post->user_id === $user->id;
+});
+
+Broadcast::channel('notifications.{userId}', function ($user, $userId) {
+    return (int) $user->id === (int) $userId;
+});
+```
+
+```php title="app/Events/PostUpdated.php"
+<?php
+
+namespace App\Events;
+
+use App\Models\Post;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+class PostUpdated implements ShouldBroadcast
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $post;
+    public $action;
+
+    public function __construct(Post $post, string $action)
+    {
+        $this->post = $post;
+        $this->action = $action;
+    }
+
+    public function broadcastOn()
+    {
+        return new PrivateChannel('posts.' . $this->post->id);
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'post' => $this->post->load('author:id,name,avatar'),
+            'action' => $this->action,
+            'timestamp' => now()->toISOString(),
+        ];
+    }
+}
+```
+
+### 2. React WebSocket Hook
+
+```typescript title="hooks/useWebSocket.ts"
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface WebSocketMessage {
+  event: string;
+  data: any;
+}
+
+export const useWebSocket = (channel: string) => {
+  const { user, isAuthenticated } = useAuth();
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [messages, setMessages] = useState<WebSocketMessage[]>([]);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      return;
+    }
+
+    const connect = () => {
+      try {
+        const wsHost = process.env.NEXT_PUBLIC_WS_HOST || 'localhost';
+        const wsPort = process.env.NEXT_PUBLIC_WS_PORT || '6001';
+        const wsKey = process.env.NEXT_PUBLIC_WS_KEY;
+
+        const ws = new WebSocket(
+          `ws://${wsHost}:${wsPort}/app/${wsKey}`
+        );
+
+        ws.onopen = () => {
+          console.log('WebSocket connected');
+          setIsConnected(true);
+          
+          // Authenticate
+          ws.send(JSON.stringify({
+            event: 'pusher:subscribe',
+            data: {
+              channel: `private-${channel.replace('{userId}', user.id.toString())}`,
+              auth: localStorage.getItem('auth_token'),
+            },
+          }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            setMessages(prev => [...prev, data]);
+          } catch (error) {
+            console.error('Error parsing WebSocket message:', error);
+          }
+        };
+
+        ws.onclose = () => {
+          console.log('WebSocket disconnected');
+          setIsConnected(false);
+          
+          // Attempt to reconnect after 5 seconds
+          reconnectTimeoutRef.current = setTimeout(() => {
+            connect();
+          }, 5000);
+        };
+
+        ws.onerror = (error) => {
+          console.error('WebSocket error:', error);
+          setIsConnected(false);
+        };
+
+        setSocket(ws);
+
+        return () => {
+          ws.close();
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+          }
+        };
+      } catch (error) {
+        console.error('Error creating WebSocket connection:', error);
+      }
+    };
+
+    connect();
+
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+    };
+  }, [isAuthenticated, user, channel]);
+
+  const sendMessage = (message: any) => {
+    if (socket && isConnected) {
+      socket.send(JSON.stringify(message));
+    }
+  };
+
+  return {
+    socket,
+    isConnected,
+    messages,
+    sendMessage,
+  };
+};
+```
+
+## File Upload System
+
+### 1. Laravel Upload Controller
+
+```php title="app/Http/Controllers/API/UploadController.php"
+<?php
+
+namespace App\Http\Controllers\API;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
+
+class UploadController extends Controller
+{
+    public function upload(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|max:10240', // 10MB max
+            'type' => 'in:image,document,video,audio',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $file = $request->file('file');
+        $type = $request->input('type', 'image');
+
+        try {
+            $path = $this->handleFileUpload($file, $type);
+            
+            return response()->json([
+                'message' => 'File uploaded successfully',
+                'path' => $path,
+                'url' => Storage::url($path),
+                'type' => $type,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Upload failed: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function handleFileUpload($file, string $type): string
+    {
+        $extension = $file->getClientOriginalExtension();
+        $filename = time() . '_' . uniqid() . '.' . $extension;
+        
+        switch ($type) {
+            case 'image':
+                return $this->handleImageUpload($file, $filename);
+            
+            case 'document':
+                return $file->storeAs('documents', $filename, 'public');
+            
+            case 'video':
+                return $file->storeAs('videos', $filename, 'public');
+            
+            case 'audio':
+                return $file->storeAs('audio', $filename, 'public');
+            
+            default:
+                throw new \InvalidArgumentException('Unsupported file type');
+        }
+    }
+
+    private function handleImageUpload($file, string $filename): string
+    {
+        $image = Image::make($file);
+        
+        // Optimize image
+        $image->orientate();
+        
+        // Resize if too large
+        if ($image->width() > 1920 || $image->height() > 1080) {
+            $image->resize(1920, 1080, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+        }
+        
+        // Create different sizes
+        $path = 'images/' . date('Y/m');
+        
+        // Original size
+        $originalPath = $path . '/original/' . $filename;
+        Storage::disk('public')->put($originalPath, $image->encode());
+        
+        // Medium size
+        $medium = clone $image;
+        if ($medium->width() > 800) {
+            $medium->resize(800, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+        }
+        $mediumPath = $path . '/medium/' . $filename;
+        Storage::disk('public')->put($mediumPath, $medium->encode());
+        
+        // Thumbnail
+        $thumbnail = clone $image;
+        $thumbnail->fit(300, 300);
+        $thumbnailPath = $path . '/thumbnail/' . $filename;
+        Storage::disk('public')->put($thumbnailPath, $thumbnail->encode());
+        
+        return $originalPath;
+    }
+}
+```
+
+### 2. React Upload Component
+
+```typescript title="components/FileUpload.tsx
+'use client';
+
+import React, { useState, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { CloudArrowUpIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { apiClient } from '@/lib/api';
+import toast from 'react-hot-toast';
+
+interface FileUploadProps {
+  onUploadComplete: (files: UploadedFile[]) => void;
+  accept?: string[];
+  maxSize?: number;
+  maxFiles?: number;
+  type?: 'image' | 'document' | 'video' | 'audio';
+  multiple?: boolean;
+}
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  url: string;
+  path: string;
+  type: string;
+  size: number;
+}
+
+export const FileUpload: React.FC<FileUploadProps> = ({
+  onUploadComplete,
+  accept = ['image/*'],
+  maxSize = 10 * 1024 * 1024, // 10MB
+  maxFiles = 5,
+  type = 'image',
+  multiple = false,
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [progress, setProgress] = useState(0);
+
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (acceptedFiles.length === 0) return;
+
+    setUploading(true);
+    setProgress(0);
+
+    const uploadPromises = acceptedFiles.map(async (file, index) => {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', type);
+
+        const response = await apiClient.post<{
+          path: string;
+          url: string;
+          type: string;
+        }>('/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        setProgress((index + 1) / acceptedFiles.length * 100);
+
+        return {
+          id: Math.random().toString(36).substr(2, 9),
+          name: file.name,
+          url: response.url,
+          path: response.path,
+          type: response.type,
+          size: file.size,
+        };
+      } catch (error: any) {
+        toast.error(`Failed to upload ${file.name}: ${error.message}`);
+        return null;
+      }
+    });
+
+    const results = await Promise.all(uploadPromises);
+    const successfulUploads = results.filter(Boolean) as UploadedFile[];
+
+    setUploadedFiles(successfulUploads);
+    onUploadComplete(successfulUploads);
+    setUploading(false);
+    setProgress(0);
+
+    if (successfulUploads.length > 0) {
+      toast.success(`${successfulUploads.length} file(s) uploaded successfully`);
+    }
+  }, [type, onUploadComplete]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: accept.reduce((acc, curr) => {
+      acc[curr] = [];
+      return acc;
+    }, {} as Record<string, string[]>),
+    maxSize,
+    maxFiles,
+    multiple,
+  });
+
+  const removeFile = (fileId: string) => {
+    const newFiles = uploadedFiles.filter(file => file.id !== fileId);
+    setUploadedFiles(newFiles);
+    onUploadComplete(newFiles);
+  };
+
+  return (
+    <div className="w-full">
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+          isDragActive
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-300 hover:border-gray-400'
+        } ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        <input {...getInputProps()} />
+        <CloudArrowUpIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="mt-4">
+          <p className="text-lg font-medium text-gray-900">
+            {uploading ? 'Uploading...' : 'Drop files here or click to browse'}
+          </p>
+          {!uploading && (
+            <p className="text-sm text-gray-500">
+              {multiple ? 'Upload up to ' : 'Upload '}
+              {maxFiles} file(s) up to {Math.round(maxSize / 1024 / 1024)}MB
+            </p>
+          )}
+        </div>
+        
+        {uploading && (
+          <div className="mt-4">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-2">{Math.round(progress)}%</p>
+          </div>
+        )}
+      </div>
+
+      {uploadedFiles.length > 0 && (
+        <div className="mt-4 space-y-2">
+          <h4 className="text-sm font-medium text-gray-900">Uploaded Files:</h4>
+          {uploadedFiles.map((file) => (
+            <div
+              key={file.id}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
+              <div className="flex items-center space-x-3">
+                {file.type === 'image' && (
+                  <img
+                    src={file.url}
+                    alt={file.name}
+                    className="h-10 w-10 object-cover rounded"
+                  />
+                )}
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{file.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => removeFile(file.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+## Testing Strategy
+
+### 1. Laravel API Tests
+
+```php title="tests/Feature/PostApiTest.php"
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\User;
+use App\Models\Post;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+
+class PostApiTest extends TestCase
+{
+    use RefreshDatabase, WithFaker;
+
+    protected User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
+    public function test_can_get_published_posts()
+    {
+        $posts = Post::factory()->count(3)->create(['status' => 'published']);
+        Post::factory()->count(2)->create(['status' => 'draft']);
+
+        $response = $this->getJson('/api/posts');
+
+        $response->assertStatus(200)
+                ->assertJsonCount(3, 'data')
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => [
+                            'id',
+                            'title',
+                            'slug',
+                            'excerpt',
+                            'content',
+                            'status',
+                            'published_at',
+                            'author' => [
+                                'id',
+                                'name',
+                                'avatar',
+                            ],
+                        ],
+                    ],
+                    'links',
+                    'meta',
+                ]);
+    }
+
+    public function test_authenticated_user_can_create_post()
+    {
+        $postData = [
+            'title' => 'Test Post',
+            'content' => 'This is a test post content.',
+            'excerpt' => 'Test excerpt',
+            'status' => 'draft',
+        ];
+
+        $response = $this->actingAs($this->user)
+                        ->postJson('/api/posts', $postData);
+
+        $response->assertStatus(201)
+                ->assertJsonStructure([
+                    'message',
+                    'post' => [
+                        'id',
+                        'title',
+                        'slug',
+                        'content',
+                        'status',
+                        'author',
+                    ],
+                ]);
+
+        $this->assertDatabaseHas('posts', [
+            'title' => 'Test Post',
+            'user_id' => $this->user->id,
+            'status' => 'draft',
+        ]);
+    }
+
+    public function test_unauthorized_user_cannot_create_post()
+    {
+        $postData = [
+            'title' => 'Test Post',
+            'content' => 'This is a test post content.',
+        ];
+
+        $response = $this->postJson('/api/posts', $postData);
+
+        $response->assertStatus(401);
+    }
+
+    public function test_user_can_only_update_own_posts()
+    {
+        $otherUser = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $otherUser->id]);
+
+        $updateData = [
+            'title' => 'Updated Title',
+        ];
+
+        $response = $this->actingAs($this->user)
+                        ->putJson("/api/posts/{$post->id}", $updateData);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_can_search_posts()
+    {
+        Post::factory()->create(['title' => 'Laravel Tutorial', 'status' => 'published']);
+        Post::factory()->create(['title' => 'React Guide', 'status' => 'published']);
+        Post::factory()->create(['title' => 'Python Basics', 'status' => 'published']);
+
+        $response = $this->getJson('/api/posts?search=Laravel');
+
+        $response->assertStatus(200)
+                ->assertJsonCount(1, 'data');
+    }
+}
+```
+
+### 2. Next.js Component Tests
+
+```typescript title="components/__tests__/PostCard.test.tsx"
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { PostCard } from '../PostCard';
+import { Post } from '@/types';
+
+const mockPost: Post = {
+  id: 1,
+  title: 'Test Post',
+  slug: 'test-post',
+  excerpt: 'This is a test post',
+  content: 'Test content',
+  status: 'published',
+  published_at: '2024-01-01T00:00:00Z',
+  reading_time: 2,
+  featured_image_url: 'https://example.com/image.jpg',
+  author: {
+    id: 1,
+    name: 'John Doe',
+    email: 'john@example.com',
+    avatar_url: 'https://example.com/avatar.jpg',
+    preferences: {},
+    last_login_at: null,
+    email_verified_at: null,
+    created_at: '2024-01-01T00:00:00Z',
+    updated_at: '2024-01-01T00:00:00Z',
+  },
+  user_id: 1,
+  featured_image: null,
+  meta: {},
+  deleted_at: null,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z',
+};
+
+const createTestQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
+const renderWithQueryClient = (component: React.ReactElement) => {
+  const testQueryClient = createTestQueryClient();
+  return render(
+    <QueryClientProvider client={testQueryClient}>
+      {component}
+    </QueryClientProvider>
+  );
+};
+
+describe('PostCard', () => {
+  it('renders post information correctly', () => {
+    renderWithQueryClient(<PostCard post={mockPost} />);
+    
+    expect(screen.getByText('Test Post')).toBeInTheDocument();
+    expect(screen.getByText('This is a test post')).toBeInTheDocument();
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('2 min read')).toBeInTheDocument();
+  });
+
+  it('displays featured image when available', () => {
+    renderWithQueryClient(<PostCard post={mockPost} />);
+    
+    const image = screen.getByAltText('Test Post');
+    expect(image).toBeInTheDocument();
+    expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
+  });
+
+  it('calls onEdit when edit button is clicked', () => {
+    const onEdit = jest.fn();
+    renderWithQueryClient(<PostCard post={mockPost} onEdit={onEdit} />);
+    
+    const editButton = screen.getByRole('button', { name: /edit/i });
+    fireEvent.click(editButton);
+    
+    expect(onEdit).toHaveBeenCalledWith(mockPost);
+  });
+
+  it('shows loading state correctly', () => {
+    renderWithQueryClient(<PostCard post={mockPost} isLoading={true} />);
+    
+    expect(screen.getByTestId('post-card-skeleton')).toBeInTheDocument();
+  });
+});
+```
+
+## Deployment with Docker
+
+### 1. Docker Compose Configuration
+
+```yaml title="docker-compose.yml"
+version: '3.8'
+
+services:
+  # Laravel API
+  api:
+    build:
+      context: ./laravel-api
+      dockerfile: Dockerfile
+    container_name: laravel-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./laravel-api:/var/www/html
+      - ./laravel-api/storage/app/public:/var/www/html/storage/app/public
+    environment:
+      - APP_ENV=production
+      - DB_HOST=mysql
+      - REDIS_HOST=redis
+      - BROADCAST_DRIVER=pusher
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app-network
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: nextjs-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_WS_HOST=localhost
+      - NEXT_PUBLIC_WS_PORT=6001
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=laravel_api
+      - MYSQL_USER=laravel
+      - MYSQL_PASSWORD=laravel
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  # Laravel WebSocket Server
+  websocket:
+    build:
+      context: ./laravel-api
+      dockerfile: Dockerfile.websocket
+    container_name: laravel-websockets
+    restart: unless-stopped
+    ports:
+      - "6001:6001"
+    environment:
+      - APP_ENV=production
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+### 2. Laravel Dockerfile
+
+```dockerfile title="laravel-api/Dockerfile"
+FROM php:8.2-fpm
+
+WORKDIR /var/www/html
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libmcrypt-dev \
+    libgd-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy existing application directory contents
+COPY . /var/www/html
+
+# Set up directory permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+
+CMD ["php-fpm"]
+```
+
+### 3. Next.js Dockerfile
+
+```dockerfile title="frontend/Dockerfile"
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN npm run build
+
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+# Automatically leverage output traces to reduce image size
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
+```
+
+## Conclusion
+
+This comprehensive full-stack application demonstrates the power of combining Laravel and Next.js:
+
+### Key Features Implemented:
+- **Secure Authentication**: Laravel Sanctum with email verification
+- **RESTful API**: Well-structured endpoints with proper validation
+- **Real-time Features**: WebSocket integration for live updates
+- **File Upload System**: Optimized image handling with multiple sizes
+- **Content Management**: CRUD operations for posts and comments
+- **Search Functionality**: Full-text search capabilities
+- **Performance Optimization**: Caching, pagination, and lazy loading
+- **Security**: CORS, input validation, and rate limiting
+- **Testing**: Comprehensive test suites for both frontend and backend
+- **Deployment**: Docker containerization with production-ready setup
+
+### Best Practices:
+- **Type Safety**: TypeScript in frontend, proper validation in backend
+- **Error Handling**: Centralized error management
+- **State Management**: React Context and React Query for server state
+- **Code Organization**: Modular architecture with clear separation of concerns
+- **Performance**: Lazy loading, caching strategies, and optimized queries
+- **Security**: Authentication, authorization, and input sanitization
+
+This architecture provides a solid foundation for building scalable, maintainable full-stack applications that can grow with your needs. The combination of Laravel's robust backend capabilities and Next.js's performance-focused frontend creates an excellent developer experience and user experience. 🚀
