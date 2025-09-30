@@ -5,62 +5,45 @@ import ReactLogo from '@/public/images/svg/react-logo.svg';
 import TypescriptLogo from '@/public/images/svg/TS-Logo.svg';
 import FigmaLogo from '@/public/images/svg/figma-logo.svg';
 import VercelLogo from '@/public/images/svg/Vercel-Logo.svg';
-import EthereumLogo from '@/public/images/svg/ethereum-logo.svg';
-import SolidityLogo from '@/public/images/svg/solidity-logo.svg';
-import EthersJSLogo from '@/public/images/svg/ethersjs-logo.svg';
-import WagmiLogo from '@/public/images/svg/wagmi-logo.svg';
-import RainbowKitLogo from '@/public/images/svg/rainbowkit-logo.svg';
 import OpenAILogo from '@/public/images/svg/openai-logo.svg';
+import PHPLogo from '@/public/images/svg/php-logo.svg';
+import LaravelLogo from '@/public/images/svg/laravel-logo.svg';
+import WordPressLogo from '@/public/images/svg/wordpress-logo.svg';
 
 export const logos = [
   {
-    src: EthereumLogo,
-    alt: 'Ethereum Logo',
-    name: 'Ethereum',
+    src: WordPressLogo,
+    alt: 'WordPress Logo',
+    name: 'WordPress',
     width: 30,
     height: 30,
   },
   {
-    src: SolidityLogo,
-    alt: 'Solidity Logo',
-    name: 'Solidity',
+    src: PHPLogo,
+    alt: 'PHP Logo',
+    name: 'PHP',
     width: 30,
     height: 30,
   },
   {
-    src: EthersJSLogo,
-    alt: 'Ethers.js Logo',
-    name: 'Ethers.js',
-    width: 30,
-    height: 30,
-  },
-  { src: WagmiLogo, alt: 'Wagmi Logo', name: 'Wagmi', width: 30, height: 30 },
-  {
-    src: RainbowKitLogo,
-    alt: 'RainbowKit Logo',
-    name: 'RainbowKit',
-    width: 30,
-    height: 30,
-  },
-  {
-    src: OpenAILogo,
-    alt: 'OpenAI Logo',
-    name: 'AI/ML',
+    src: LaravelLogo,
+    alt: 'Laravel Logo',
+    name: 'Laravel',
     width: 30,
     height: 30,
   },
   { src: ReactLogo, alt: 'React Logo', name: 'React', width: 30, height: 30 },
   {
-    src: VercelLogo,
-    alt: 'Vercel Logo',
-    name: 'Next.js',
+    src: TypescriptLogo,
+    alt: 'TypeScript Logo',
+    name: 'TypeScript',
     width: 30,
     height: 30,
   },
   {
-    src: TypescriptLogo,
-    alt: 'TypeScript Logo',
-    name: 'TypeScript',
+    src: VercelLogo,
+    alt: 'Vercel Logo',
+    name: 'Next.js',
     width: 30,
     height: 30,
   },
@@ -79,6 +62,13 @@ export const logos = [
     height: 30,
   },
   { src: FigmaLogo, alt: 'Figma Logo', name: 'Figma', width: 23, height: 23 },
+  {
+    src: OpenAILogo,
+    alt: 'OpenAI Logo',
+    name: 'AI/ML',
+    width: 30,
+    height: 30,
+  },
 ];
 
 interface LogoProps {

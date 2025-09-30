@@ -88,6 +88,16 @@ export default function Menu() {
               </span>
             ))}
           </div>
+          <div className="hidden gap-4 lg:flex lg:flex-1 lg:justify-end">
+            <a
+              href="https://github.com/0xAquaWolf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="grid place-items-center rounded-full py-3 px-6 text-center text-sm text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta xl:px-8 xl:py-3 xl:text-base"
+            >
+              Check out my GitHub
+            </a>
+          </div>
         </nav>
         <Dialog
           open={mobileMenuOpen}
