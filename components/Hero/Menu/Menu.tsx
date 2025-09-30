@@ -93,9 +93,16 @@ export default function Menu() {
               href="https://github.com/0xAquaWolf"
               target="_blank"
               rel="noopener noreferrer"
-              className="grid place-items-center rounded-full py-3 px-6 text-center text-sm text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta xl:px-8 xl:py-3 xl:text-base"
+              className="group flex items-center gap-2 rounded-full py-3 px-6 text-center text-sm text-white shadow-alt-cta transition-all hover:bg-white hover:text-black hover:shadow-cta xl:px-8 xl:py-3 xl:text-base"
             >
-              Check out my GitHub
+              <Image
+                src={GithubLogo}
+                alt="GitHub Logo"
+                width={20}
+                height={20}
+                className="transition-all group-hover:brightness-0"
+              />
+              GitHub
             </a>
           </div>
         </nav>
