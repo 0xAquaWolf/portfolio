@@ -188,35 +188,6 @@ export const projectsData: Project[] = [
       '- Advanced SEO optimization and Core Web Vitals',
   },
   {
-    title: 'WordPress Custom Plugin Suite',
-    description:
-      'Developing a comprehensive plugin suite for WordPress optimization including performance monitoring, SEO enhancement, and advanced caching solutions for high-traffic websites.',
-    date: 'Coming Soon',
-    imageUrl: '/projects/wordpress-plugins.jpg',
-    tags: ['WordPress', 'PHP', 'JavaScript', 'Performance', 'SEO', 'Optimization'],
-    slug: 'wordpress-custom-plugin-suite',
-    links: [
-      { title: 'Plugin Demo', url: '#coming-soon' },
-      { title: 'GitHub', url: '#coming-soon' },
-    ],
-    fullDescription:
-      '## Project Overview\n\n' +
-      'This WordPress plugin suite will provide comprehensive website optimization tools designed for high-performance WordPress sites. The suite addresses common performance bottlenecks and SEO challenges while maintaining ease of use for non-technical users.\n\n' +
-      'The plugins will focus on automated optimization, intelligent caching, and advanced SEO features that work seamlessly together to deliver measurable improvements in site performance and search rankings.\n\n' +
-      '## Technical Approach\n\n' +
-      'Built using WordPress best practices with modern PHP 8+ features, the plugin suite will implement advanced caching mechanisms, database query optimization, and intelligent image compression. Each plugin follows WordPress coding standards and includes comprehensive hooks for developer customization.\n\n' +
-      'The suite will feature a unified admin interface with detailed performance analytics, automated optimization recommendations, and one-click implementation of performance improvements.\n\n' +
-      '## Expected Outcomes\n\n' +
-      'The plugin suite will deliver significant performance and SEO improvements:\n\n' +
-      '- 50%+ improvement in page load times\n' +
-      '- Automated image optimization and compression\n' +
-      '- Advanced caching with intelligent cache warming\n' +
-      '- Comprehensive SEO analysis and optimization\n' +
-      '- Database cleanup and optimization tools\n' +
-      '- Real-time performance monitoring dashboard\n' +
-      '- Automated Core Web Vitals optimization',
-  },
-  {
     title: 'Modern WordPress Theme 2025',
     description:
       'Developing a modern WordPress theme with 2025\'s most demanded features: AI-powered design suggestions, Full Site Editing blocks, lightning-fast performance, mobile-first responsive design, and zero-code customization.',
@@ -245,6 +216,35 @@ export const projectsData: Project[] = [
       '- 50+ pre-built professional block patterns and templates\n' +
       '- Zero-code customization for headers, footers, and layouts\n' +
       '- Native WooCommerce integration and PWA support',
+  },
+  {
+    title: 'WordPress Custom Plugin Suite',
+    description:
+      'Developing a comprehensive plugin suite for WordPress optimization including performance monitoring, SEO enhancement, and advanced caching solutions for high-traffic websites.',
+    date: 'Coming Soon',
+    imageUrl: '/projects/wordpress-plugins.jpg',
+    tags: ['WordPress', 'PHP', 'JavaScript', 'Performance', 'SEO', 'Optimization'],
+    slug: 'wordpress-custom-plugin-suite',
+    links: [
+      { title: 'Plugin Demo', url: '#coming-soon' },
+      { title: 'GitHub', url: '#coming-soon' },
+    ],
+    fullDescription:
+      '## Project Overview\n\n' +
+      'This WordPress plugin suite will provide comprehensive website optimization tools designed for high-performance WordPress sites. The suite addresses common performance bottlenecks and SEO challenges while maintaining ease of use for non-technical users.\n\n' +
+      'The plugins will focus on automated optimization, intelligent caching, and advanced SEO features that work seamlessly together to deliver measurable improvements in site performance and search rankings.\n\n' +
+      '## Technical Approach\n\n' +
+      'Built using WordPress best practices with modern PHP 8+ features, the plugin suite will implement advanced caching mechanisms, database query optimization, and intelligent image compression. Each plugin follows WordPress coding standards and includes comprehensive hooks for developer customization.\n\n' +
+      'The suite will feature a unified admin interface with detailed performance analytics, automated optimization recommendations, and one-click implementation of performance improvements.\n\n' +
+      '## Expected Outcomes\n\n' +
+      'The plugin suite will deliver significant performance and SEO improvements:\n\n' +
+      '- 50%+ improvement in page load times\n' +
+      '- Automated image optimization and compression\n' +
+      '- Advanced caching with intelligent cache warming\n' +
+      '- Comprehensive SEO analysis and optimization\n' +
+      '- Database cleanup and optimization tools\n' +
+      '- Real-time performance monitoring dashboard\n' +
+      '- Automated Core Web Vitals optimization',
   },
 ];
 
