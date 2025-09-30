@@ -109,6 +109,56 @@ export const projectsData: Project[] = [
       '- Active community engagement and positive feedback',
   },
   {
+    title: 'AquaStack - Universal React Monorepo',
+    description:
+      'Universal React monorepo combining Next.js web app, Expo mobile client, and Convex backend with Better Auth. Features complete type safety, real-time database, and unified development workflow across platforms.',
+    date: 'September 2025',
+    imageUrl: '/projects/aquastack.jpg',
+    tags: ['React', 'Expo', 'Next.js', 'Convex', 'Better Auth', 'Turborepo', 'TypeScript', 'Monorepo'],
+    slug: 'aquastack-universal-react',
+    links: [
+      { title: 'GitHub', url: 'https://github.com/0xAquaWolf/aquastack' },
+    ],
+    fullDescription:
+      '## Project Overview\n\n' +
+      'AquaStack is a universal React monorepo that combines Next.js web applications, Expo mobile clients, and Convex backends with Better Auth security. The project demonstrates full-stack type safety and real-time capabilities across multiple platforms from a single codebase.\n\n' +
+      'The architecture leverages shared packages for common types, UI components, and utilities while maintaining platform-specific optimizations. This approach maximizes code reuse and ensures consistent user experience across web and mobile applications.\n\n' +
+      '## Technical Architecture\n\n' +
+      'Built with Turborepo for efficient monorepo management, the system features:\n\n' +
+      '- **Backend**: Convex real-time database with Better Auth integration for secure authentication\n' +
+      '- **Web App**: Next.js with App Router, Convex client, and Better Auth session management\n' +
+      '- **Mobile App**: Expo Router with NativeWind styling, Zustand state management\n' +
+      '- **Shared Packages**: Centralized types, UI components, and auth utilities\n\n' +
+      'The system provides complete end-to-end type safety with generated types from Convex schemas flowing through to all client applications.\n\n' +
+      '## Key Features & Implementation\n\n' +
+      '### Real-time Data Synchronization\n' +
+      '- Convex real-time database ensures instant updates across all connected clients\n' +
+      '- Automatic type generation maintains consistency between backend and frontend\n' +
+      '- Optimistic updates and conflict resolution for smooth user experience\n\n' +
+      '### Unified Authentication\n' +
+      '- Better Auth integration across web and mobile platforms\n' +
+      '- Session management with secure token handling\n' +
+      '- Shared auth utilities simplify cross-platform implementation\n\n' +
+      '### Development Workflow\n' +
+      '- Turborepo orchestrates builds and development servers\n' +
+      '- Hot reloading across all platforms during development\n' +
+      '- Comprehensive testing suite for end-to-end validation\n\n' +
+      '## Documentation & Testing\n\n' +
+      'The project includes extensive documentation covering:\n' +
+      '- Architecture overview and implementation details\n' +
+      '- Testing guide for full-stack validation\n' +
+      '- Development workflow and troubleshooting\n' +
+      '- Type safety deep dive and best practices\n\n' +
+      '## Expected Outcomes\n\n' +
+      'AquaStack delivers significant improvements in development efficiency:\n\n' +
+      '- 90%+ type safety across the entire stack\n' +
+      '- Real-time synchronization across all platforms\n' +
+      '- Unified development and deployment workflow\n' +
+      '- Comprehensive documentation for team onboarding\n' +
+      '- Scalable architecture for complex applications\n' +
+      '- Production-ready authentication and data management',
+  },
+  {
     title: 'WordPress Headless CMS with Next.js',
     description:
       'Creating a modern headless WordPress setup with Next.js frontend, featuring custom Gutenberg blocks, GraphQL API, and advanced page building capabilities for optimal performance.',
