@@ -158,8 +158,8 @@ export const LogoList = ({ startIndex = 0 }: { startIndex?: number }) => (
 
 export default function LogoCloud() {
   return (
-    <div className="lg:mt-22 relative z-40 mx-auto mb-[-75px] mt-[50px] flex flex-col gap-3 text-white lg:mb-0 lg:max-w-[1080px] lg:gap-6">
-      <h2 className="mx-auto mb-3 w-full px-8 text-center text-sm lg:mb-0 lg:max-w-none lg:px-0 lg:text-xl">
+    <div className="relative z-40 mx-auto mt-2 flex flex-col gap-1 text-white lg:max-w-[1080px] lg:gap-2">
+      <h2 className="mx-auto w-full px-8 text-center text-xs lg:max-w-none lg:px-0 lg:text-sm">
         Leveraging state-of-the-art technologies
       </h2>
 
@@ -172,13 +172,13 @@ export default function LogoCloud() {
             'linear-gradient(to right, transparent, black 15%, black 85%, transparent 100%)',
         }}
       >
-        <div className="flex animate-marquee-scroll whitespace-nowrap py-6">
+        <div className="flex animate-marquee-scroll whitespace-nowrap py-2">
           {Array.from({ length: 2 }, (_, i) => (
             <LogoList key={`list-1-${i}`} startIndex={i} />
           ))}
         </div>
         <div
-          className="flex animate-marquee-scroll whitespace-nowrap py-6"
+          className="flex animate-marquee-scroll whitespace-nowrap py-2"
           style={{ animationDelay: '-20s' }}
           aria-hidden="true"
         >
@@ -188,7 +188,7 @@ export default function LogoCloud() {
         </div>
       </div>
 
-      <p className="mx-auto w-full max-w-[250px] text-center text-sm opacity-60 lg:max-w-none">
+      <p className="mx-auto w-full max-w-[250px] text-center text-xs opacity-60 lg:max-w-none lg:text-sm">
         Staying ahead of the curve and surfing the waves of innovation
       </p>
     </div>

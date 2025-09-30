@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import { Timeline } from '@/components/ui/timeline';
+import SectionHeading from '@/components/SectionHeading';
 import {
   AcademicCapIcon,
   ComputerDesktopIcon,
@@ -10,7 +11,8 @@ import {
   CurrencyDollarIcon,
   GlobeAltIcon,
   CpuChipIcon,
-  FlagIcon
+  FlagIcon,
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/solid';
 
 const timelineData = [
@@ -319,15 +321,31 @@ const timelineData = [
             </div>
             <div className="flex items-start space-x-3">
               <span className="mt-2 h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-              <span className="text-sm text-gray-100">YouTube content (0xAquawolf)</span>
+              <a href="https://youtube.com/@0xAquawolf" target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1">
+                YouTube content (0xAquawolf)
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
             </div>
             <div className="flex items-start space-x-3">
               <span className="mt-2 h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-              <span className="text-sm text-gray-100 font-semibold">AquaKit (57 stars)</span>
+              <a href="https://github.com/0xAquaWolf/AquaKit" target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-semibold flex items-center gap-1">
+                AquaKit (50 stars)
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
             </div>
             <div className="flex items-start space-x-3">
               <span className="mt-2 h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-              <span className="text-sm text-gray-100 font-semibold">Portfolio open source (74 stars)</span>
+              <a href="https://github.com/0xAquaWolf/portfolio" target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-semibold flex items-center gap-1">
+                Portfolio open source (76 stars)
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="mt-2 h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
+              <a href="https://github.com/0xAquaWolf/AquaStack" target="_blank" rel="noopener noreferrer" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors font-semibold flex items-center gap-1">
+                AquaStack universal app
+                <ArrowTopRightOnSquareIcon className="h-3 w-3" />
+              </a>
             </div>
             <div className="flex items-start space-x-3">
               <span className="mt-2 h-2 w-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
@@ -343,6 +361,10 @@ const timelineData = [
 export default function TimelineComponent() {
   return (
     <div id="timeline" className="w-full">
+      <SectionHeading
+        heading="My Developer Journey"
+        subheading="8+ Years of Evolution: WordPress, AI, Next.js, React, PHP, Startups, AI Dev Workflows, Neovim"
+      />
       <Timeline data={timelineData} />
     </div>
   );
