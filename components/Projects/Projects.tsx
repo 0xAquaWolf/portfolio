@@ -18,32 +18,33 @@ export interface Project {
 
 export const projectsData: Project[] = [
   {
-    title: 'Laravel E-Commerce Platform',
+    title: 'SunnySide 24/7 AC Business Website',
     description:
-      'Built a comprehensive e-commerce platform using Laravel with advanced inventory management, payment processing, and real-time analytics dashboard.',
-    date: 'December 2023',
-    imageUrl: '/projects/laravel-ecommerce.jpg',
-    tags: ['Laravel', 'PHP', 'Vue.js', 'MySQL', 'Redis', 'Stripe', 'Docker'],
-    slug: 'laravel-ecommerce-platform',
+      'Designed and developed a complete business website from concept to launch - created all UI/UX designs in Figma then built the responsive site using Astro with custom branding and optimized user experience.',
+    date: 'August 2025',
+    imageUrl: '/projects/sunnyside-hvac.jpg',
+    tags: ['Figma', 'UI/UX Design', 'Astro', 'JavaScript', 'Responsive Design', 'SEO'],
+    slug: 'sunnyside-247-ac-website',
     links: [
-      { title: 'Live Demo', url: 'https://laravel-shop.demo' },
-      { title: 'GitHub', url: 'https://github.com/username/laravel-ecommerce' },
+      { title: 'Live Site', url: 'https://sunnyside247ac.com' },
+      { title: 'GitHub', url: 'https://github.com/0xaquawolf/sunnyside-hvac' },
     ],
     fullDescription:
       '## Problem\n\n' +
-      'Small to medium businesses struggle with expensive e-commerce solutions that lack customization options and scalability. Existing platforms often charge high transaction fees and provide limited control over the customer experience, while custom solutions are typically cost-prohibitive.\n\n' +
-      'The challenge was compounded by the need for advanced features like real-time inventory tracking, multi-vendor support, and comprehensive analytics, all while maintaining performance and security standards.\n\n' +
+      'A family HVAC business in South Florida needed a professional online presence to compete with larger companies and attract new customers. Their existing web presence was outdated and failed to showcase their expertise or make it easy for customers to contact them for emergency services.\n\n' +
+      'The challenge was creating a modern, mobile-friendly website that would rank well in local search results while clearly communicating their 24/7 availability and comprehensive service coverage across South Florida.\n\n' +
       '## Action\n\n' +
-      'Developed a comprehensive e-commerce platform using Laravel and modern PHP practices. Implemented advanced features including real-time inventory management, automated order processing, and a powerful admin dashboard with Vue.js. Built a modular architecture supporting multiple payment gateways and shipping providers.\n\n' +
-      'Utilized Redis for caching and session management, MySQL for robust data storage, and Docker for consistent deployment environments. Created a comprehensive API for mobile app integration and third-party service connections.\n\n' +
+      'Started with complete UI/UX design process in Figma - creating wireframes, designing the user experience flow, and developing a comprehensive design system with the professional yellow/orange brand color scheme. Crafted every visual element from logo placement to call-to-action buttons with focus on conversion and user engagement.\n\n' +
+      'Translated the Figma designs pixel-perfectly into a high-performance website using Astro for optimal loading speeds and SEO. Implemented responsive design patterns, integrated structured JSON-LD schema markup for local SEO, and built interactive elements including the logo marquee. Every design decision was intentionally crafted to convey warmth, reliability, and professional HVAC expertise.\n\n' +
       '## Results\n\n' +
-      'The platform has delivered exceptional business value and technical performance:\n\n' +
-      '- Processing $2M+ in monthly transactions\n' +
-      '- 50% reduction in page load times through optimization\n' +
-      '- 99.9% uptime with automated scaling\n' +
-      '- Support for 10,000+ concurrent users\n' +
-      '- 70% improvement in inventory accuracy\n' +
-      '- Zero payment processing errors since launch',
+      'The complete design-to-development process delivered exceptional results:\n\n' +
+      '- Pixel-perfect implementation from Figma designs to live site\n' +
+      '- 90+ Google PageSpeed performance score\n' +
+      '- Professional brand presence across South Florida market\n' +
+      '- Intuitive user experience optimized for customer conversion\n' +
+      '- Mobile-first responsive design tested across all devices\n' +
+      '- SEO-optimized for local HVAC searches\n' +
+      '- Successfully represents family business values and expertise',
   },
   {
     title: 'WordPress Headless CMS with Next.js',
