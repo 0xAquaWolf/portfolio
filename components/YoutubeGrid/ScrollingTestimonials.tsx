@@ -65,7 +65,13 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
       <div className="relative">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {/* Mobile view: single column */}
-          <div className="marquee-slow h-[600px] overflow-hidden px-10 md:hidden">
+          <div 
+            className="marquee-slow h-[600px] overflow-hidden px-10 md:hidden"
+            style={{
+              maskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)',
+            }}
+          >
             <div className="animate-marquee">
               {testimonials.map((testimonial, i) => (
                 <TestimonialCard key={i} {...testimonial} />
@@ -83,6 +89,10 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
               className={`hidden h-[600px] overflow-hidden md:block ${
                 index === 1 ? "marquee-slow" : "marquee-fast"
               }`}
+              style={{
+                maskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 25%, black 75%, transparent)',
+              }}
             >
               <div className="animate-marquee">
                 {group.map((testimonial, i) => (
@@ -95,10 +105,6 @@ const ScrollingTestimonials: React.FC<{ testimonials: CommentData[] }> = ({
               </div>
             </div>
           ))}
-          {/* top shadow */}
-          <div className="absolute left-0 right-0 top-0 h-1/4 bg-gradient-to-t from-transparent to-black"></div>
-          {/* bottom shadow */}
-          <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black to-transparent"></div>
         </div>
       </div>
     </div>
