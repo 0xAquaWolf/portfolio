@@ -55,7 +55,7 @@ function Navbar({ className }: { className?: string }) {
       }}
     >
       <Menu setActive={setActive}>
-        <Link href="/" className="text-white hover:opacity-[0.9] cursor-pointer">
+        <Link href="/" className="text-white/90 hover:text-white font-medium px-4 py-2 rounded-full transition-all duration-200 hover:bg-white/10 cursor-pointer">
           Home
         </Link>
         <MenuItem setActive={setActive} active={active} item="About">

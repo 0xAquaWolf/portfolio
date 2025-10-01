@@ -28,7 +28,11 @@ export const MenuItem = ({
     <div onMouseEnter={() => setActive(item)} className="relative ">
       <motion.p
         transition={{ duration: 0.3 }}
-        className="cursor-pointer text-white/90 hover:text-white font-medium"
+        className={`cursor-pointer text-white/90 hover:text-white font-medium px-4 py-2 rounded-full transition-all duration-200 ${
+          active === item 
+            ? 'bg-white/20 text-white' 
+            : 'hover:bg-white/10'
+        }`}
       >
         {item}
       </motion.p>
@@ -43,11 +47,10 @@ export const MenuItem = ({
               <motion.div
                 transition={transition}
                 layoutId="active" // layoutId ensures smooth animation
-                className="bg-black/40 backdrop-blur-md rounded-2xl overflow-hidden border border-white/[0.3] shadow-xl"
+                className="bg-white/10 backdrop-blur-md rounded-2xl overflow-hidden border border-white/[0.2] shadow-xl"
                 style={{
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.6)',
                 }}
               >
                 <motion.div
@@ -107,10 +110,10 @@ export const ProductItem = ({
         className="shrink-0 rounded-md shadow-2xl"
       />
       <div>
-        <h4 className="text-xl font-bold mb-1 text-white">
+        <h4 className="text-xl font-bold mb-1 text-black dark:text-white">
           {title}
         </h4>
-        <p className="text-white/80 text-sm max-w-[10rem]">
+        <p className="text-neutral-700 text-sm max-w-[10rem] dark:text-neutral-300">
           {description}
         </p>
       </div>
@@ -122,7 +125,7 @@ export const HoveredLink = ({ children, ...rest }: any) => {
   return (
     <a
       {...rest}
-      className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+      className="text-neutral-700 dark:text-neutral-200 hover:text-black transition-colors duration-200"
     >
       {children}
     </a>
