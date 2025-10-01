@@ -53,10 +53,10 @@ export default function BlogCard({ blog }: BlogCardProps) {
             </div>
           </div>
           <div className="mt-2 overflow-hidden">
-            <h3 className="truncate text-lg font-semibold text-white">
+            <h3 className="line-clamp-2 text-lg font-semibold text-white">
               {blog.title}
             </h3>
-            <p className="mt-1 truncate text-sm text-gray-300">
+            <p className="mt-1 line-clamp-2 text-sm text-gray-300">
               {blog.description}
             </p>
             {blog.tags && blog.tags.length > 0 && (
