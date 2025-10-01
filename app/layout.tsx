@@ -7,7 +7,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import localFont from 'next/font/local';
 import ResponsiveGodRays from '@/components/ui/ResponsiveGodRays';
-import { NewNavbar } from '@/components/Hero/NewNavbar';
+import Menu from '@/components/Hero/Menu/Menu';
 import { ThemeProvider } from 'next-themes';
 import NoiseTexture from '@/components/ui/NoiseTexture';
 
@@ -107,7 +107,7 @@ export default function RootLayout({
           <div className="pointer-events-none absolute left-0 top-0 -z-10 h-[100dvh] w-full overflow-hidden">
             <ResponsiveGodRays />
           </div>
-          <NewNavbar />
+          <Menu />
           <div className="mx-auto max-w-[1440px] bg-transparent px-4 sm:px-6 lg:px-8">
             {children}
           </div>

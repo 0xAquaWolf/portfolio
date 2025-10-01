@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
@@ -25,6 +25,8 @@ interface NavItem {
 
 export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [navMenu, setNavMenu] = useState<NavItem[]>([
     { name: 'Home', href: '/', isActive: true },
     { name: 'About', href: '/#about', isActive: false },
@@ -42,9 +44,29 @@ export default function Menu() {
     );
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY < lastScrollY || currentScrollY < 100) {
+        // Scrolling up or near top
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down and past threshold
+        setIsVisible(false);
+        setMobileMenuOpen(false); // Close mobile menu when hiding
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   return (
     <div className="mx-auto max-w-[1440px]">
-      <header className="absolute inset-x-0 top-0 z-50">
+      <header className="fixed inset-x-0 top-0 z-50">
         <nav
           aria-label="Global"
           className="flex items-center justify-between p-6 lg:px-8"
@@ -70,23 +92,38 @@ export default function Menu() {
               <Bars3Icon aria-hidden="true" className="h-10 w-10 text-white" />
             </button>
           </div>
-          <div className="hidden gap-4 rounded-full bg-white/20 px-5 py-2 text-white lg:flex lg:w-full lg:flex-1 lg:items-center lg:gap-x-12">
-            {/* Desktop Mobile menu */}
-            {navMenu.map((item) => (
-              <span key={item.name} onClick={() => setActiveNavItem(item.name)}>
+          {/* Desktop navigation - centered modern design */}
+          <div className={`fixed top-10 inset-x-0 max-w-2xl mx-auto z-50 hidden lg:flex lg:items-center lg:justify-center transition-all duration-500 ease-out ${
+            isVisible 
+              ? "translate-y-0 opacity-100 scale-100" 
+              : "-translate-y-16 opacity-0 scale-95 pointer-events-none"
+          }`}
+               style={{
+                 transitionProperty: 'transform, opacity, scale',
+                 transitionTimingFunction: isVisible 
+                   ? 'cubic-bezier(0.16, 1, 0.3, 1)' 
+                   : 'cubic-bezier(0.7, 0, 0.84, 0)',
+               }}>
+            <nav className="relative rounded-full border border-white/[0.2] bg-white/10 backdrop-blur-md shadow-lg flex justify-center space-x-8 px-10 py-4"
+                 style={{
+                   backdropFilter: 'blur(16px)',
+                   WebkitBackdropFilter: 'blur(16px)',
+                 }}>
+              {navMenu.map((item) => (
                 <a
-                  className={clsx({
-                    'flex-2 relative rounded-full px-4 py-1 transition-all':
-                      true,
-                    [activeStyle]: item.isActive,
-                    [inActiveStyle]: !item.isActive,
-                  })}
+                  key={item.name}
                   href={item.href}
+                  onClick={() => setActiveNavItem(item.name)}
+                  className={clsx({
+                    'text-white/90 hover:text-white font-medium px-4 py-2 rounded-full transition-all duration-200': true,
+                    'bg-white/20 text-white': item.isActive,
+                    'hover:bg-white/10': !item.isActive,
+                  })}
                 >
                   {item.name}
                 </a>
-              </span>
-            ))}
+              ))}
+            </nav>
           </div>
           <div className="hidden gap-4 lg:flex lg:flex-1 lg:justify-end">
             <a

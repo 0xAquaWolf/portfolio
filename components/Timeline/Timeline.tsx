@@ -26,7 +26,7 @@ const timelineData = [
           </div>
           <h4 className="text-xl font-bold text-white">The Beginning</h4>
         </div>
-        <p className="text-gray-300 text-sm md:text-base leading-relaxed">
+        <p className="text-white text-sm md:text-base leading-relaxed">
           Started my coding journey, watched coding videos and learned about web development. This was when I first heard about learning how to code.
         </p>
       </div>
