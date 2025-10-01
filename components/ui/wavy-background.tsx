@@ -105,8 +105,8 @@ export const WavyBackground = ({
     // I'm sorry but i have got to support it on safari.
     setIsSafari(
       typeof window !== 'undefined' &&
-        navigator.userAgent.includes('Safari') &&
-        !navigator.userAgent.includes('Chrome'),
+      navigator.userAgent.includes('Safari') &&
+      !navigator.userAgent.includes('Chrome'),
     );
   }, []);
 
@@ -118,20 +118,18 @@ export const WavyBackground = ({
       )}
     >
       <canvas
-        className="absolute inset-0 z-20"
+        className="absolute inset-0 z-10 max-w-full"
         ref={canvasRef}
         id="canvas"
         style={{
+          maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
           ...(isSafari ? { filter: `blur(${blur}px)` } : {}),
         }}
       ></canvas>
-      <div className={cn('relative z-20', className)} {...props}>
+      <div className={cn('relative z-30', className)} {...props}>
         {children}
       </div>
-      {/* top shadow */}
-      <div className="absolute left-0 z-[99] h-full w-44 bg-gradient-to-r from-[#08080e] to-transparent"></div>
-      {/* bottom shadow */}
-      <div className="absolute right-0 z-[99] h-full w-44 bg-gradient-to-l from-[#08080e] to-transparent"></div>
     </div>
   );
 };

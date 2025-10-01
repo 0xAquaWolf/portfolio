@@ -22,6 +22,25 @@ export default function ProjectContent({
 }: ProjectContentProps) {
   const [isLoading, setIsLoading] = useState(true);
 
+  // Determine the primary link - prioritize live site, then github
+  const getPrimaryLink = () => {
+    const liveLink = links.find(link => 
+      link.title.toLowerCase().includes('live') || 
+      link.title.toLowerCase().includes('site') ||
+      link.title.toLowerCase().includes('demo')
+    );
+    
+    if (liveLink) return liveLink;
+    
+    const githubLink = links.find(link => 
+      link.title.toLowerCase().includes('github')
+    );
+    
+    return githubLink || links[0]; // fallback to first link if no live or github
+  };
+
+  const primaryLink = getPrimaryLink();
+
   return (
     <div className="flex flex-col gap-8">
       {/* Back Button */}
@@ -36,7 +55,12 @@ export default function ProjectContent({
       </div>
 
       {/* Hero Image */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-[60px] bg-gray-900">
+      <a
+        href={primaryLink?.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative aspect-video w-full overflow-hidden rounded-[60px] bg-gray-900 cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
+      >
         {/* Loading Placeholder */}
         <div
           className={`absolute inset-0 flex items-center justify-center bg-gray-800 transition-opacity duration-300 ${
@@ -51,13 +75,23 @@ export default function ProjectContent({
           src={imageUrl}
           alt={title}
           fill
-          className={`object-cover transition-opacity duration-700 ${
+          className={`object-cover transition-all duration-700 ${
             isLoading ? 'opacity-0' : 'opacity-100'
-          }`}
+          } group-hover:scale-105`}
           priority
           onLoad={() => setIsLoading(false)}
         />
-      </div>
+
+        {/* Overlay with link indicator */}
+        <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/20">
+          <div className="absolute top-4 right-4 opacity-0 transition-all duration-300 group-hover:opacity-100">
+            <div className="flex items-center gap-2 rounded-full bg-white/90 px-3 py-2 text-sm font-medium text-gray-900 backdrop-blur-sm">
+              <ExternalLink className="h-4 w-4" />
+              {primaryLink?.title}
+            </div>
+          </div>
+        </div>
+      </a>
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
