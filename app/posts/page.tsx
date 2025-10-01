@@ -6,7 +6,7 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 
 export default function Posts() {
   return (
-    <div className="lg:mt-30 relative z-10 mb-8 mt-10 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="relative z-10 mb-8 px-4 pt-20 pb-8 sm:px-6 lg:px-8">
       <div className="mx-auto mb-12 mt-8 max-w-[1440px]">
         <h1 className="text-center text-4xl font-bold text-white mb-6">Posts</h1>
         <h2 className="mb-16 text-center text-white px-4">
@@ -15,7 +15,8 @@ export default function Posts() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, index) => (
             <Link key={index} href={post.slug} className="block">
-              <div className="relative aspect-square overflow-hidden rounded-xl bg-slate-900 shadow-lg transition-transform duration-300 hover:scale-105">
+              <div className="relative aspect-square rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 p-[3px] shadow-lg transition-all duration-300 hover:scale-105 hover:skew-y-1">
+                <div className="relative h-full w-full overflow-hidden rounded-[calc(0.75rem-3px)] bg-slate-900">
                 <Image
                   src={post.imageUrl}
                   alt={post.title}
@@ -51,6 +52,7 @@ export default function Posts() {
                     <span className="font-medium">Read more</span>
                     <ChevronRightIcon className="h-6 w-6" />
                   </div>
+                </div>
                 </div>
               </div>
             </Link>

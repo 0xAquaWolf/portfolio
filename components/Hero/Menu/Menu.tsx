@@ -110,7 +110,7 @@ export default function Menu() {
       </header>
 
       {/* Sticky centered navigation menu */}
-      <div className={`fixed inset-x-0 max-w-2xl mx-auto z-50 hidden lg:flex lg:items-center lg:justify-center transition-all duration-500 ease-out ${isVisible
+      <div className={`fixed inset-x-0 max-w-2xl top-3 mx-auto z-50 hidden lg:flex lg:items-center lg:justify-center transition-all duration-500 ease-out ${isVisible
         ? "translate-y-0 opacity-100 scale-100"
         : "-translate-y-16 opacity-0 scale-95 pointer-events-none"
         }`}
