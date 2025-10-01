@@ -12,7 +12,7 @@ export default function FeaturedBlogs() {
         subheading="Documenting my expertise in PHP, WordPress, and Laravel development, plus insights on AI integration."
       />
       <div className="rounded-2xllg:mt-40 mt-20">
-        <div className="mt-8 overflow-x-auto rounded-2xl pb-4">
+        <div className="mt-8 overflow-x-auto rounded-2xl pb-4 py-4">
           <div className="flex space-x-6 px-4">
             {posts
               .sort((a, b) => {
@@ -30,6 +30,7 @@ export default function FeaturedBlogs() {
                     imageUrl: post.imageUrl,
                     url: post.slug,
                     readTime: post.readTime,
+                    tags: post.tags,
                   }}
                 />
               ))}

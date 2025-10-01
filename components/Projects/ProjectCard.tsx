@@ -28,7 +28,7 @@ export default function ProjectCard({
 
   return (
     <Link href={`/projects/${slug}`} className="h-full">
-      <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-800 bg-gray-900/50 shadow-lg backdrop-blur-sm transition-all hover:shadow-2xl hover:shadow-purple-500/10">
+      <div className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-gray-800 bg-gray-900/50 shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-transparent hover:bg-gradient-to-br hover:from-purple-500/20 hover:via-pink-500/20 hover:to-blue-500/20 hover:shadow-2xl hover:shadow-purple-500/20 hover:ring-4 hover:ring-purple-500/30" style={{maxHeight: '500px'}}>
         <div className="relative h-60 w-full overflow-hidden bg-gray-800">
           <Image
             src={imageError ? '/images/placeholder-project.svg' : imageUrl}
@@ -54,7 +54,7 @@ export default function ProjectCard({
             <p className="text-gray-400">{description}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
+            {tags.slice(0, 5).map((tag) => (
               <span
                 key={tag}
                 className="rounded-full bg-gray-800 px-3 py-1 text-sm text-gray-300"
@@ -62,6 +62,11 @@ export default function ProjectCard({
                 {tag}
               </span>
             ))}
+            {tags.length > 5 && (
+              <span className="rounded-full bg-purple-600/20 px-3 py-1 text-sm text-purple-300">
+                +{tags.length - 5} more
+              </span>
+            )}
           </div>
         </div>
       </div>

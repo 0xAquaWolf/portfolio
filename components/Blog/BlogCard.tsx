@@ -9,6 +9,7 @@ interface BlogPost {
   imageUrl: string;
   url: string;
   readTime: string;
+  tags?: string[];
 }
 
 interface BlogCardProps {
@@ -19,7 +20,8 @@ export default function BlogCard({ blog }: BlogCardProps) {
   // console.log(blog);
   return (
     <Link href={blog.url} className="block">
-      <div className="relative h-[24rem] w-64 flex-shrink-0 overflow-hidden rounded-2xl bg-white shadow-md lg:h-[30rem] lg:w-80">
+      <div className="relative h-[31.25rem] w-64 flex-shrink-0 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 p-[3px] shadow-md transition-all duration-300 hover:scale-105 hover:skew-y-1 lg:w-80" style={{maxHeight: '500px'}}>
+        <div className="relative h-full w-full rounded-[calc(1rem-3px)] bg-white overflow-hidden">
         <Image
           src={blog.imageUrl}
           alt={blog.title}
@@ -57,10 +59,28 @@ export default function BlogCard({ blog }: BlogCardProps) {
             <p className="mt-1 truncate text-sm text-gray-300">
               {blog.description}
             </p>
+            {blog.tags && blog.tags.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {blog.tags.slice(0, 5).map((tag, index) => (
+                  <span
+                    key={index}
+                    className="rounded-full bg-purple-600/20 px-2 py-1 text-xs text-purple-300 backdrop-blur-sm"
+                  >
+                    {tag}
+                  </span>
+                ))}
+                {blog.tags.length > 5 && (
+                  <span className="rounded-full bg-gray-600/20 px-2 py-1 text-xs text-gray-300 backdrop-blur-sm">
+                    +{blog.tags.length - 5} more
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
         {/* bottom shadow */}
         <div className="absolute bottom-0 left-0 right-0 h-3/4 bg-gradient-to-t from-[#07070C] to-transparent"></div>
+        </div>
       </div>
     </Link>
   );

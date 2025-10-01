@@ -31,7 +31,7 @@ export default function Home() {
       <Projects />
       <SecondQuote />
       <FeaturedBlogs />
-      <TheEnd />
+      {/* <TheEnd /> */}
       <Footer />
     </main>
   );
