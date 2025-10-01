@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
@@ -13,9 +13,6 @@ import TwitterLogo from '../../../public/images/svg/X-Twitter-Logo.svg';
 import YouTubeLogo from '../../../public/images/svg/Youtube-Logo.svg';
 import clsx from 'clsx';
 import Link from 'next/link';
-
-const inActiveStyle = 'text-white/50 hover:bg-white/40 hover:text-white/80';
-const activeStyle = 'bg-gradient-to-b from-white/40 to-[#2F2D2D]/20';
 
 interface NavItem {
   name: string;
@@ -47,7 +44,7 @@ export default function Menu() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY < lastScrollY || currentScrollY < 100) {
         // Scrolling up or near top
         setIsVisible(true);
@@ -56,7 +53,7 @@ export default function Menu() {
         setIsVisible(false);
         setMobileMenuOpen(false); // Close mobile menu when hiding
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -66,7 +63,7 @@ export default function Menu() {
 
   return (
     <div className="mx-auto max-w-[1440px]">
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header className="absolute inset-x-0 top-0 z-40">
         <nav
           aria-label="Global"
           className="flex items-center justify-between p-6 lg:px-8"
@@ -92,39 +89,6 @@ export default function Menu() {
               <Bars3Icon aria-hidden="true" className="h-10 w-10 text-white" />
             </button>
           </div>
-          {/* Desktop navigation - centered modern design */}
-          <div className={`fixed top-10 inset-x-0 max-w-2xl mx-auto z-50 hidden lg:flex lg:items-center lg:justify-center transition-all duration-500 ease-out ${
-            isVisible 
-              ? "translate-y-0 opacity-100 scale-100" 
-              : "-translate-y-16 opacity-0 scale-95 pointer-events-none"
-          }`}
-               style={{
-                 transitionProperty: 'transform, opacity, scale',
-                 transitionTimingFunction: isVisible 
-                   ? 'cubic-bezier(0.16, 1, 0.3, 1)' 
-                   : 'cubic-bezier(0.7, 0, 0.84, 0)',
-               }}>
-            <nav className="relative rounded-full border border-white/[0.2] bg-white/10 backdrop-blur-md shadow-lg flex justify-center space-x-8 px-10 py-4"
-                 style={{
-                   backdropFilter: 'blur(16px)',
-                   WebkitBackdropFilter: 'blur(16px)',
-                 }}>
-              {navMenu.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setActiveNavItem(item.name)}
-                  className={clsx({
-                    'text-white/90 hover:text-white font-medium px-4 py-2 rounded-full transition-all duration-200': true,
-                    'bg-white/20 text-white': item.isActive,
-                    'hover:bg-white/10': !item.isActive,
-                  })}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </nav>
-          </div>
           <div className="hidden gap-4 lg:flex lg:flex-1 lg:justify-end">
             <a
               href="https://github.com/0xAquaWolf"
@@ -143,175 +107,182 @@ export default function Menu() {
             </a>
           </div>
         </nav>
-        <Dialog
-          open={mobileMenuOpen}
-          onClose={setMobileMenuOpen}
-          className="lg:hidden"
-        >
-          <div className="fixed inset-0 z-50" />
-          <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-bg-default px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-            <div className="relative z-50">
-              <div className="flex items-center justify-between">
-                <a href="#" className="-m-1.5 p-1.5">
-                  <span className="sr-only">0xAquaWolf</span>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/images/png/aquawolf-logo.png"
-                      alt="Logo"
-                      width={25}
-                      height={25}
-                    />
-                    <div className="text-lg font-semibold text-white">
-                      0xAquaWolf
-                    </div>
-                  </div>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="-m-2.5 rounded-md p-2.5 text-gray-700"
-                >
-                  <span className="sr-only">Close menu</span>
-                  <XMarkIcon
-                    aria-hidden="true"
-                    className="h-10 w-10 text-white"
+      </header>
+
+      {/* Sticky centered navigation menu */}
+      <div className={`fixed inset-x-0 max-w-2xl mx-auto z-50 hidden lg:flex lg:items-center lg:justify-center transition-all duration-500 ease-out ${isVisible
+        ? "translate-y-0 opacity-100 scale-100"
+        : "-translate-y-16 opacity-0 scale-95 pointer-events-none"
+        }`}
+        style={{
+          transitionProperty: 'transform, opacity, scale',
+          transitionTimingFunction: isVisible
+            ? 'cubic-bezier(0.16, 1, 0.3, 1)'
+            : 'cubic-bezier(0.7, 0, 0.84, 0)',
+        }}>
+        <nav className="relative rounded-full border border-white/[0.2] bg-white/10 backdrop-blur-md shadow-lg flex justify-center space-x-8 px-10 py-4"
+          style={{
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+          }}>
+          {navMenu.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              onClick={() => setActiveNavItem(item.name)}
+              className={clsx({
+                'text-white/90 hover:text-white font-medium px-4 py-2 rounded-full transition-all duration-200': true,
+                'bg-white/20 text-white': item.isActive,
+                'hover:bg-white/10': !item.isActive,
+              })}
+            >
+              {item.name}
+            </a>
+          ))}
+        </nav>
+      </div>
+
+      <Dialog
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+        className="lg:hidden"
+      >
+        <div className="fixed inset-0 z-50" />
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-bg-default px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="relative z-50">
+            <div className="flex items-center justify-between">
+              <a href="#" className="-m-1.5 p-1.5">
+                <span className="sr-only">0xAquaWolf</span>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/images/png/aquawolf-logo.png"
+                    alt="Logo"
+                    width={25}
+                    height={25}
                   />
-                </button>
-              </div>
-              <div className="mt-6 flow-root">
-                <div className="-my-6 divide-y divide-gray-500/10">
-                  <div className="space-y-2 py-6 text-center">
-                    {navMenu.map((item) => (
-                      <a
-                        key={item.name + 1}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="-mx-3 block rounded-lg px-3 py-2 text-3xl font-normal leading-7 text-white transition-all hover:bg-gray-50/20"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
+                  <div className="text-lg font-semibold text-white">
+                    0xAquaWolf
                   </div>
-                  {/* Seperator */}
-                  <div className="flex flex-1 items-center justify-center">
-                    <div className="h-[2px] w-[70vw] bg-white/100"></div>
+                </div>
+              </a>
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(false)}
+                className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              >
+                <span className="sr-only">Close menu</span>
+                <XMarkIcon
+                  aria-hidden="true"
+                  className="h-10 w-10 text-white"
+                />
+              </button>
+            </div>
+            <div className="mt-6 flow-root">
+              <div className="-my-6 divide-y divide-gray-500/10">
+                <div className="space-y-2 py-6 text-center">
+                  {navMenu.map((item) => (
+                    <a
+                      key={item.name + 1}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="-mx-3 block rounded-lg px-3 py-2 text-3xl font-normal leading-7 text-white transition-all hover:bg-gray-50/20"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+                {/* Seperator */}
+                <div className="flex flex-1 items-center justify-center">
+                  <div className="h-[2px] w-[70vw] bg-white/100"></div>
+                </div>
+                {/* Social Links */}
+                <div className="mt-10 grid gap-10">
+                  <div className="align-center flex flex-1 justify-center gap-10">
+                    <a
+                      href="https://twitter.com/0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src={TwitterLogo}
+                        alt="X/Twitter Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
+                    <a
+                      className="grid items-center"
+                      href="https://www.youtube.com/@0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src={YouTubeLogo}
+                        alt="YouTube Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
+                    <a
+                      href="https://github.com/0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src={GithubLogo}
+                        alt="Github Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
                   </div>
-                  {/* Social Links */}
-                  <div className="mt-10 grid gap-10">
-                    <div className="align-center flex flex-1 justify-center gap-10">
-                      <a
-                        href="https://twitter.com/0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Image
-                          src={TwitterLogo}
-                          alt="X/Twitter Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                      <a
-                        className="grid items-center"
-                        href="https://www.youtube.com/@0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Image
-                          src={YouTubeLogo}
-                          alt="YouTube Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                      <a
-                        href="https://github.com/0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Image
-                          src={GithubLogo}
-                          alt="Github Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                    </div>
-                    <div className="align-center flex justify-center gap-10">
-                      <a
-                        href="https://www.instagram.com/_0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="grid items-center"
-                      >
-                        <Image
-                          src={InstagramLogo}
-                          alt="Instagram Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                      <a
-                        href="https://www.tiktok.com/@0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Image
-                          src={TiktokLogo}
-                          alt="TikTok Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                      <a
-                        href="https://www.linkedin.com/in/0xAquaWolf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="grid items-center"
-                      >
-                        <Image
-                          src={LinkedinLogo}
-                          alt="Linkedin Logo"
-                          width={50}
-                          height={50}
-                        />
-                      </a>
-                    </div>
+                  <div className="align-center flex justify-center gap-10">
+                    <a
+                      href="https://www.instagram.com/_0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="grid items-center"
+                    >
+                      <Image
+                        src={InstagramLogo}
+                        alt="Instagram Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
+                    <a
+                      href="https://www.tiktok.com/@0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Image
+                        src={TiktokLogo}
+                        alt="TikTok Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
+                    <a
+                      href="https://www.linkedin.com/in/0xAquaWolf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="grid items-center"
+                    >
+                      <Image
+                        src={LinkedinLogo}
+                        alt="Linkedin Logo"
+                        width={50}
+                        height={50}
+                      />
+                    </a>
                   </div>
                 </div>
               </div>
             </div>
-            <SVGGradientBg />
-          </DialogPanel>
-        </Dialog>
-      </header>
-
-      {/* <div className="relative isolate px-6 pt-14 lg:px-8"> */}
-      {/*   <div */}
-      {/*     aria-hidden="true" */}
-      {/*     className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" */}
-      {/*   > */}
-      {/*     <div */}
-      {/*       style={{ */}
-      {/*         clipPath: */}
-      {/*           'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)', */}
-      {/*       }} */}
-      {/*       className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" */}
-      {/*     /> */}
-      {/*   </div> */}
-      {/*   <div */}
-      {/*     aria-hidden="true" */}
-      {/*     className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]" */}
-      {/*   > */}
-      {/*     <div */}
-      {/*       style={{ */}
-      {/*         clipPath: */}
-      {/*           'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)', */}
-      {/*       }} */}
-      {/*       className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" */}
-      {/*     /> */}
-      {/*   </div> */}
-      {/* </div> */}
+          </div>
+          <SVGGradientBg />
+        </DialogPanel>
+      </Dialog>
     </div>
   );
 }

@@ -104,7 +104,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* <NoiseTexture /> */}
-          <div className="pointer-events-none absolute left-0 top-0 -z-10 h-[100dvh] w-full overflow-hidden">
+          <div 
+            className="pointer-events-none absolute left-0 top-0 -z-10 h-[100dvh] w-full overflow-hidden"
+            style={{
+              maskImage: 'linear-gradient(to bottom, black 80%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent)',
+            }}
+          >
             <ResponsiveGodRays />
           </div>
           <Menu />
