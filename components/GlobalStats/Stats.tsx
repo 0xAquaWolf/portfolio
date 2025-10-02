@@ -117,7 +117,7 @@ export const Stats = async () => {
         <h2 className="mb-8 text-center text-base font-semibold lg:text-2xl">
           Global Stats {DEBUG ? '(Debug Mode)' : ''}
         </h2>
-        <div className="flex flex-col items-center justify-center md:flex-row">
+        <div className="flex flex-col items-center justify-center md:flex-row text-white">
           {statsData.map((stat, index) => (
             <div
               key={index}

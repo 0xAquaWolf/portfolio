@@ -1,22 +1,13 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
-    ],
-    "types": [
-      "node"
-    ],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "types": ["node"],
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -30,29 +21,15 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@/components/*": [
-        "./components/*"
-      ],
-      "@/ui/*": [
-        "./components/ui/*"
-      ],
-      "@/magicui/*": [
-        "./components/magicui/*"
-      ],
-      "@/mdx/*": [
-        "./components/mdx/*"
-      ],
-      "@/lib/*": [
-        "./lib/*"
-      ],
-      "#site/content": [
-        "./.velite"
-      ]
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/ui/*": ["./components/ui/*"],
+      "@/magicui/*": ["./components/magicui/*"],
+      "@/mdx/*": ["./components/mdx/*"],
+      "@/lib/*": ["./lib/*"],
+      "#site/content": ["./.velite"]
     },
-    "target": "ES2017"
+    "target": "ESNEXT"
   },
   "include": [
     "next-env.d.ts",
@@ -62,7 +39,5 @@
     ".contentlayer/generated",
     "eslint.config.mjs"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
