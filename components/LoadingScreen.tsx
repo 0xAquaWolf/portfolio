@@ -16,6 +16,17 @@ export default function LoadingScreen({ progress, isComplete, onComplete }: Load
   const percentageRef = useRef<HTMLSpanElement>(null);
   const [displayProgress, setDisplayProgress] = useState(0);
 
+  // Lock scroll when loading screen is active
+  useEffect(() => {
+    // Disable scroll
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      // Re-enable scroll when component unmounts
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
   // Animate percentage counter
   useGSAP(() => {
     gsap.to({ value: displayProgress }, {
@@ -65,7 +76,7 @@ export default function LoadingScreen({ progress, isComplete, onComplete }: Load
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-600 via-blue-600 to-yellow-500"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-purple-600 via-blue-600 to-yellow-500"
       style={{ touchAction: 'none', overflow: 'hidden' }}
     >
       {/* Percentage Counter */}

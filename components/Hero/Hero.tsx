@@ -12,7 +12,7 @@ export default function Hero() {
   // Listen for loading screen completion event
   useEffect(() => {
     console.log('🎯 Hero: Setting up event listener for loadingScreenComplete');
-    
+
     const handleLoadingComplete = () => {
       console.log('🎉 Hero: Received loadingScreenComplete event! Starting animations...');
       setShouldAnimate(true);
@@ -55,46 +55,46 @@ export default function Hero() {
       duration: 0.8,
       ease: 'power2.out',
     })
-    .to('[data-gsap="hero-text"]', {
-      opacity: 1,
-      scale: 1,
-      duration: 0.8,
-      ease: 'power2.out',
-    }, '-=0.4')
-    .to('[data-gsap="cta-view-projects"]', {
-      opacity: 1,
-      x: 0,
-      duration: 0.6,
-      ease: 'power2.out',
-    }, '-=0.4')
-    .to('[data-gsap="cta-book-call"]', {
-      opacity: 1,
-      x: 0,
-      duration: 0.6,
-      ease: 'power2.out',
-    }, '-=0.3')
-    .to('[data-gsap="tech-subtitle"]', {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: 'power2.out',
-    }, '-=0.4')
-    .to('[data-gsap="logo-cloud"]', {
-      opacity: 1,
-      scale: 1,
-      duration: 0.8,
-      ease: 'power2.out',
-    }, '-=0.4')
-    .to('[data-gsap="curve-text"]', {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      ease: 'power2.out',
-    }, '-=0.4');
+      .to('[data-gsap="hero-text"]', {
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        ease: 'power2.out',
+      }, '-=0.4')
+      .to('[data-gsap="cta-view-projects"]', {
+        opacity: 1,
+        x: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+      }, '-=0.4')
+      .to('[data-gsap="cta-book-call"]', {
+        opacity: 1,
+        x: 0,
+        duration: 0.6,
+        ease: 'power2.out',
+      }, '-=0.3')
+      .to('[data-gsap="tech-subtitle"]', {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      }, '-=0.4')
+      .to('[data-gsap="logo-cloud"]', {
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        ease: 'power2.out',
+      }, '-=0.4')
+      .to('[data-gsap="curve-text"]', {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power2.out',
+      }, '-=0.4');
   }, [shouldAnimate]);
 
   return (
-    <div className="relative min-h-[100dvh] flex flex-col mt-4 lg:justify-center px-2 md:px-10">
+    <div className="relative min-h-[100dvh] flex flex-col mt-32 md:mt-4 lg:justify-center px-2 md:px-10">
       <HeroCTA />
       <LogoCloud />
     </div>
