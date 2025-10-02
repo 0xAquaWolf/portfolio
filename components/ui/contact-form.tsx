@@ -94,7 +94,7 @@ export default function ContactForm() {
               className="space-y-5"
             >
               <div>
-                <label className="font-medium text-neutral-200/50">
+                <label className="font-medium text-neutral-200/30">
                   Full Name
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
@@ -107,7 +107,7 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
+                <label className="font-medium text-neutral-200/30">
                   Email Address
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
@@ -120,7 +120,7 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
+                <label className="font-medium text-neutral-200/30">
                   Type of Inquiry
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
@@ -139,7 +139,7 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
+                <label className="font-medium text-neutral-200/30">
                   Company/Organization
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
@@ -151,8 +151,8 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
-                  Phone Number <span className="text-neutral-400/50">(optional)</span>
+                <label className="font-medium text-neutral-200/30">
+                  Phone Number <span className="text-neutral-400/30">(optional)</span>
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
                   <input
@@ -163,8 +163,8 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
-                  Project Budget <span className="text-neutral-400/50">(optional)</span>
+                <label className="font-medium text-neutral-200/30">
+                  Project Budget <span className="text-neutral-400/30">(optional)</span>
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
                   <select 
@@ -182,7 +182,7 @@ export default function ContactForm() {
                 </div>
               </div>
               <div>
-                <label className="font-medium text-neutral-200/50">
+                <label className="font-medium text-neutral-200/30">
                   Project Details
                 </label>
                 <div className="mt-2 relative rounded-lg bg-gradient-to-br from-purple-500 via-yellow-500 to-blue-500 p-[2px]">
