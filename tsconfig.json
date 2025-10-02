@@ -22,6 +22,11 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/ui/*": ["./components/ui/*"],
+      "@/magicui/*": ["./components/magicui/*"],
+      "@/mdx/*": ["./components/mdx/*"],
+      "@/lib/*": ["./lib/*"],
       "#site/content": ["./.velite"]
     }
   },

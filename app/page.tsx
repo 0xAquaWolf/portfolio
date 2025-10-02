@@ -9,9 +9,12 @@ import SecondQuote from '@/components/SecondQuote/SecondQuote';
 import TheEnd from '@/components/TheEnd';
 import { Footer } from '@/components/footer';
 // import Newsletter from '@/components/Newsletter/Newsletter';
+import Faq from '@/components/Home/FAQ';
 import FeaturedBlogs from '@/components/Blog/FeaturedBlogs';
 import { unstable_noStore as noStore } from 'next/cache';
 import Projects from '@/components/Projects/Projects';
+import Books from '@/components/Books/Books';
+import GearSection from '@/components/Gear/GearSection';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600 * 12; // revalidate every 12 hour
@@ -29,8 +32,11 @@ export default function Home() {
       <TimelineComponent />
       <AboutMe />
       <Projects />
+      <Books />
+      <GearSection />
       <SecondQuote />
       <FeaturedBlogs />
+      <Faq />
       {/* <TheEnd /> */}
       <Footer />
     </main>

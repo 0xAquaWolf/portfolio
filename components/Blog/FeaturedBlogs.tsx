@@ -6,7 +6,7 @@ import { posts } from '#site/content';
 
 export default function FeaturedBlogs() {
   return (
-    <div id="blog" className="mt-20 lg:mt-40">
+    <div id="blog" className="my-20 lg:mt-40">
       <SectionHeading
         heading="Blog"
         subheading="Documenting my expertise in PHP, WordPress, and Laravel development, plus insights on AI integration."

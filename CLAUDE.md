@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Development server**: `bun run dev` (uses Bun runtime)
 - **Build production**: `bun run build` 
 - **Start production**: `bun run start`
-- **Lint code**: `bun run lint`
 - **Add shadcn/ui components**: `bun run scn:add [component-name]`
 - **Add Aceternity UI components**: `bun run ace:add [component-name]`
 - **Install dependencies**: `bun install`
