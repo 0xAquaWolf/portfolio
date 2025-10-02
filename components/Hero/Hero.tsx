@@ -3,6 +3,7 @@
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import HeroCTA from './HeroCTA';
+
 import LogoCloud from '@/components/LogoCloud/LogoCloud';
 
 export default function Hero() {
