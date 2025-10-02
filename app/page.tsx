@@ -1,4 +1,6 @@
 import Hero from '@/components/Hero/Hero';
+import Introduction from '@/components/Introduction/Introduction';
+import FeaturedVideo from '@/components/FeaturedVideo/FeaturedVideo';
 import YoutubeGrid from '@/components/YoutubeGrid/YoutubeGrid';
 import Stats from '@/components/GlobalStats/Stats';
 import YoutubeVideos from '@/components/YoutubeVideos/YoutubeVideo';
@@ -16,6 +18,7 @@ import Projects from '@/components/Projects/Projects';
 import Books from '@/components/Books/Books';
 import GearSection from '@/components/Gear/GearSection';
 import ContactForm from '@/components/ui/contact-form';
+import CallToAction from '@/components/ui/call-to-action-1';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600 * 12; // revalidate every 12 hour
@@ -26,6 +29,8 @@ export default function Home() {
   return (
     <main className="bg-transparent">
       <Hero />
+      <Introduction />
+      <FeaturedVideo />
       <YoutubeGrid />
       <Stats />
       <YoutubeVideos />
@@ -39,6 +44,7 @@ export default function Home() {
       <FeaturedBlogs />
       <Faq />
       <ContactForm />
+      <CallToAction />
       {/* <TheEnd /> */}
       <Footer />
     </main>

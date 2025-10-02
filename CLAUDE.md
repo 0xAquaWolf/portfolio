@@ -10,6 +10,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Add shadcn/ui components**: `bun run scn:add [component-name]`
 - **Add Aceternity UI components**: `bun run ace:add [component-name]`
 - **Install dependencies**: `bun install`
+- **Clean and reinstall**: `bun run clean` (removes node_modules, .next, and reinstalls)
+
+## Code Quality
+
+- **Formatting**: Prettier with Tailwind plugin (configured in .prettierrc)
+- **Linting**: ESLint with Next.js core web vitals config
+- **No dedicated test framework configured**
 
 ## Environment Variables Required
 
@@ -31,6 +38,7 @@ This is a Next.js 14 portfolio and blog website built with TypeScript, featuring
   - Content files processed during build via Velite webpack plugin
 - **Database**: Drizzle ORM with Turso (SQLite) database
 - **Styling**: Tailwind CSS with shadcn/ui and Aceternity UI components
+- **Animation**: GSAP and Framer Motion for animations
 - **APIs**: YouTube API integration for video stats, GitHub API for project data
 
 ## Key Directory Structure
@@ -48,19 +56,33 @@ This is a Next.js 14 portfolio and blog website built with TypeScript, featuring
 
 ## Code Style Guidelines (from .cursorrules)
 
-- Use TypeScript for all code; prefer interfaces over types
-- Use functional and declarative programming patterns
-- Prefer React Server Components; minimize 'use client'
-- Use Shadcn UI, Radix, and Tailwind for components
-- Mobile-first responsive design approach
-- Use descriptive variable names with auxiliary verbs (isLoading, hasError)
-- Structure files: exported component, subcomponents, helpers, static content, types
+- **TypeScript**: Use TypeScript for all code; prefer interfaces over types, avoid enums (use maps instead)
+- **Programming Style**: Use functional and declarative programming patterns; avoid classes
+- **React Patterns**: Prefer React Server Components; minimize 'use client', useEffect, and setState
+- **Components**: Use Shadcn UI, Radix, and Tailwind for components; wrap client components in Suspense
+- **Design**: Mobile-first responsive design approach
+- **Naming**: Use descriptive variable names with auxiliary verbs (isLoading, hasError)
+- **File Structure**: exported component, subcomponents, helpers, static content, types
+- **Directories**: Use lowercase with dashes (e.g., auth-wizard)
+- **Performance**: Optimize Web Vitals (LCP, CLS, FID); use dynamic loading for non-critical components
 
 ## Content Management
 
 - Blog posts are processed by Velite during build
 - MDX files support syntax highlighting with Shiki
 - Content is automatically processed via webpack plugin in next.config.mjs
+
+## Package Management
+
+- **Runtime**: Uses Bun as the JavaScript runtime and package manager
+- **Package Manager**: Configured to use pnpm@9.15.4 as fallback package manager
+- **Dependencies**: Key libraries include GSAP, Framer Motion, Drizzle ORM, Velite, and Tailwind CSS
+
+## Animation Libraries
+
+- **GSAP**: Primary animation library (@gsap/react for React integration)
+- **Framer Motion**: Secondary animation library for React components
+- **Canvas Confetti**: For celebration animations
 
 ## Testing
 

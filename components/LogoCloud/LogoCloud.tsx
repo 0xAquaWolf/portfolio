@@ -159,16 +159,20 @@ export const LogoList = ({ startIndex = 0 }: { startIndex?: number }) => (
 export default function LogoCloud() {
   return (
     <div className="relative z-40 mx-auto mt-10 md:mt-4 flex min-w-0 max-w-full flex-col gap-6 overflow-hidden px-4 text-white sm:px-6 lg:max-w-[1080px] lg:gap-2 lg:px-0">
-      <h2 className="mx-auto w-full text-center text-xs lg:text-sm">
+      <h2 
+        className="mx-auto w-full text-center text-xs lg:text-sm opacity-0"
+        data-gsap="tech-subtitle"
+      >
         Leveraging state-of-the-art technologies
       </h2>
 
       <div
-        className="relative flex w-full min-w-0 overflow-hidden"
+        className="relative flex w-full min-w-0 overflow-hidden opacity-0"
         style={{
           maskImage: 'linear-gradient(to right, transparent, black 20%, black 80%, transparent)',
           WebkitMaskImage: 'linear-gradient(to right, transparent, black 20%, black 80%, transparent)',
         }}
+        data-gsap="logo-cloud"
       >
 
         <div className="flex animate-marquee-scroll whitespace-nowrap py-2">
@@ -187,7 +191,10 @@ export default function LogoCloud() {
         </div>
       </div>
 
-      <p className="mx-auto w-full max-w-[280px] text-center text-xs opacity-60 sm:max-w-none lg:text-sm">
+      <p 
+        className="mx-auto w-full max-w-[280px] text-center text-xs opacity-0 sm:max-w-none lg:text-sm"
+        data-gsap="curve-text"
+      >
         Staying ahead of the curve and surfing the waves of innovation
       </p>
     </div>
