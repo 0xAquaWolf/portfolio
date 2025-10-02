@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_NO_WARNINGS=1 next dev",
-    "build": "NODE_NO_WARNINGS=1 next build",
-    "start": "NODE_NO_WARNINGS=1 next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "next lint",
     "scn:add": "bunx --bun shadcn-ui@latest add",
-    "ace:add": "bunx --bun aceternity-ui@latest add"
+    "ace:add": "bunx --bun aceternity-ui@latest add",
+    "clean": "rm -rf node_modules .next && bun i"
   },
   "dependencies": {
     "@eslint/eslintrc": "2.1.0",
@@ -61,12 +62,18 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
     "@types/canvas-confetti": "^1.6.4",
+    "@types/eslint__eslintrc": "^3.3.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "drizzle-kit": "^0.25.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^6.1.0",
+    "eslint-plugin-unused-imports": "^4.2.0",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
