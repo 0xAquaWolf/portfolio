@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import BlogViewsIcon from '@/public/images/svg/BlogViewsIcon.svg';
 import ReadTimeIcon from '@/public/images/svg/ReadTimeIcon.svg';
@@ -14,8 +15,9 @@ async function getPostFromParams(slug: string) {
   return post;
 }
 
-const PostLayout = async ({ params }: { params: { slug: string } }) => {
-  const post = await getPostFromParams(params.slug);
+const PostLayout = async ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = await params;
+  const post = await getPostFromParams(slug);
   // console.log(post)
 
   if (!post || !post.published) {
@@ -31,17 +33,17 @@ const PostLayout = async ({ params }: { params: { slug: string } }) => {
             <nav className="text-lg text-white">
               <ol className="flex items-center space-x-2">
                 <li>
-                  <a href="/" className="hover:text-white font-bold underline underline-offset-4">
+                  <Link href="/" className="hover:text-white font-bold underline underline-offset-4">
                     Home
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <span className="mx-2">&gt;</span>
                 </li>
                 <li>
-                  <a href="/posts" className="hover:text-white font-bold underline underline-offset-4">
+                  <Link href="/posts" className="hover:text-white font-bold underline underline-offset-4">
                     Posts
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <span className="mx-2">&gt;</span>

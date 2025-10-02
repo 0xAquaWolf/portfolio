@@ -104,5 +104,5 @@ export function useAssetPreloader() {
         clearInterval(progressInterval);
       }
     };
-  }, []); // Empty dependency array to run only once
+  }, [setAssetLoaded, setProgress]); // Dependencies: setAssetLoaded and setProgress
 }

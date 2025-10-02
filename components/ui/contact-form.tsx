@@ -82,7 +82,7 @@ export default function ContactForm() {
               Contact
             </h3>
             <p className="text-neutral-100 text-3xl font-semibold sm:text-4xl">
-              Let's work together
+              Let&apos;s work together
             </p>
             <p>
               Interested in hiring me or collaborating? Please fill out the form below with your project details.
@@ -177,7 +177,7 @@ export default function ContactForm() {
                     <option value="25k-50k">$25,000 - $50,000</option>
                     <option value="50k-100k">$50,000 - $100,000</option>
                     <option value="over-100k">$100,000+</option>
-                    <option value="discuss">Let's discuss</option>
+                    <option value="discuss">Let&apos;s discuss</option>
                   </select>
                 </div>
               </div>

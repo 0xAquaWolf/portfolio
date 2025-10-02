@@ -1,5 +1,6 @@
 "use client"
 import React, { useMemo, useState, useCallback } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ResponsiveYouTubeProps {
@@ -137,13 +138,14 @@ export default function ResponsiveYouTube({
           <>
             {/* Thumbnail fallback - click to load iframe for better performance */}
             {!hasError ? (
-              <img
+              <Image
                 src={thumbnailSrc}
                 alt={`Thumbnail for video ${videoId}`}
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                className="object-cover"
                 onError={handleImageError}
-                decoding="async"
                 loading="lazy"
+                unoptimized
               />
             ) : (
               <div className="absolute inset-0 bg-muted flex items-center justify-center">

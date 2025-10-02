@@ -18,7 +18,7 @@ import ContactForm from '@/components/ui/contact-form';
 import CallToAction from '@/components/ui/call-to-action-1';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 3600 * 12; // revalidate every 12 hour
+export const revalidate = 43200; // revalidate every 12 hours
 
 export default function Home() {
   noStore();
