@@ -1,12 +1,17 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLoading } from '@/lib/context/LoadingContext';
 
 export function useAssetPreloader() {
   const { setAssetLoaded, setProgress } = useLoading();
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
+    // Prevent multiple executions
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
     let progressInterval: NodeJS.Timeout;
     let currentProgress = 0;
 
@@ -24,98 +29,56 @@ export function useAssetPreloader() {
 
     const preloadAssets = async () => {
       try {
+        const loadingStartTime = Date.now();
+        
         // Start progress simulation
         simulateProgress();
 
-        // 1. Check if fonts are loaded
-        const checkFonts = () => {
-          return new Promise<void>((resolve) => {
+        // Simple asset loading without multiple calls
+        await Promise.all([
+          // 1. Fonts
+          new Promise<void>((resolve) => {
             if (document.fonts) {
               document.fonts.ready.then(() => {
                 setAssetLoaded('fonts');
                 resolve();
               });
             } else {
-              // Fallback for browsers without FontFaceSet API
               setTimeout(() => {
                 setAssetLoaded('fonts');
                 resolve();
               }, 1000);
             }
-          });
-        };
+          }),
 
-        // 2. Preload critical images
-        const preloadImages = () => {
-          return new Promise<void>((resolve) => {
-            const criticalImages = [
-              // Add any critical hero images here
-              // '/images/hero-bg.jpg',
-            ];
+          // 2. Critical images (none for now)
+          new Promise<void>((resolve) => {
+            setAssetLoaded('critical-images');
+            resolve();
+          }),
 
-            if (criticalImages.length === 0) {
-              setAssetLoaded('critical-images');
-              resolve();
-              return;
-            }
-
-            let loadedCount = 0;
-            criticalImages.forEach((src) => {
-              const img = new Image();
-              img.onload = img.onerror = () => {
-                loadedCount++;
-                if (loadedCount === criticalImages.length) {
-                  setAssetLoaded('critical-images');
-                  resolve();
-                }
-              };
-              img.src = src;
-            });
-          });
-        };
-
-        // 3. Wait for God rays shader initialization
-        const waitForShader = () => {
-          return new Promise<void>((resolve) => {
-            // Give time for the shader to initialize
-            // This is a heuristic - adjust timing based on your shader complexity
-            const shaderTimeout = setTimeout(() => {
+          // 3. Shader loading time
+          new Promise<void>((resolve) => {
+            setTimeout(() => {
               setAssetLoaded('god-rays-shader');
               resolve();
-            }, 2000); // 2 seconds for shader loading
+            }, 2000);
+          }),
 
-            // Optional: Listen for actual shader load events if available
-            // You might need to modify ResponsiveGodRays to emit load events
-            
-            return () => clearTimeout(shaderTimeout);
-          });
-        };
-
-        // 4. Hero components ready
-        const markHeroReady = () => {
-          return new Promise<void>((resolve) => {
-            // Small delay to ensure all React components are mounted
+          // 4. Hero components
+          new Promise<void>((resolve) => {
             setTimeout(() => {
               setAssetLoaded('hero-components');
               resolve();
             }, 500);
-          });
-        };
-
-        // Load assets in parallel
-        await Promise.all([
-          checkFonts(),
-          preloadImages(),
-          waitForShader(),
-          markHeroReady(),
+          }),
         ]);
 
         // Clear progress interval
         clearInterval(progressInterval);
 
-        // Ensure minimum loading time for good UX (optional)
+        // Ensure minimum loading time for good UX
         const minLoadingTime = 2500; // 2.5 seconds minimum
-        const loadingStartTime = Date.now();
         const elapsed = Date.now() - loadingStartTime;
         
         if (elapsed < minLoadingTime) {
@@ -141,5 +104,5 @@ export function useAssetPreloader() {
         clearInterval(progressInterval);
       }
     };
-  }, [setAssetLoaded, setProgress]);
+  }, []); // Empty dependency array to run only once
 }

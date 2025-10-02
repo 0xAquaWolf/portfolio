@@ -41,7 +41,7 @@ export function LoadingProvider({ children }: LoadingProviderProps) {
       const newLoadedAssets = new Set(prev.loadedAssets);
       newLoadedAssets.add(assetName);
       
-      const progress = Math.min(95, (newLoadedAssets.size / REQUIRED_ASSETS.length) * 100);
+      const progress = Math.min(100, (newLoadedAssets.size / REQUIRED_ASSETS.length) * 100);
       
       return {
         ...prev,

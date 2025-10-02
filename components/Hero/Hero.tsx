@@ -2,37 +2,39 @@
 
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import HeroCTA from './HeroCTA';
-
-import LogoCloud from '@/components/LogoCloud/LogoCloud';
-
-'use client';
-
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import HeroCTA from './HeroCTA';
-import LogoCloud from '@/components/LogoCloud/LogoCloud';
-import { useLoading } from '@/lib/context/LoadingContext';
 import { useEffect, useState } from 'react';
+import HeroCTA from './HeroCTA';
+import LogoCloud from '@/components/LogoCloud/LogoCloud';
 
 export default function Hero() {
-  const { isComplete } = useLoading();
   const [shouldAnimate, setShouldAnimate] = useState(false);
 
-  // Wait for loading to complete before showing and animating hero content
+  // Listen for loading screen completion event
   useEffect(() => {
-    if (isComplete) {
-      // Small delay to ensure loading screen animation completes
-      const timer = setTimeout(() => {
-        setShouldAnimate(true);
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isComplete]);
+    console.log('🎯 Hero: Setting up event listener for loadingScreenComplete');
+    
+    const handleLoadingComplete = () => {
+      console.log('🎉 Hero: Received loadingScreenComplete event! Starting animations...');
+      setShouldAnimate(true);
+    };
+
+    // Add event listener for loading screen completion
+    window.addEventListener('loadingScreenComplete', handleLoadingComplete);
+
+    // Cleanup event listener on unmount
+    return () => {
+      console.log('🧹 Hero: Cleaning up event listener');
+      window.removeEventListener('loadingScreenComplete', handleLoadingComplete);
+    };
+  }, []);
 
   useGSAP(() => {
-    if (!shouldAnimate) return;
+    if (!shouldAnimate) {
+      console.log('⏳ Hero: shouldAnimate is false, waiting...');
+      return;
+    }
+
+    console.log('🎬 Hero: shouldAnimate is true! Starting GSAP animations...');
 
     // Create a timeline for the staggered animation
     const tl = gsap.timeline();

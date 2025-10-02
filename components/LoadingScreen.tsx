@@ -44,10 +44,14 @@ export default function LoadingScreen({ progress, isComplete, onComplete }: Load
     if (isComplete && containerRef.current) {
       const tl = gsap.timeline({
         onComplete: () => {
+          // Dispatch custom event when loading screen animation is completely finished
+          console.log('🚀 LoadingScreen: Dispatching loadingScreenComplete event');
+          window.dispatchEvent(new CustomEvent('loadingScreenComplete'));
           onComplete();
         }
       });
 
+      // Slide up animation all the way
       tl.to(containerRef.current, {
         y: '-100%',
         duration: 1,
@@ -56,14 +60,12 @@ export default function LoadingScreen({ progress, isComplete, onComplete }: Load
     }
   }, [isComplete, onComplete]);
 
-  if (isComplete && displayProgress >= 100) {
-    return null;
-  }
+  // Don't early return - let the completion animation handle the unmounting
 
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-purple-600 via-blue-600 to-yellow-500"
       style={{ touchAction: 'none', overflow: 'hidden' }}
     >
       {/* Percentage Counter */}

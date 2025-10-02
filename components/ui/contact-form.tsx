@@ -97,87 +97,101 @@ export default function ContactForm() {
                 <label className="font-medium text-neutral-200">
                   Full Name
                 </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Your full name"
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                />
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Your full name"
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  />
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Email Address
                 </label>
-                <input
-                  type="email"
-                  required
-                  placeholder="your.email@example.com"
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                />
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <input
+                    type="email"
+                    required
+                    placeholder="your.email@example.com"
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  />
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Type of Inquiry
                 </label>
-                <select 
-                  required
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                >
-                  <option value="">Select an option...</option>
-                  <option value="full-time">Full-time Employment</option>
-                  <option value="contract">Contract Work</option>
-                  <option value="freelance">Freelance Project</option>
-                  <option value="consulting">Consulting</option>
-                  <option value="collaboration">Collaboration</option>
-                  <option value="other">Other</option>
-                </select>
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <select 
+                    required
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  >
+                    <option value="">Select an option...</option>
+                    <option value="full-time">Full-time Employment</option>
+                    <option value="contract">Contract Work</option>
+                    <option value="freelance">Freelance Project</option>
+                    <option value="consulting">Consulting</option>
+                    <option value="collaboration">Collaboration</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Company/Organization
                 </label>
-                <input
-                  type="text"
-                  placeholder="Your company or organization (optional)"
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                />
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <input
+                    type="text"
+                    placeholder="Your company or organization (optional)"
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  />
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Phone Number <span className="text-neutral-400">(optional)</span>
                 </label>
-                <input
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                />
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <input
+                    type="tel"
+                    placeholder="+1 (555) 123-4567"
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  />
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Project Budget <span className="text-neutral-400">(optional)</span>
                 </label>
-                <select 
-                  className="w-full mt-2 px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                >
-                  <option value="">Select budget range...</option>
-                  <option value="under-5k">Under $5,000</option>
-                  <option value="5k-10k">$5,000 - $10,000</option>
-                  <option value="10k-25k">$10,000 - $25,000</option>
-                  <option value="25k-50k">$25,000 - $50,000</option>
-                  <option value="50k-100k">$50,000 - $100,000</option>
-                  <option value="over-100k">$100,000+</option>
-                  <option value="discuss">Let's discuss</option>
-                </select>
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <select 
+                    className="w-full px-3 py-2 text-neutral-100 bg-neutral-900/50 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  >
+                    <option value="">Select budget range...</option>
+                    <option value="under-5k">Under $5,000</option>
+                    <option value="5k-10k">$5,000 - $10,000</option>
+                    <option value="10k-25k">$10,000 - $25,000</option>
+                    <option value="25k-50k">$25,000 - $50,000</option>
+                    <option value="50k-100k">$50,000 - $100,000</option>
+                    <option value="over-100k">$100,000+</option>
+                    <option value="discuss">Let's discuss</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="font-medium text-neutral-200">
                   Project Details
                 </label>
-                <textarea 
-                  required 
-                  placeholder="Please describe your project, timeline, requirements, and any specific technologies or skills needed. The more details you provide, the better I can understand how to help you."
-                  className="w-full mt-2 h-40 px-3 py-2 resize-none appearance-none bg-neutral-900/50 text-neutral-100 outline-none border border-neutral-600 focus:border-indigo-500 shadow-sm rounded-lg"
-                ></textarea>
+                <div className="mt-2 relative rounded-lg border-2 border-white p-[2px]">
+                  <textarea 
+                    required 
+                    placeholder="Please describe your project, timeline, requirements, and any specific technologies or skills needed. The more details you provide, the better I can understand how to help you."
+                    className="w-full h-40 px-3 py-2 resize-none appearance-none bg-neutral-900/50 text-neutral-100 outline-none border-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-neutral-900"
+                  ></textarea>
+                </div>
               </div>
               <Button
                 type="submit"
