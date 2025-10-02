@@ -15,6 +15,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Projects from '@/components/Projects/Projects';
 import Books from '@/components/Books/Books';
 import GearSection from '@/components/Gear/GearSection';
+import ContactForm from '@/components/ui/contact-form';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600 * 12; // revalidate every 12 hour
@@ -37,6 +38,7 @@ export default function Home() {
       <SecondQuote />
       <FeaturedBlogs />
       <Faq />
+      <ContactForm />
       {/* <TheEnd /> */}
       <Footer />
     </main>
