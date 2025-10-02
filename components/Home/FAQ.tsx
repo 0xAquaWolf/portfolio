@@ -71,15 +71,3 @@ export default function FAQ() {
   );
 }
 
-// function CustomStyleDemo() {
-//   return (
-//     <FaqAccordion
-//       data={defaultData}
-//       className="max-w-[700px]"
-//       questionClassName="bg-secondary hover:bg-secondary/80"
-//       answerClassName="bg-secondary text-secondary-foreground"
-//       timestamp="Updated daily at 12:00 PM"
-//     />
-//   );
-// }
-//

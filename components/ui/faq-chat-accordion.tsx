@@ -53,10 +53,10 @@ export function FaqAccordion({
               <Accordion.Trigger className="flex w-full items-center justify-start gap-x-4">
                 <div
                   className={cn(
-                    "relative flex items-center space-x-2 rounded-xl p-2 transition-colors w-full",
+                    "relative flex items-center space-x-2 rounded-xl p-2 transition-colors",
                     openItem === item.id.toString()
-                      ? "bg-gray-600/60 text-gray-100"
-                      : "bg-gray-800/40 hover:bg-gray-700/50",
+                      ? "bg-primary/20 text-slate-300"
+                      : "bg-slate-600 text-slate-300 hover:bg-primary/10",
                     questionClassName
                   )}
                 >
@@ -75,19 +75,19 @@ export function FaqAccordion({
                       {item.icon}
                     </span>
                   )}
-                  <span className="font-medium text-gray-100">{item.question}</span>
+                  <span className="font-medium">{item.question}</span>
                 </div>
 
                 <span
                   className={cn(
-                    "text-gray-400",
-                    openItem === item.id.toString() && "text-gray-200"
+                    "text-muted-foreground",
+                    openItem === item.id.toString() && "text-primary"
                   )}
                 >
                   {openItem === item.id.toString() ? (
-                    <Minus className="h-5 w-5" />
+                    <Minus className="h-5 w-5 text-slate-300" />
                   ) : (
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-5 w-5 text-slate-300" />
                   )}
                 </span>
               </Accordion.Trigger>
@@ -101,12 +101,12 @@ export function FaqAccordion({
                   collapsed: { opacity: 0, height: 0 },
                 }}
                 transition={{ duration: 0.4 }}
-                className="overflow-hidden"
+                className="overflow-hidden flex justify-end"
               >
                 <div className="ml-7 mt-1 md:ml-16">
                   <div
                     className={cn(
-                      "relative max-w-xs rounded-2xl bg-gray-700/70 px-4 py-2 text-gray-100 border border-gray-600/40",
+                      "relative max-w-xs rounded-2xl bg-primary px-4 py-2 text-primary-foreground",
                       answerClassName
                     )}
                   >
