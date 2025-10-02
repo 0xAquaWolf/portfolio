@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
-
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -55,10 +55,11 @@ const BentoCard = ({
     <div>{background}</div>
     {image && (
       <div className="absolute inset-0 opacity-20">
-        <img 
-          src={image} 
+        <Image
+          src={image}
           alt={name}
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
         />
       </div>
     )}
